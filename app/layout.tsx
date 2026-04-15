@@ -4,6 +4,8 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,22 +23,26 @@ export const metadata: Metadata = {
   description: "让 OpenClaw 用户用最少的配置工作，获得最大的成本节省",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
+
   return (
     <html lang="zh">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
-        <Toaster />
+        <NextIntlClientProvider messages={messages}>
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+          <Toaster />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
