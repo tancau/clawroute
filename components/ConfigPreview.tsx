@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
-import { generateYaml } from '@/lib/yaml-generator';
+import { generateOpenClawConfig } from '@/lib/yaml-generator';
 import { copyToClipboard, downloadYaml } from '@/lib/export-utils';
 import { Button } from '@/components/ui/button';
 import { Copy, Download } from 'lucide-react';
@@ -13,11 +13,11 @@ import { toast } from '@/components/ui/use-toast';
 export function ConfigPreview() {
   const t = useTranslations('configPreview');
   const rules = useAppStore((s) => s.rules);
-  const allModels = useAppStore((s) => s.allModels);
+
 
   const yamlContent = useMemo(() => {
-    return generateYaml(rules, allModels);
-  }, [rules, allModels]);
+    return generateOpenClawConfig(rules);
+  }, [rules]);
 
   const handleCopy = async () => {
     const success = await copyToClipboard(yamlContent);

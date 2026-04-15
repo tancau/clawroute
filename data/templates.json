@@ -6,10 +6,10 @@
       "description": "Simple signals use free models, complex analysis uses reasoning models, default uses balanced models",
       "sceneId": "trading-bot",
       "rules": [
-        { "id": "rule-tb-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-free", "isDefault": false },
-        { "id": "rule-tb-2", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-r1", "isDefault": false },
-        { "id": "rule-tb-3", "condition": { "attribute": "hasCode", "matchValue": "true" }, "targetModelId": "deepseek-v3", "isDefault": false },
-        { "id": "rule-tb-default", "condition": null, "targetModelId": "claude-haiku", "isDefault": true }
+        { "id": "rule-tb-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-32b", "isDefault": false },
+        { "id": "rule-tb-2", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-reasoner", "isDefault": false },
+        { "id": "rule-tb-3", "condition": { "attribute": "hasCode", "matchValue": "true" }, "targetModelId": "deepseek-chat", "isDefault": false },
+        { "id": "rule-tb-default", "condition": null, "targetModelId": "claude-3-5-haiku-20241022", "isDefault": true }
       ],
       "estimatedSavingRate": 72,
       "author": "ClawRoute"
@@ -20,9 +20,9 @@
       "description": "Simple Q&A uses free models, complex questions use high quality models",
       "sceneId": "customer-service",
       "rules": [
-        { "id": "rule-cs-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-free", "isDefault": false },
-        { "id": "rule-cs-2", "condition": { "attribute": "complexity", "matchValue": "complex" }, "targetModelId": "qwen36-plus", "isDefault": false },
-        { "id": "rule-cs-default", "condition": null, "targetModelId": "deepseek-v3", "isDefault": true }
+        { "id": "rule-cs-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-32b", "isDefault": false },
+        { "id": "rule-cs-2", "condition": { "attribute": "complexity", "matchValue": "complex" }, "targetModelId": "qwen-plus", "isDefault": false },
+        { "id": "rule-cs-default", "condition": null, "targetModelId": "deepseek-chat", "isDefault": true }
       ],
       "estimatedSavingRate": 55,
       "author": "ClawRoute"
@@ -33,9 +33,9 @@
       "description": "Simple content uses balanced models, deep creation uses high quality models",
       "sceneId": "content-creation",
       "rules": [
-        { "id": "rule-cc-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen36-plus", "isDefault": false },
-        { "id": "rule-cc-2", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "claude-sonnet", "isDefault": false },
-        { "id": "rule-cc-default", "condition": null, "targetModelId": "gpt4o", "isDefault": true }
+        { "id": "rule-cc-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen-plus", "isDefault": false },
+        { "id": "rule-cc-2", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "claude-3-5-sonnet-20241022", "isDefault": false },
+        { "id": "rule-cc-default", "condition": null, "targetModelId": "gpt-4o", "isDefault": true }
       ],
       "estimatedSavingRate": 40,
       "author": "ClawRoute"
@@ -46,10 +46,10 @@
       "description": "Simple queries use low cost models, complex analysis uses reasoning models",
       "sceneId": "data-analysis",
       "rules": [
-        { "id": "rule-da-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder", "isDefault": false },
-        { "id": "rule-da-2", "condition": { "attribute": "hasCode", "matchValue": "true" }, "targetModelId": "deepseek-v3", "isDefault": false },
-        { "id": "rule-da-3", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-r1", "isDefault": false },
-        { "id": "rule-da-default", "condition": null, "targetModelId": "claude-sonnet", "isDefault": true }
+        { "id": "rule-da-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-32b", "isDefault": false },
+        { "id": "rule-da-2", "condition": { "attribute": "hasCode", "matchValue": "true" }, "targetModelId": "deepseek-chat", "isDefault": false },
+        { "id": "rule-da-3", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-reasoner", "isDefault": false },
+        { "id": "rule-da-default", "condition": null, "targetModelId": "claude-3-5-sonnet-20241022", "isDefault": true }
       ],
       "estimatedSavingRate": 62,
       "author": "ClawRoute"
@@ -60,9 +60,9 @@
       "description": "Reasoning tasks use reasoning models, general queries use balanced models",
       "sceneId": "research-assistant",
       "rules": [
-        { "id": "rule-ra-1", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-r1", "isDefault": false },
-        { "id": "rule-ra-2", "condition": { "attribute": "inputTokenRange", "matchValue": "long" }, "targetModelId": "gemini-pro", "isDefault": false },
-        { "id": "rule-ra-default", "condition": null, "targetModelId": "claude-sonnet", "isDefault": true }
+        { "id": "rule-ra-1", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-reasoner", "isDefault": false },
+        { "id": "rule-ra-2", "condition": { "attribute": "inputTokenRange", "matchValue": "long" }, "targetModelId": "gemini-1.5-pro", "isDefault": false },
+        { "id": "rule-ra-default", "condition": null, "targetModelId": "claude-3-5-sonnet-20241022", "isDefault": true }
       ],
       "estimatedSavingRate": 45,
       "author": "ClawRoute"
@@ -73,10 +73,10 @@
       "description": "Simple code uses free models, complex code uses professional models",
       "sceneId": "dev-tools",
       "rules": [
-        { "id": "rule-dt-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-free", "isDefault": false },
-        { "id": "rule-dt-2", "condition": { "attribute": "hasCode", "matchValue": "true" }, "targetModelId": "qwen35-coder-plus", "isDefault": false },
-        { "id": "rule-dt-3", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-r1", "isDefault": false },
-        { "id": "rule-dt-default", "condition": null, "targetModelId": "claude-haiku", "isDefault": true }
+        { "id": "rule-dt-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-32b", "isDefault": false },
+        { "id": "rule-dt-2", "condition": { "attribute": "hasCode", "matchValue": "true" }, "targetModelId": "deepseek-chat", "isDefault": false },
+        { "id": "rule-dt-3", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-reasoner", "isDefault": false },
+        { "id": "rule-dt-default", "condition": null, "targetModelId": "claude-3-5-haiku-20241022", "isDefault": true }
       ],
       "estimatedSavingRate": 58,
       "author": "ClawRoute"

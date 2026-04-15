@@ -1,9 +1,32 @@
 import type { Model, SortMode } from './types';
-import modelsData from '@/data/models.json';
+import providersData from '@/data/providers.json';
 import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
 
-const models: Model[] = modelsData.models as Model[];
 const sceneModelMapping = sceneModelMappingRaw as Record<string, { candidateModelIds: string[]; defaultTemplateId: string }>;
+
+// Flatten models from providers.json into the existing Model[] format
+function flattenModels(): Model[] {
+  const models: Model[] = [];
+  
+  for (const [providerId, provider] of Object.entries(providersData.providers)) {
+    for (const modelData of provider.models) {
+      models.push({
+        id: modelData.id,
+        name: modelData.name,
+        provider: providerId,
+        costPer1KToken: modelData.costPer1KToken,
+        speedRating: modelData.speedRating as 1 | 2 | 3,
+        qualityRating: modelData.qualityRating as 1 | 2 | 3,
+        capabilityTags: modelData.capabilityTags,
+        recommendationReason: modelData.recommendationReason,
+      });
+    }
+  }
+  
+  return models;
+}
+
+const models = flattenModels();
 
 /** Get all models */
 export function getAllModels(): Model[] {
@@ -13,6 +36,11 @@ export function getAllModels(): Model[] {
 /** Get a single model by ID */
 export function getModelById(id: string): Model | undefined {
   return models.find((m) => m.id === id);
+}
+
+/** Get all models as flat array (for internal use) */
+export function getAllModelsFlat(): Model[] {
+  return models;
 }
 
 /** Filter models by capability tags */
@@ -52,4 +80,14 @@ export function sortModels(models: Model[], mode: SortMode): Model[] {
       break;
   }
   return sorted;
+}
+
+/** Get all provider IDs */
+export function getAllProviderIds(): string[] {
+  return Object.keys(providersData.providers);
+}
+
+/** Get provider info */
+export function getProviderInfo(providerId: string) {
+  return providersData.providers[providerId as keyof typeof providersData.providers];
 }
