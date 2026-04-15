@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useAppStore } from '@/store/use-app-store';
+import { ModelLogo } from '@/components/ModelLogo';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { SortMode } from '@/lib/types';
@@ -61,7 +62,12 @@ export function ModelComparePanel() {
           <tbody>
             {models.map((model) => (
               <tr key={model.id} className="border-b hover:bg-muted/50">
-                <td className="py-2 px-2 font-medium">{model.name}</td>
+                <td className="py-2 px-2">
+                  <div className="flex items-center gap-2">
+                    <ModelLogo provider={model.provider} size="sm" />
+                    <span className="font-medium">{model.name}</span>
+                  </div>
+                </td>
                 <td className="py-2 px-2"><SpeedRating rating={model.speedRating} /></td>
                 <td className="py-2 px-2"><QualityRating rating={model.qualityRating} /></td>
                 <td className="py-2 px-2">
