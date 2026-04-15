@@ -6,7 +6,46 @@
   "home": {
     "heading": "What do you use OpenClaw for?",
     "subheading": "Select a scenario, get the optimal config",
-    "savingLabel": "Typically saves"
+    "savingLabel": "Typically saves",
+    "hero": {
+      "highlight": "Empower OpenClaw Users",
+      "title": "Maximum savings with minimum configuration.",
+      "subtitle": "Select your use case, generate optimized routing config, save 60-80% on OpenClaw costs instantly."
+    },
+    "cta": {
+      "start": "Get Started",
+      "templates": "Browse Templates"
+    },
+    "testimonials": {
+      "title": "What users say"
+    },
+    "sceneSection": {
+      "title": "What do you use OpenClaw for?",
+      "subtitle": "Select a scenario, get the optimal config"
+    },
+    "quickstart": {
+      "title": "Quick Start"
+    },
+    "installCode": {
+      "comment": "Configure your OpenClaw routing",
+      "step1": "Select scenario → Generate models.yaml",
+      "savings": "Save 60-80% on costs!"
+    },
+    "features": {
+      "title": "Why ClawRoute",
+      "savings": {
+        "title": "Significant Savings",
+        "desc": "Smart routing saves you 60-80% on OpenClaw costs"
+      },
+      "easy": {
+        "title": "Ready to Use",
+        "desc": "Preset templates, no complex YAML configuration needed"
+      },
+      "opensource": {
+        "title": "Fully Open Source",
+        "desc": "All code is open source, community-driven improvements"
+      }
+    }
   },
   "scenes": {
     "trading-bot": "Trading Bot",

@@ -6,7 +6,46 @@
   "home": {
     "heading": "你用 OpenClaw 做什么？",
     "subheading": "选择场景，获取最优配置",
-    "savingLabel": "通常节省"
+    "savingLabel": "通常节省",
+    "hero": {
+      "highlight": "让 OpenClaw 用户",
+      "title": "用最少的配置工作，获得最大的成本节省。",
+      "subtitle": "选择你的使用场景，一键生成优化好的路由配置，立即节省 60-80% 的 OpenClaw 费用。"
+    },
+    "cta": {
+      "start": "开始配置",
+      "templates": "浏览模板市场"
+    },
+    "testimonials": {
+      "title": "来自用户的评价"
+    },
+    "sceneSection": {
+      "title": "你用 OpenClaw 做什么？",
+      "subtitle": "选择场景，获取最优配置"
+    },
+    "quickstart": {
+      "title": "快速开始"
+    },
+    "installCode": {
+      "comment": "配置你的 OpenClaw 路由",
+      "step1": "选择场景 → 一键生成 models.yaml",
+      "savings": "节省 60-80% 成本！"
+    },
+    "features": {
+      "title": "为什么选择 ClawRoute",
+      "savings": {
+        "title": "显著节省",
+        "desc": "智能路由让你节省 60-80% 的 OpenClaw 费用"
+      },
+      "easy": {
+        "title": "开箱即用",
+        "desc": "预设场景模板，无需手动配置复杂的 YAML"
+      },
+      "opensource": {
+        "title": "完全开源",
+        "desc": "所有代码完全开源，社区驱动持续改进"
+      }
+    }
   },
   "scenes": {
     "trading-bot": "交易 Bot",
