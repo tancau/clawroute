@@ -3,7 +3,8 @@
 /**
  * ClawRoute Model Updater
  * 
- * Fetches latest model lists from various LLM providers and updates providers.json
+ * Fetches latest model lists from OpenRouter (free, no API key required)
+ * and merges with our curated provider data
  * 
  * Usage: node scripts/update-models.js [--dry-run]
  */
@@ -15,119 +16,93 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROVIDERS_FILE = path.join(__dirname, '../data/providers.json');
 
-// Provider API endpoints for fetching model lists
-const PROVIDER_APIS = {
-  openai: {
-    url: 'https://api.openai.com/v1/models',
-    headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY || ''}` },
-    filter: (data) => data.data.filter(m => m.id.includes('gpt')).map(m => ({
-      id: m.id,
-      name: m.id.replace(/-/g, ' ').replace(/gpt/i, 'GPT ')
-    }))
-  },
-  anthropic: {
-    url: 'https://api.anthropic.com/v1/models',
-    headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY || '', 'anthropic-version': '2023-06-01' },
-    filter: (data) => data.data.map(m => ({
-      id: m.id,
-      name: m.display_name || m.id
-    }))
-  },
-  google: {
-    url: 'https://generativelanguage.googleapis.com/v1beta/models?key=' + (process.env.GOOGLE_API_KEY || ''),
-    headers: {},
-    filter: (data) => data.models.map(m => ({
-      id: m.name.replace('models/', ''),
-      name: m.displayName || m.name
-    }))
-  },
-  deepseek: {
-    // DeepSeek doesn't have a public model list API, use known models
-    url: null,
-    known: [
-      { id: 'deepseek-chat', name: 'DeepSeek V3' },
-      { id: 'deepseek-reasoner', name: 'DeepSeek R1' }
-    ],
-    filter: (data) => data
-  },
-  cohere: {
-    url: 'https://api.cohere.ai/v2/models',
-    headers: { 'Authorization': `Bearer ${process.env.COHERE_API_KEY || ''}` },
-    filter: (data) => data.models.filter(m => m.latest).map(m => ({
-      id: m.name,
-      name: m.name
-    }))
-  },
-  openrouter: {
-    url: 'https://openrouter.ai/api/v1/models',
-    headers: {},
-    filter: (data) => data.data.slice(0, 50).map(m => ({
-      id: m.id,
-      name: m.name || m.id,
-      cost: m.pricing?.prompt
-    }))
-  }
-};
-
-async function fetchWithTimeout(url, options = {}, timeout = 10000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+/**
+ * OpenRouter has a public API that doesn't require authentication
+ * It aggregates models from many providers: OpenAI, Anthropic, Google, DeepSeek, Meta, etc.
+ */
+async function fetchOpenRouterModels() {
+  console.log('  Fetching from OpenRouter (no API key required)...');
   
   try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
+    const response = await fetch('https://openrouter.ai/api/v1/models', {
+      headers: {
+        'Accept': 'application/json'
+      }
     });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    throw error;
-  }
-}
-
-async function fetchProviderModels(providerId) {
-  const provider = PROVIDER_APIS[providerId];
-  
-  if (!provider) {
-    console.warn(`  Unknown provider: ${providerId}`);
-    return [];
-  }
-  
-  if (!provider.url) {
-    // Use known models if no API available
-    console.log(`  Using known models for ${providerId}`);
-    return provider.known || [];
-  }
-  
-  try {
-    console.log(`  Fetching from ${providerId}...`);
-    const response = await fetchWithTimeout(provider.url, { headers: provider.headers });
     
     if (!response.ok) {
-      console.warn(`  Failed to fetch ${providerId}: ${response.status} ${response.statusText}`);
+      console.warn(`  OpenRouter API error: ${response.status}`);
       return [];
     }
     
     const data = await response.json();
-    return provider.filter(data);
+    
+    // Filter to popular/reliable models and extract useful info
+    const models = data.data
+      .filter(m => {
+        // Filter to models that are generally available and not too obscure
+        const id = m.id.toLowerCase();
+        const isSupported = 
+          id.includes('gpt-') ||
+          id.includes('claude') ||
+          id.includes('gemini') ||
+          id.includes('deepseek') ||
+          id.includes('llama') ||
+          id.includes('qwen') ||
+          id.includes('mistral') ||
+          id.includes('command');
+        
+        // Exclude preview/beta models
+        const isStable = !id.includes('preview') && !id.includes('beta') && !id.includes('alpha');
+        
+        return isSupported && isStable;
+      })
+      .slice(0, 100) // Limit to top 100
+      .map(m => ({
+        id: m.id,
+        name: m.name || m.id,
+        provider: getProviderFromOpenRouterId(m.id),
+        context_length: m.context_length,
+        pricing: m.pricing ? {
+          prompt: m.pricing.prompt,
+          completion: m.pricing.completion
+        } : null
+      }));
+    
+    console.log(`  Found ${models.length} models from OpenRouter`);
+    return models;
   } catch (error) {
-    console.warn(`  Error fetching ${providerId}: ${error.message}`);
+    console.warn(`  Error fetching OpenRouter: ${error.message}`);
     return [];
   }
 }
 
+/** Extract provider name from OpenRouter model ID */
+function getProviderFromOpenRouterId(openRouterId) {
+  const parts = openRouterId.split('/');
+  if (parts.length >= 2) {
+    return parts[0]; // e.g., "openai", "anthropic", "google"
+  }
+  return 'unknown';
+}
+
+/** Calculate cost per 1K tokens from OpenRouter pricing */
+function calculateCostPer1KToken(pricing) {
+  if (!pricing || !pricing.completion) return 0;
+  // OpenRouter pricing is per million tokens, convert to per 1K
+  return pricing.completion / 1000;
+}
+
 async function updateModels() {
   console.log('🔄 ClawRoute Model Updater\n');
-  console.log('Fetching latest models from providers...\n');
+  console.log('Fetching latest models from OpenRouter (free, no API key)...\n');
   
-  const results = {};
+  // Fetch from OpenRouter
+  const openRouterModels = await fetchOpenRouterModels();
   
-  for (const providerId of Object.keys(PROVIDER_APIS)) {
-    console.log(`\n📦 ${providerId}:`);
-    const models = await fetchProviderModels(providerId);
-    results[providerId] = models;
-    console.log(`  Found ${models.length} models`);
+  if (openRouterModels.length === 0) {
+    console.error('❌ Failed to fetch models from OpenRouter');
+    process.exit(1);
   }
   
   // Load existing providers.json
@@ -139,24 +114,39 @@ async function updateModels() {
     process.exit(1);
   }
   
-  // Update models for each provider
+  // Group OpenRouter models by provider
+  const modelsByProvider = {};
+  for (const model of openRouterModels) {
+    if (!modelsByProvider[model.provider]) {
+      modelsByProvider[model.provider] = [];
+    }
+    modelsByProvider[model.provider].push(model);
+  }
+  
+  // Update providers with latest model data from OpenRouter
   let updatedCount = 0;
   
-  for (const [providerId, models] of Object.entries(results)) {
-    if (providersData.providers[providerId] && models.length > 0) {
-      // Merge with existing model data, preserving our custom fields
-      const existingModels = providersData.providers[providerId].models || [];
+  for (const [providerId, models] of Object.entries(modelsByProvider)) {
+    if (providersData.providers[providerId]) {
+      // Merge with existing provider data
+      const existingIds = new Set(
+        (providersData.providers[providerId].models || []).map(m => m.id)
+      );
       
-      // Update only if we got new models from API
-      if (models.length > existingModels.length || process.argv.includes('--force')) {
-        providersData.providers[providerId].models = models.map(newModel => {
-          const existing = existingModels.find(m => m.id === newModel.id);
-          if (existing) {
-            return { ...existing, ...newModel };
-          }
-          return newModel;
-        });
-        updatedCount++;
+      // Add new models found on OpenRouter
+      for (const model of models) {
+        if (!existingIds.has(model.id)) {
+          providersData.providers[providerId].models.push({
+            id: model.id,
+            name: model.name,
+            costPer1KToken: calculateCostPer1KToken(model.pricing),
+            speedRating: 2, // Default, can be refined
+            qualityRating: 2, // Default, can be refined
+            capabilityTags: [],
+            recommendationReason: 'Updated from OpenRouter'
+          });
+          updatedCount++;
+        }
       }
     }
   }
@@ -167,7 +157,7 @@ async function updateModels() {
   fs.writeFileSync(PROVIDERS_FILE, JSON.stringify(providersData, null, 2));
   
   console.log('\n✅ Update complete!');
-  console.log(`   Updated ${updatedCount} providers`);
+  console.log(`   Added ${updatedCount} new models`);
   console.log(`   Last updated: ${providersData.lastUpdated}`);
   
   // Print summary
@@ -180,4 +170,4 @@ async function updateModels() {
 // Run if executed directly
 updateModels().catch(console.error);
 
-export { updateModels, fetchProviderModels };
+export { updateModels, fetchOpenRouterModels };
