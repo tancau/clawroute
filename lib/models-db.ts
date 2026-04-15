@@ -91,3 +91,18 @@ export function getAllProviderIds(): string[] {
 export function getProviderInfo(providerId: string) {
   return providersData.providers[providerId as keyof typeof providersData.providers];
 }
+
+/** Get all providers with their metadata */
+export function getAllProviders() {
+  return Object.entries(providersData.providers).map(([id, data]) => ({
+    id,
+    name: data.name,
+    baseUrl: data.baseUrl,
+    apiKeyEnvVar: data.apiKeyEnvVar,
+  }));
+}
+
+/** Get models for a specific provider */
+export function getModelsByProvider(providerId: string): Model[] {
+  return models.filter((m) => m.provider === providerId);
+}
