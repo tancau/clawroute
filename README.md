@@ -11,6 +11,16 @@ English | [简体中文](./README.zh.md)
 
 ---
 
+## 🎬 Demo Video
+
+Watch how ClawRoute helps you save 60-80% on OpenClaw costs in under 30 seconds:
+
+[![ClawRoute Demo](https://img.shields.io/badge/Video-Coming%20Soon-blue?style=for-the-badge)](https://github.com/tancau/clawroute/discussions)
+
+*Video coming soon — showing scene selection → config generation → export*
+
+---
+
 ## 🎯 What is ClawRoute?
 
 OpenClaw sends all requests to the same model by default — like driving a Ferrari to buy groceries.
