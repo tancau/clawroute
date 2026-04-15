@@ -169,7 +169,7 @@ MIT License — 可免费商用，但请保留署名。
 
 | 首页 | 配置页 | 模板市场 |
 |:---:|:---:|:---:|
-| <img src="public/screenshot-home.png" width="300"/> | <img src="public/screenshot-config.png" width="300"/> | <img src="public/screenshot-templates.png" width="300"/> |
+| <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-home.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-config.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-tpl.png" width="300"/> |
 
 ---
 
