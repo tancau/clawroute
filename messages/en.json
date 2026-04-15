@@ -20,7 +20,8 @@
     "title": "Configure Routing",
     "switchScene": "Switch Scene",
     "noScene": "Please select a scenario first",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "loading": "Loading..."
   },
   "modelCompare": {
     "title": "Model Comparison",
@@ -56,7 +57,7 @@
       "true": "Yes",
       "false": "No",
       "short": "Short (<1K)",
-      "medium": "Medium (1K-10K)",
+      "mediumRange": "Medium (1K-10K)",
       "long": "Long (>10K)"
     }
   },
@@ -68,10 +69,16 @@
     "copyFailed": "Copy failed, please copy manually"
   },
   "template": {
-    "title": "Preset Templates",
+    "title": "Template Market",
+    "description": "Browse and search community routing config templates",
+    "searchPlaceholder": "Search templates...",
+    "all": "All",
+    "noResults": "No matching templates found",
+    "savingRate": "Save",
+    "useTemplate": "Use Template",
     "apply": "Apply",
-    "savingRate": "Saving Rate",
-    "applied": "Template applied"
+    "applied": "Template applied",
+    "backHome": "Back to Home"
   },
   "footer": {
     "dataUpdated": "Data updated",
@@ -80,5 +87,8 @@
   "language": {
     "zh": "中文",
     "en": "English"
+  },
+  "header": {
+    "github": "GitHub"
   }
 }

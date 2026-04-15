@@ -1,17 +1,21 @@
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { SceneSelector } from '@/components/SceneSelector';
 import { Button } from '@/components/ui/button';
 import { Store } from 'lucide-react';
 
 export default function Home() {
+  const t = useTranslations('home');
+  const tNav = useTranslations('template');
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold tracking-tight mb-3">
-          你用 OpenClaw 做什么？
+          {t('heading')}
         </h1>
         <p className="text-muted-foreground text-lg">
-          选择场景，获取最优配置
+          {t('subheading')}
         </p>
       </div>
       <SceneSelector />
@@ -19,7 +23,7 @@ export default function Home() {
         <Link href="/templates">
           <Button variant="outline" className="gap-2">
             <Store className="h-4 w-4" />
-            浏览模板市场
+            {tNav('title')}
           </Button>
         </Link>
       </div>

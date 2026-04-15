@@ -1,12 +1,11 @@
-import modelsData from '@/data/models.json';
+import { useTranslations } from 'next-intl';
 
 export function Footer() {
+  const t = useTranslations('footer');
+
   return (
-    <footer className="border-t mt-auto">
-      <div className="container mx-auto flex h-10 items-center justify-between px-4 text-xs text-muted-foreground">
-        <span>数据更新日期：{modelsData.lastUpdated}</span>
-        <span>ClawRoute - 开源项目</span>
-      </div>
+    <footer className="border-t py-4 text-center text-xs text-muted-foreground">
+      <p>{t('openSource')}</p>
     </footer>
   );
 }

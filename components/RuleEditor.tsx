@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useAppStore } from '@/store/use-app-store';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,40 +24,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import type { RoutingRule } from '@/lib/types';
 
-const attributeOptions: { value: RequestAttribute; label: string }[] = [
-  { value: 'complexity', label: '请求复杂度' },
-  { value: 'hasCode', label: '包含代码' },
-  { value: 'needsReasoning', label: '需要推理' },
-  { value: 'inputTokenRange', label: '输入 token 长度' },
-];
-
-function getMatchValueOptions(attribute: RequestAttribute): { value: string; label: string }[] {
-  switch (attribute) {
-    case 'complexity':
-      return [
-        { value: 'simple', label: '简单' },
-        { value: 'medium', label: '中等' },
-        { value: 'complex', label: '复杂' },
-      ];
-    case 'hasCode':
-      return [
-        { value: 'true', label: '是' },
-        { value: 'false', label: '否' },
-      ];
-    case 'needsReasoning':
-      return [
-        { value: 'true', label: '是' },
-        { value: 'false', label: '否' },
-      ];
-    case 'inputTokenRange':
-      return [
-        { value: 'short', label: '短（<1K）' },
-        { value: 'medium', label: '中（1K-10K）' },
-        { value: 'long', label: '长（>10K）' },
-      ];
-  }
-}
-
 function SortableRuleItem({
   rule,
   candidateModels,
@@ -66,6 +33,7 @@ function SortableRuleItem({
   onMoveDown,
   isFirst,
   isLast,
+  t,
 }: {
   rule: RoutingRule;
   candidateModels: { id: string; name: string }[];
@@ -75,6 +43,7 @@ function SortableRuleItem({
   onMoveDown: () => void;
   isFirst: boolean;
   isLast: boolean;
+  t: ReturnType<typeof useTranslations<'ruleEditor'>>;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: rule.id,
@@ -84,6 +53,40 @@ function SortableRuleItem({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+  };
+
+  const attributeOptions: { value: RequestAttribute; label: string }[] = [
+    { value: 'complexity', label: t('attribute.complexity') },
+    { value: 'hasCode', label: t('attribute.hasCode') },
+    { value: 'needsReasoning', label: t('attribute.needsReasoning') },
+    { value: 'inputTokenRange', label: t('attribute.inputTokenRange') },
+  ];
+
+  const getMatchValueOptions = (attribute: RequestAttribute): { value: string; label: string }[] => {
+    switch (attribute) {
+      case 'complexity':
+        return [
+          { value: 'simple', label: t('matchValue.simple') },
+          { value: 'medium', label: t('matchValue.medium') },
+          { value: 'complex', label: t('matchValue.complex') },
+        ];
+      case 'hasCode':
+        return [
+          { value: 'true', label: t('matchValue.true') },
+          { value: 'false', label: t('matchValue.false') },
+        ];
+      case 'needsReasoning':
+        return [
+          { value: 'true', label: t('matchValue.true') },
+          { value: 'false', label: t('matchValue.false') },
+        ];
+      case 'inputTokenRange':
+        return [
+          { value: 'short', label: t('matchValue.short') },
+          { value: 'medium', label: t('matchValue.mediumRange') },
+          { value: 'long', label: t('matchValue.long') },
+        ];
+    }
   };
 
   const handleConditionAttributeChange = (attr: string) => {
@@ -110,7 +113,7 @@ function SortableRuleItem({
       </button>
 
       {/* Condition */}
-      <span className="text-sm text-muted-foreground shrink-0">当</span>
+      <span className="text-sm text-muted-foreground shrink-0">{t('condition')}</span>
 
       <Select
         value={rule.condition?.attribute ?? 'complexity'}
@@ -150,7 +153,7 @@ function SortableRuleItem({
         onValueChange={(value: string) => onUpdate({ targetModelId: value })}
       >
         <SelectTrigger className="w-[180px] h-8 text-xs">
-          <SelectValue placeholder="选择模型" />
+          <SelectValue placeholder={t('use')} />
         </SelectTrigger>
         <SelectContent>
           {candidateModels.map((model) => (
@@ -178,6 +181,7 @@ function SortableRuleItem({
 }
 
 export function RuleEditor() {
+  const t = useTranslations('ruleEditor');
   const rules = useAppStore((s) => s.rules);
   const addNewRule = useAppStore((s) => s.addNewRule);
   const removeRuleById = useAppStore((s) => s.removeRuleById);
@@ -230,7 +234,7 @@ export function RuleEditor() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">路由规则</h3>
+      <h3 className="text-lg font-semibold">{t('title')}</h3>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={nonDefaultIds} strategy={verticalListSortingStrategy}>
@@ -246,6 +250,7 @@ export function RuleEditor() {
                 onMoveDown={() => handleMoveDown(rule.id)}
                 isFirst={index === 0}
                 isLast={index === nonDefaultRules.length - 1}
+                t={t}
               />
             ))}
           </div>
@@ -257,14 +262,14 @@ export function RuleEditor() {
         <>
           <Separator />
           <div className="flex items-center gap-2 p-3 border rounded-md bg-muted/30">
-            <span className="text-sm text-muted-foreground shrink-0">否则</span>
+            <span className="text-sm text-muted-foreground shrink-0">{t('otherwise')}</span>
             <span className="text-sm text-muted-foreground shrink-0">→</span>
             <Select
               value={defaultRule.targetModelId}
               onValueChange={(value: string) => updateRuleById(defaultRule.id, { targetModelId: value })}
             >
               <SelectTrigger className="w-[180px] h-8 text-xs">
-                <SelectValue placeholder="选择模型" />
+                <SelectValue placeholder={t('use')} />
               </SelectTrigger>
               <SelectContent>
                 {candidateModels.map((model) => (
@@ -272,13 +277,13 @@ export function RuleEditor() {
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-xs text-muted-foreground ml-2">（默认规则）</span>
+            <span className="text-xs text-muted-foreground ml-2">({t('defaultRule')})</span>
           </div>
         </>
       )}
 
       <Button variant="outline" size="sm" onClick={addNewRule} className="w-full">
-        + 添加规则
+        + {t('addRule')}
       </Button>
     </div>
   );

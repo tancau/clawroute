@@ -20,7 +20,8 @@
     "title": "配置路由",
     "switchScene": "切换场景",
     "noScene": "请先选择一个使用场景",
-    "goHome": "返回首页"
+    "goHome": "返回首页",
+    "loading": "加载中..."
   },
   "modelCompare": {
     "title": "模型比较",
@@ -56,7 +57,7 @@
       "true": "是",
       "false": "否",
       "short": "短（<1K）",
-      "medium": "中（1K-10K）",
+      "mediumRange": "中（1K-10K）",
       "long": "长（>10K）"
     }
   },
@@ -68,10 +69,16 @@
     "copyFailed": "复制失败，请手动复制"
   },
   "template": {
-    "title": "预设模板",
+    "title": "模板市场",
+    "description": "浏览和搜索社区贡献的路由配置模板",
+    "searchPlaceholder": "搜索模板...",
+    "all": "全部",
+    "noResults": "没有找到匹配的模板",
+    "savingRate": "节省",
+    "useTemplate": "使用模板",
     "apply": "应用",
-    "savingRate": "节省率",
-    "applied": "模板已应用"
+    "applied": "模板已应用",
+    "backHome": "返回首页选择场景"
   },
   "footer": {
     "dataUpdated": "数据更新日期",
@@ -80,5 +87,8 @@
   "language": {
     "zh": "中文",
     "en": "English"
+  },
+  "header": {
+    "github": "GitHub"
   }
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { useAppStore } from '@/store/use-app-store';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 function ConfigureContent() {
+  const t = useTranslations('configure');
   const searchParams = useSearchParams();
   const sceneId = searchParams.get('scene');
   const selectedSceneId = useAppStore((s) => s.selectedSceneId);
@@ -28,9 +30,9 @@ function ConfigureContent() {
   if (!currentScene) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">请先选择一个使用场景</p>
+        <p className="text-muted-foreground">{t('noScene')}</p>
         <Link href="/">
-          <Button variant="outline">返回首页</Button>
+          <Button variant="outline">{t('goHome')}</Button>
         </Link>
       </div>
     );
@@ -43,7 +45,7 @@ function ConfigureContent() {
         <span className="text-2xl">{currentScene.icon}</span>
         <h2 className="text-xl font-semibold">{currentScene.name}</h2>
         <Link href="/" className="text-sm text-muted-foreground hover:underline ml-2">
-          切换场景
+          {t('switchScene')}
         </Link>
       </div>
 
@@ -66,8 +68,10 @@ function ConfigureContent() {
 }
 
 export default function ConfigurePage() {
+  const t = useTranslations('configure');
+
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">加载中...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('loading') || '...'}</div>}>
       <ConfigureContent />
     </Suspense>
   );

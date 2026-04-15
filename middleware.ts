@@ -3,14 +3,6 @@ import createMiddleware from 'next-intl/middleware';
 export default createMiddleware({
   locales: ['zh', 'en'],
   defaultLocale: 'zh',
-  // 不在 URL 中显示默认语言前缀
-  localePrefix: {
-    mode: 'as-needed',
-    prefixes: {
-      zh: '/zh',
-      en: '/en'
-    }
-  }
 });
  
 export const config = {

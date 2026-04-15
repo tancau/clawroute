@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
 import { generateYaml } from '@/lib/yaml-generator';
@@ -10,6 +11,7 @@ import { Highlight, themes } from 'prism-react-renderer';
 import { toast } from '@/components/ui/use-toast';
 
 export function ConfigPreview() {
+  const t = useTranslations('configPreview');
   const rules = useAppStore((s) => s.rules);
   const allModels = useAppStore((s) => s.allModels);
 
@@ -20,29 +22,29 @@ export function ConfigPreview() {
   const handleCopy = async () => {
     const success = await copyToClipboard(yamlContent);
     if (success) {
-      toast({ title: '已复制到剪贴板', description: 'YAML 配置已复制' });
+      toast({ title: t('copySuccess'), description: 'YAML config copied' });
     } else {
-      toast({ title: '复制失败', description: '请手动复制', variant: 'destructive' });
+      toast({ title: t('copyFailed'), description: 'Please copy manually', variant: 'destructive' });
     }
   };
 
   const handleDownload = () => {
     downloadYaml(yamlContent);
-    toast({ title: '下载成功', description: 'models.yaml 已下载' });
+    toast({ title: t('download'), description: 'models.yaml downloaded' });
   };
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">配置预览</h3>
+        <h3 className="text-lg font-semibold">{t('title')}</h3>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleCopy}>
             <Copy className="h-3 w-3 mr-1" />
-            复制
+            {t('copy')}
           </Button>
           <Button variant="outline" size="sm" onClick={handleDownload}>
             <Download className="h-3 w-3 mr-1" />
-            下载
+            {t('download')}
           </Button>
         </div>
       </div>

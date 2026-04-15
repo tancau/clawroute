@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState, useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,35 +10,38 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import type { Template } from '@/lib/types';
 
-const sceneLabels: Record<string, string> = {
-  'trading-bot': '交易 Bot',
-  'customer-service': '客服助手',
-  'content-creation': '内容创作',
-  'data-analysis': '数据分析',
-  'research-assistant': '研究助手',
-  'dev-tools': '开发工具',
-};
-
-function TemplateCard({ template, onApply }: { template: Template; onApply: (id: string) => void }) {
+function TemplateCard({ 
+  template, 
+  onApply,
+  sceneLabel,
+  saveLabel,
+  useTemplateLabel
+}: { 
+  template: Template; 
+  onApply: (id: string) => void;
+  sceneLabel: string;
+  saveLabel: string;
+  useTemplateLabel: string;
+}) {
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-base font-semibold">{template.name}</h3>
           <Badge variant="secondary" className="text-xs shrink-0">
-            节省 {template.estimatedSavingRate}%
+            {saveLabel} {template.estimatedSavingRate}%
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs">
-              {sceneLabels[template.sceneId] ?? template.sceneId}
+              {sceneLabel}
             </Badge>
             <span className="text-xs text-muted-foreground">by {template.author}</span>
           </div>
           <Button variant="default" size="sm" onClick={() => onApply(template.id)}>
-            使用模板
+            {useTemplateLabel}
           </Button>
         </div>
       </CardContent>
@@ -46,11 +50,21 @@ function TemplateCard({ template, onApply }: { template: Template; onApply: (id:
 }
 
 export default function TemplatesPage() {
+  const t = useTranslations();
   const templates = useAppStore((s) => s.templates);
   const selectScene = useAppStore((s) => s.selectScene);
   const applyTemplate = useAppStore((s) => s.applyTemplate);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedScene, setSelectedScene] = useState<string>('all');
+
+  const sceneLabels: Record<string, string> = {
+    'trading-bot': t('scenes.trading-bot'),
+    'customer-service': t('scenes.customer-service'),
+    'content-creation': t('scenes.content-creation'),
+    'data-analysis': t('scenes.data-analysis'),
+    'research-assistant': t('scenes.research-assistant'),
+    'dev-tools': t('scenes.dev-tools'),
+  };
 
   const filteredTemplates = useMemo(() => {
     let result = templates;
@@ -79,14 +93,14 @@ export default function TemplatesPage() {
   return (
     <div className="min-h-screen p-4 md:p-6 max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">模板市场</h1>
-        <p className="text-muted-foreground">浏览和搜索社区贡献的路由配置模板</p>
+        <h1 className="text-2xl font-bold mb-2">{t('template.title')}</h1>
+        <p className="text-muted-foreground">{t('template.description')}</p>
       </div>
 
       {/* Search and filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <Input
-          placeholder="搜索模板..."
+          placeholder={t('template.searchPlaceholder')}
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
           className="sm:max-w-xs"
@@ -97,7 +111,7 @@ export default function TemplatesPage() {
             size="sm"
             onClick={() => setSelectedScene('all')}
           >
-            全部
+            {t('template.all')}
           </Button>
           {Object.entries(sceneLabels).map(([id, label]) => (
             <Button
@@ -115,12 +129,19 @@ export default function TemplatesPage() {
       {/* Template grid */}
       {filteredTemplates.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          没有找到匹配的模板
+          {t('template.noResults')}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredTemplates.map((template) => (
-            <TemplateCard key={template.id} template={template} onApply={handleApply} />
+            <TemplateCard 
+              key={template.id} 
+              template={template} 
+              onApply={handleApply}
+              sceneLabel={sceneLabels[template.sceneId] ?? template.sceneId}
+              saveLabel={t('template.savingRate')}
+              useTemplateLabel={t('template.useTemplate')}
+            />
           ))}
         </div>
       )}
@@ -128,7 +149,7 @@ export default function TemplatesPage() {
       {/* Navigate to configure */}
       <div className="mt-8 text-center">
         <Link href="/">
-          <Button variant="outline">返回首页选择场景</Button>
+          <Button variant="outline">{t('template.backHome')}</Button>
         </Link>
       </div>
     </div>
