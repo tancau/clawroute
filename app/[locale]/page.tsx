@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { SceneSelector } from '@/components/SceneSelector';
 import { TestimonialCard } from '@/components/TestimonialCard';
 import { CodeBlock } from '@/components/CodeBlock';
+import { CostCalculator } from '@/components/CostCalculator';
 
 export default function Home() {
   const t = useTranslations('home');
@@ -95,6 +96,13 @@ export default function Home() {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-8 text-[#f8fafc]">{t('quickstart.title')}</h2>
           <CodeBlock code={installCode} language="bash" />
+        </div>
+      </section>
+
+      {/* Cost Calculator */}
+      <section className="px-4 py-16 bg-[#0a0a0a]">
+        <div className="max-w-3xl mx-auto">
+          <CostCalculator />
         </div>
       </section>
 

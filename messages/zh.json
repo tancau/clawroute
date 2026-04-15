@@ -153,5 +153,16 @@
   },
   "header": {
     "github": "GitHub"
+  },
+  "calculator": {
+    "title": "成本计算器",
+    "monthlyCalls": "每月 API 调用次数",
+    "avgTokens": "每次调用平均 Token 数",
+    "withoutClawroute": "不用 ClawRoute",
+    "withClawroute": "使用 ClawRoute",
+    "savings": "节省",
+    "month": "月",
+    "annualSavings": "年度节省",
+    "cta": "立即开始节省"
   }
 }

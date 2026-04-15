@@ -129,5 +129,16 @@
   },
   "header": {
     "github": "GitHub"
+  },
+  "calculator": {
+    "title": "Cost Calculator",
+    "monthlyCalls": "Monthly API Calls",
+    "avgTokens": "Avg Tokens per Call",
+    "withoutClawroute": "Without ClawRoute",
+    "withClawroute": "With ClawRoute",
+    "savings": "Savings",
+    "month": "month",
+    "annualSavings": "Annual savings",
+    "cta": "Start Saving Now"
   }
 }
