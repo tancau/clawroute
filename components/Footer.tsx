@@ -1,11 +1,12 @@
-import { useTranslations } from 'next-intl';
+import providersData from '@/data/providers.json';
 
 export function Footer() {
-  const t = useTranslations('footer');
-
   return (
-    <footer className="border-t py-4 text-center text-xs text-muted-foreground">
-      <p>{t('openSource')}</p>
+    <footer className="border-t border-[#2a2d3a] mt-auto">
+      <div className="container mx-auto flex h-12 items-center justify-between px-4 text-xs text-[#94a3b8]">
+        <span>数据更新日期：{providersData.lastUpdated}</span>
+        <span className="gradient-text font-semibold">ClawRoute - 开源项目</span>
+      </div>
     </footer>
   );
 }
