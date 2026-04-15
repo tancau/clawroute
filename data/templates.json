@@ -2,8 +2,8 @@
   "templates": [
     {
       "id": "tpl-trading-bot",
-      "name": "交易 Bot 标准配置",
-      "description": "简单信号用免费模型，复杂分析用推理模型，默认用均衡模型",
+      "name": "Trading Bot Standard Config",
+      "description": "Simple signals use free models, complex analysis uses reasoning models, default uses balanced models",
       "sceneId": "trading-bot",
       "rules": [
         { "id": "rule-tb-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-free", "isDefault": false },
@@ -16,8 +16,8 @@
     },
     {
       "id": "tpl-customer-service",
-      "name": "客服助手标准配置",
-      "description": "简单问答用免费模型，复杂问题用高质量模型",
+      "name": "Customer Service Standard Config",
+      "description": "Simple Q&A uses free models, complex questions use high quality models",
       "sceneId": "customer-service",
       "rules": [
         { "id": "rule-cs-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-free", "isDefault": false },
@@ -29,8 +29,8 @@
     },
     {
       "id": "tpl-content-creation",
-      "name": "内容创作标准配置",
-      "description": "简单内容用均衡模型，深度创作用高质量模型",
+      "name": "Content Creation Standard Config",
+      "description": "Simple content uses balanced models, deep creation uses high quality models",
       "sceneId": "content-creation",
       "rules": [
         { "id": "rule-cc-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen36-plus", "isDefault": false },
@@ -42,8 +42,8 @@
     },
     {
       "id": "tpl-data-analysis",
-      "name": "数据分析标准配置",
-      "description": "简单查询用低成本模型，复杂分析用推理模型",
+      "name": "Data Analysis Standard Config",
+      "description": "Simple queries use low cost models, complex analysis uses reasoning models",
       "sceneId": "data-analysis",
       "rules": [
         { "id": "rule-da-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder", "isDefault": false },
@@ -56,8 +56,8 @@
     },
     {
       "id": "tpl-research-assistant",
-      "name": "研究助手标准配置",
-      "description": "推理任务用推理模型，一般查询用均衡模型",
+      "name": "Research Assistant Standard Config",
+      "description": "Reasoning tasks use reasoning models, general queries use balanced models",
       "sceneId": "research-assistant",
       "rules": [
         { "id": "rule-ra-1", "condition": { "attribute": "needsReasoning", "matchValue": "true" }, "targetModelId": "deepseek-r1", "isDefault": false },
@@ -69,8 +69,8 @@
     },
     {
       "id": "tpl-dev-tools",
-      "name": "开发工具标准配置",
-      "description": "简单代码用免费模型，复杂代码用专业模型",
+      "name": "Dev Tools Standard Config",
+      "description": "Simple code uses free models, complex code uses professional models",
       "sceneId": "dev-tools",
       "rules": [
         { "id": "rule-dt-1", "condition": { "attribute": "complexity", "matchValue": "simple" }, "targetModelId": "qwen3-coder-free", "isDefault": false },

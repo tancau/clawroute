@@ -16,6 +16,14 @@
     "research-assistant": "研究助手",
     "dev-tools": "开发工具"
   },
+  "sceneDescriptions": {
+    "trading-bot": "加密货币/股票交易自动化，需要快速响应和数据分析能力",
+    "customer-service": "智能客服对话，需要中文理解和快速响应",
+    "content-creation": "文章撰写、文案生成，需要高质量输出",
+    "data-analysis": "数据处理、可视化、统计分析，需要推理和代码能力",
+    "research-assistant": "学术研究、文献分析，需要深度推理和长上下文",
+    "dev-tools": "代码生成、调试、重构，需要代码理解和生成能力"
+  },
   "configure": {
     "title": "配置路由",
     "switchScene": "切换场景",
@@ -69,7 +77,7 @@
     "copyFailed": "复制失败，请手动复制"
   },
   "template": {
-    "title": "模板市场",
+    "title": "预设模板",
     "description": "浏览和搜索社区贡献的路由配置模板",
     "searchPlaceholder": "搜索模板...",
     "all": "全部",
@@ -79,6 +87,22 @@
     "apply": "应用",
     "applied": "模板已应用",
     "backHome": "返回首页选择场景"
+  },
+  "templateNames": {
+    "tpl-trading-bot": "交易 Bot 标准配置",
+    "tpl-customer-service": "客服助手标准配置",
+    "tpl-content-creation": "内容创作标准配置",
+    "tpl-data-analysis": "数据分析标准配置",
+    "tpl-research-assistant": "研究助手标准配置",
+    "tpl-dev-tools": "开发工具标准配置"
+  },
+  "templateDescriptions": {
+    "tpl-trading-bot": "简单信号用免费模型，复杂分析用推理模型，默认用均衡模型",
+    "tpl-customer-service": "简单问答用免费模型，复杂问题用高质量模型",
+    "tpl-content-creation": "简单内容用均衡模型，深度创作用高质量模型",
+    "tpl-data-analysis": "简单查询用低成本模型，复杂分析用推理模型",
+    "tpl-research-assistant": "推理任务用推理模型，一般查询用均衡模型",
+    "tpl-dev-tools": "简单代码用免费模型，复杂代码用专业模型"
   },
   "footer": {
     "dataUpdated": "数据更新日期",

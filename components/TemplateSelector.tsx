@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 
 export function TemplateSelector() {
   const t = useTranslations('template');
+  const tNames = useTranslations('templateNames');
+  const tDescs = useTranslations('templateDescriptions');
   const getTemplatesForSelectedScene = useAppStore((s) => s.getTemplatesForSelectedScene);
   const applyTemplate = useAppStore((s) => s.applyTemplate);
 
@@ -23,12 +25,12 @@ export function TemplateSelector() {
           <Card key={template.id} className="overflow-hidden">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
-                <h4 className="text-sm font-medium">{template.name}</h4>
+                <h4 className="text-sm font-medium">{tNames(template.id)}</h4>
                 <Badge variant="secondary" className="text-xs">
                   {t('savingRate')} {template.estimatedSavingRate}%
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mb-3">{template.description}</p>
+              <p className="text-xs text-muted-foreground mb-3">{tDescs(template.id)}</p>
               <Button
                 variant="outline"
                 size="sm"

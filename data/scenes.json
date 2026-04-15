@@ -2,54 +2,54 @@
   "scenes": [
     {
       "id": "trading-bot",
-      "name": "交易 Bot",
+      "name": "Trading Bot",
       "icon": "🤖",
-      "description": "加密货币/股票交易自动化，需要快速响应和数据分析能力",
+      "description": "Crypto/stock automated trading, requires fast response and data analysis",
       "estimatedSaving": "60-80%",
       "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-haiku", "gpt4o-mini", "gemini-flash"],
       "defaultTemplateId": "tpl-trading-bot"
     },
     {
       "id": "customer-service",
-      "name": "客服助手",
+      "name": "Customer Service",
       "icon": "💬",
-      "description": "智能客服对话，需要中文理解和快速响应",
+      "description": "Intelligent customer support, requires Chinese understanding and fast response",
       "estimatedSaving": "40-60%",
       "candidateModelIds": ["qwen3-coder-free", "qwen36-plus", "deepseek-v3", "claude-haiku", "gpt4o-mini", "gemini-flash", "mistral-small"],
       "defaultTemplateId": "tpl-customer-service"
     },
     {
       "id": "content-creation",
-      "name": "内容创作",
+      "name": "Content Creation",
       "icon": "✍️",
-      "description": "文章撰写、文案生成，需要高质量输出",
+      "description": "Article writing, copywriting, requires high quality output",
       "estimatedSaving": "30-50%",
       "candidateModelIds": ["qwen36-plus", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro"],
       "defaultTemplateId": "tpl-content-creation"
     },
     {
       "id": "data-analysis",
-      "name": "数据分析",
+      "name": "Data Analysis",
       "icon": "📊",
-      "description": "数据处理、可视化、统计分析，需要推理和代码能力",
+      "description": "Data processing, visualization, statistical analysis, requires reasoning and code ability",
       "estimatedSaving": "50-70%",
       "candidateModelIds": ["qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-sonnet", "gpt4o", "gemini-pro", "llama-70b"],
       "defaultTemplateId": "tpl-data-analysis"
     },
     {
       "id": "research-assistant",
-      "name": "研究助手",
+      "name": "Research Assistant",
       "icon": "🔍",
-      "description": "学术研究、文献分析，需要深度推理和长上下文",
+      "description": "Academic research, literature analysis, requires deep reasoning and long context",
       "estimatedSaving": "35-55%",
       "candidateModelIds": ["deepseek-r1", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro", "command-r-plus"],
       "defaultTemplateId": "tpl-research-assistant"
     },
     {
       "id": "dev-tools",
-      "name": "开发工具",
+      "name": "Dev Tools",
       "icon": "🛠️",
-      "description": "代码生成、调试、重构，需要代码理解和生成能力",
+      "description": "Code generation, debugging, refactoring, requires code understanding and generation",
       "estimatedSaving": "45-65%",
       "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "qwen35-coder-plus", "deepseek-coder", "deepseek-r1", "claude-haiku", "claude-sonnet", "gpt4o-mini", "gpt4o"],
       "defaultTemplateId": "tpl-dev-tools"
