@@ -1,7 +1,4 @@
-'use client';
-
 import type { Scene } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface SceneCardProps {
   scene: Scene;
@@ -10,18 +7,19 @@ interface SceneCardProps {
 
 export function SceneCard({ scene, onSelect }: SceneCardProps) {
   return (
-    <Card
-      className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+    <div
+      className="relative rounded-xl cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
       onClick={() => onSelect(scene.id)}
     >
-      <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-        <span className="text-4xl mb-3">{scene.icon}</span>
-        <h3 className="text-lg font-semibold mb-2">{scene.name}</h3>
-        <p className="text-sm text-muted-foreground mb-2">{scene.description}</p>
-        <span className="text-xs font-medium text-green-600 dark:text-green-400">
-          通常节省 {scene.estimatedSaving}
+      <div className="absolute inset-0 rounded-xl p-[1px] bg-gradient-to-br from-[#00c9ff] via-[#92fe9d] to-[#6366f1] opacity-50 group-hover:opacity-100 transition-opacity"></div>
+      <div className="relative bg-[#1a1d29] rounded-xl p-6 text-center h-full">
+        <span className="text-5xl mb-4 block">{scene.icon}</span>
+        <h3 className="text-xl font-semibold mb-2 text-[#f8fafc]">{scene.name}</h3>
+        <p className="text-sm text-[#94a3b8] mb-3">{scene.description}</p>
+        <span className="inline-block text-xs font-medium bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] bg-clip-text text-transparent">
+          节省 {scene.estimatedSaving}
         </span>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
