@@ -6,8 +6,9 @@ import { useAppStore } from '@/store/use-app-store';
 import { generateOpenClawConfig } from '@/lib/yaml-generator';
 import { copyToClipboard, downloadYaml } from '@/lib/export-utils';
 import { Button } from '@/components/ui/button';
-import { Copy, Download } from 'lucide-react';
+import { Copy, Download, Share2 } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
+import { getShareUrl } from '@/lib/share-config';
 import { toast } from '@/components/ui/use-toast';
 
 export function ConfigPreview() {
@@ -33,6 +34,17 @@ export function ConfigPreview() {
     toast({ title: t('download'), description: 'models.yaml downloaded' });
   };
 
+  const handleShare = async () => {
+    const sceneId = useAppStore.getState().selectedSceneId;
+    const shareUrl = getShareUrl(rules, sceneId || 'custom');
+    const success = await copyToClipboard(shareUrl);
+    if (success) {
+      toast({ title: t('shareSuccess') || 'Link copied!', description: shareUrl });
+    } else {
+      toast({ title: t('shareFailed') || 'Failed to copy', description: shareUrl, variant: 'destructive' });
+    }
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -45,6 +57,10 @@ export function ConfigPreview() {
           <Button variant="outline" size="sm" onClick={handleDownload}>
             <Download className="h-3 w-3 mr-1" />
             {t('download')}
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleShare}>
+            <Share2 className="h-3 w-3 mr-1" />
+            {t('share') || 'Share'}
           </Button>
         </div>
       </div>
