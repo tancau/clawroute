@@ -140,5 +140,29 @@
     "month": "month",
     "annualSavings": "Annual savings",
     "cta": "Start Saving Now"
+  },
+  "importer": {
+    "title": "Import Your Config",
+    "description": "Paste your existing OpenClaw models.yaml and get optimization suggestions",
+    "placeholder": "Paste your models.yaml content here...",
+    "analyze": "Analyze",
+    "analyzing": "Analyzing...",
+    "clear": "Clear",
+    "foundIssues": "Issues Found",
+    "suggestions": "Optimization Suggestions",
+    "generateOptimized": "Generate Optimized Config",
+    "noIssues": "Your config looks good! No issues found.",
+    "issues": {
+      "missingBaseUrl": "Missing baseUrl configuration for providers",
+      "gpt4NoCondition": "GPT-4 is used without routing conditions (expensive)",
+      "noFreeTier": "No free tier models configured",
+      "noDefault": "Missing default fallback model"
+    },
+    "suggestions": {
+      "addBaseUrl": "Add baseUrl for each provider to ensure proper routing",
+      "routeGpt4": "Route GPT-4 to complex tasks only, use cheaper models for simple requests",
+      "addFreeTier": "Add free models like Qwen3-Coder-Free for simple tasks",
+      "addDefault": "Add a default model as fallback for unmatched requests"
+    }
   }
 }

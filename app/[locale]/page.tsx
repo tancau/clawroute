@@ -6,6 +6,7 @@ import { SceneSelector } from '@/components/SceneSelector';
 import { TestimonialCard } from '@/components/TestimonialCard';
 import { CodeBlock } from '@/components/CodeBlock';
 import { CostCalculator } from '@/components/CostCalculator';
+import { ConfigImporter } from '@/components/ConfigImporter';
 
 export default function Home() {
   const t = useTranslations('home');
@@ -103,6 +104,13 @@ export default function Home() {
       <section className="px-4 py-16 bg-[#0a0a0a]">
         <div className="max-w-3xl mx-auto">
           <CostCalculator />
+        </div>
+      </section>
+
+      {/* Config Importer */}
+      <section className="px-4 py-16">
+        <div className="max-w-3xl mx-auto">
+          <ConfigImporter />
         </div>
       </section>
 

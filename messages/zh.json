@@ -164,5 +164,29 @@
     "month": "月",
     "annualSavings": "年度节省",
     "cta": "立即开始节省"
+  },
+  "importer": {
+    "title": "导入你的配置",
+    "description": "粘贴你现有的 OpenClaw models.yaml，获取优化建议",
+    "placeholder": "在这里粘贴你的 models.yaml 内容...",
+    "analyze": "分析",
+    "analyzing": "分析中...",
+    "clear": "清除",
+    "foundIssues": "发现的问题",
+    "suggestions": "优化建议",
+    "generateOptimized": "生成优化配置",
+    "noIssues": "你的配置看起来不错！没有发现问题。",
+    "issues": {
+      "missingBaseUrl": "提供商的 baseUrl 配置缺失",
+      "gpt4NoCondition": "GPT-4 没有路由条件（成本较高）",
+      "noFreeTier": "没有配置免费层模型",
+      "noDefault": "缺少默认回退模型"
+    },
+    "suggestions": {
+      "addBaseUrl": "为每个提供商添加 baseUrl 确保正确路由",
+      "routeGpt4": "只在复杂任务中使用 GPT-4，简单请求用更便宜的模型",
+      "addFreeTier": "为简单任务添加免费模型如 Qwen3-Coder-Free",
+      "addDefault": "添加默认模型作为未匹配请求的回退"
+    }
   }
 }
