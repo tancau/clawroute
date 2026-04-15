@@ -165,6 +165,12 @@ MIT License — 可免费商用，但请保留署名。
 - 📖 **OpenClaw 文档**：[docs.openclaw.ai](https://docs.openclaw.ai)
 - 🤖 **OpenRouter**：[openrouter.ai](https://openrouter.ai) — 模型聚合平台
 
+## 📸 截图
+
+| 首页 | 配置页 | 模板市场 |
+|:---:|:---:|:---:|
+| <img src="public/screenshot-home.png" width="300"/> | <img src="public/screenshot-config.png" width="300"/> | <img src="public/screenshot-templates.png" width="300"/> |
+
 ---
 
 *如果你觉得 ClawRoute 有用，请给我们一个 ⭐*
