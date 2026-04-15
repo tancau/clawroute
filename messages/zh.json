@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "ClawRoute",
+    "subtitle": "OpenClaw 智能路由配置生成器"
+  },
+  "home": {
+    "heading": "你用 OpenClaw 做什么？",
+    "subheading": "选择场景，获取最优配置",
+    "savingLabel": "通常节省"
+  },
+  "scenes": {
+    "trading-bot": "交易 Bot",
+    "customer-service": "客服助手",
+    "content-creation": "内容创作",
+    "data-analysis": "数据分析",
+    "research-assistant": "研究助手",
+    "dev-tools": "开发工具"
+  },
+  "configure": {
+    "title": "配置路由",
+    "switchScene": "切换场景",
+    "noScene": "请先选择一个使用场景",
+    "goHome": "返回首页"
+  },
+  "modelCompare": {
+    "title": "模型比较",
+    "sortCost": "成本优先",
+    "sortQuality": "质量优先",
+    "sortSpeed": "速度优先",
+    "modelName": "模型",
+    "speed": "速度",
+    "quality": "质量",
+    "costPer1K": "成本/1K token",
+    "reason": "推荐理由"
+  },
+  "ruleEditor": {
+    "title": "路由规则",
+    "addRule": "添加规则",
+    "defaultRule": "默认规则",
+    "condition": "当",
+    "otherwise": "否则",
+    "use": "使用",
+    "remove": "删除",
+    "moveUp": "上移",
+    "moveDown": "下移",
+    "attribute": {
+      "complexity": "请求复杂度",
+      "hasCode": "包含代码",
+      "needsReasoning": "需要推理",
+      "inputTokenRange": "输入 token 长度"
+    },
+    "matchValue": {
+      "simple": "简单",
+      "medium": "中等",
+      "complex": "复杂",
+      "true": "是",
+      "false": "否",
+      "short": "短（<1K）",
+      "medium": "中（1K-10K）",
+      "long": "长（>10K）"
+    }
+  },
+  "configPreview": {
+    "title": "配置预览",
+    "copy": "复制",
+    "download": "下载",
+    "copySuccess": "复制成功",
+    "copyFailed": "复制失败，请手动复制"
+  },
+  "template": {
+    "title": "预设模板",
+    "apply": "应用",
+    "savingRate": "节省率",
+    "applied": "模板已应用"
+  },
+  "footer": {
+    "dataUpdated": "数据更新日期",
+    "openSource": "开源项目"
+  },
+  "language": {
+    "zh": "中文",
+    "en": "English"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "trading-bot": {
+    "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-haiku", "gpt4o-mini", "gemini-flash"],
+    "defaultTemplateId": "tpl-trading-bot"
+  },
+  "customer-service": {
+    "candidateModelIds": ["qwen3-coder-free", "qwen36-plus", "deepseek-v3", "claude-haiku", "gpt4o-mini", "gemini-flash", "mistral-small"],
+    "defaultTemplateId": "tpl-customer-service"
+  },
+  "content-creation": {
+    "candidateModelIds": ["qwen36-plus", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro"],
+    "defaultTemplateId": "tpl-content-creation"
+  },
+  "data-analysis": {
+    "candidateModelIds": ["qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-sonnet", "gpt4o", "gemini-pro", "llama-70b"],
+    "defaultTemplateId": "tpl-data-analysis"
+  },
+  "research-assistant": {
+    "candidateModelIds": ["deepseek-r1", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro", "command-r-plus"],
+    "defaultTemplateId": "tpl-research-assistant"
+  },
+  "dev-tools": {
+    "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "qwen35-coder-plus", "deepseek-coder", "deepseek-r1", "claude-haiku", "claude-sonnet", "gpt4o-mini", "gpt4o"],
+    "defaultTemplateId": "tpl-dev-tools"
+  }
+}

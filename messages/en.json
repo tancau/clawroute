@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "ClawRoute",
+    "subtitle": "OpenClaw Smart Routing Config Generator"
+  },
+  "home": {
+    "heading": "What do you use OpenClaw for?",
+    "subheading": "Select a scenario, get the optimal config",
+    "savingLabel": "Typically saves"
+  },
+  "scenes": {
+    "trading-bot": "Trading Bot",
+    "customer-service": "Customer Service",
+    "content-creation": "Content Creation",
+    "data-analysis": "Data Analysis",
+    "research-assistant": "Research Assistant",
+    "dev-tools": "Dev Tools"
+  },
+  "configure": {
+    "title": "Configure Routing",
+    "switchScene": "Switch Scene",
+    "noScene": "Please select a scenario first",
+    "goHome": "Go Home"
+  },
+  "modelCompare": {
+    "title": "Model Comparison",
+    "sortCost": "Cost First",
+    "sortQuality": "Quality First",
+    "sortSpeed": "Speed First",
+    "modelName": "Model",
+    "speed": "Speed",
+    "quality": "Quality",
+    "costPer1K": "Cost/1K token",
+    "reason": "Reason"
+  },
+  "ruleEditor": {
+    "title": "Routing Rules",
+    "addRule": "Add Rule",
+    "defaultRule": "Default Rule",
+    "condition": "When",
+    "otherwise": "Otherwise",
+    "use": "use",
+    "remove": "Remove",
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "attribute": {
+      "complexity": "Request Complexity",
+      "hasCode": "Contains Code",
+      "needsReasoning": "Needs Reasoning",
+      "inputTokenRange": "Input Token Range"
+    },
+    "matchValue": {
+      "simple": "Simple",
+      "medium": "Medium",
+      "complex": "Complex",
+      "true": "Yes",
+      "false": "No",
+      "short": "Short (<1K)",
+      "medium": "Medium (1K-10K)",
+      "long": "Long (>10K)"
+    }
+  },
+  "configPreview": {
+    "title": "Config Preview",
+    "copy": "Copy",
+    "download": "Download",
+    "copySuccess": "Copied!",
+    "copyFailed": "Copy failed, please copy manually"
+  },
+  "template": {
+    "title": "Preset Templates",
+    "apply": "Apply",
+    "savingRate": "Saving Rate",
+    "applied": "Template applied"
+  },
+  "footer": {
+    "dataUpdated": "Data updated",
+    "openSource": "Open Source"
+  },
+  "language": {
+    "zh": "中文",
+    "en": "English"
+  }
+}

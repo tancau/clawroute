@@ -1,0 +1,29 @@
+{
+  "models": [
+    { "id": "qwen3-coder-free", "name": "Qwen3 Coder (Free)", "provider": "qwen", "costPer1KToken": 0.0, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["coding", "simple-tasks"], "recommendationReason": "免费，适合简单任务" },
+    { "id": "qwen3-coder", "name": "Qwen3 Coder", "provider": "qwen", "costPer1KToken": 0.0001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["coding", "general"], "recommendationReason": "性价比极高，代码任务首选" },
+    { "id": "qwen35-coder-plus", "name": "Qwen3.5 Coder Plus", "provider": "qwen", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["coding", "complex-code"], "recommendationReason": "代码能力强，价格适中" },
+    { "id": "qwen36-plus", "name": "Qwen3.6 Plus", "provider": "qwen", "costPer1KToken": 0.0008, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "chinese"], "recommendationReason": "通用能力强，中文优秀" },
+    { "id": "qwen36-max", "name": "Qwen3.6 Max", "provider": "qwen", "costPer1KToken": 0.002, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "complex-tasks"], "recommendationReason": "最强通义模型，复杂任务" },
+    { "id": "deepseek-r1", "name": "DeepSeek R1", "provider": "deepseek", "costPer1KToken": 0.001, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "math", "coding"], "recommendationReason": "推理能力强，价格合理" },
+    { "id": "deepseek-v3", "name": "DeepSeek V3", "provider": "deepseek", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "coding", "chinese"], "recommendationReason": "均衡之选，中文好" },
+    { "id": "deepseek-coder", "name": "DeepSeek Coder", "provider": "deepseek", "costPer1KToken": 0.0003, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["coding", "code-completion"], "recommendationReason": "代码专精，价格低" },
+    { "id": "claude-haiku", "name": "Claude 3.5 Haiku", "provider": "anthropic", "costPer1KToken": 0.001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "coding"], "recommendationReason": "速度快，质量好" },
+    { "id": "claude-sonnet", "name": "Claude 3.5 Sonnet", "provider": "anthropic", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "coding", "writing"], "recommendationReason": "平衡之选，综合能力强" },
+    { "id": "claude-opus", "name": "Claude 3 Opus", "provider": "anthropic", "costPer1KToken": 0.015, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks", "writing"], "recommendationReason": "最强推理，适合复杂任务" },
+    { "id": "gpt4o-mini", "name": "GPT-4o Mini", "provider": "openai", "costPer1KToken": 0.00015, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "coding"], "recommendationReason": "快速且便宜" },
+    { "id": "gpt4o", "name": "GPT-4o", "provider": "openai", "costPer1KToken": 0.005, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "coding", "multimodal"], "recommendationReason": "综合能力强" },
+    { "id": "gpt4-turbo", "name": "GPT-4 Turbo", "provider": "openai", "costPer1KToken": 0.01, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks"], "recommendationReason": "复杂推理任务" },
+    { "id": "gemini-flash", "name": "Gemini 2.0 Flash", "provider": "google", "costPer1KToken": 0.0001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "multimodal"], "recommendationReason": "极快且便宜" },
+    { "id": "gemini-pro", "name": "Gemini 1.5 Pro", "provider": "google", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "long-context"], "recommendationReason": "长上下文，推理强" },
+    { "id": "mistral-small", "name": "Mistral Small", "provider": "mistral", "costPer1KToken": 0.0002, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["general", "fast"], "recommendationReason": "轻量快速" },
+    { "id": "mistral-medium", "name": "Mistral Medium", "provider": "mistral", "costPer1KToken": 0.001, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "coding"], "recommendationReason": "均衡选择" },
+    { "id": "mistral-large", "name": "Mistral Large", "provider": "mistral", "costPer1KToken": 0.004, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks", "coding"], "recommendationReason": "强推理能力" },
+    { "id": "llama-8b", "name": "Llama 3.1 8B", "provider": "meta", "costPer1KToken": 0.0, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["general", "simple-tasks"], "recommendationReason": "免费开源，简单任务" },
+    { "id": "llama-70b", "name": "Llama 3.1 70B", "provider": "meta", "costPer1KToken": 0.0006, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "reasoning", "coding"], "recommendationReason": "开源最强，性价比高" },
+    { "id": "command-r", "name": "Command R", "provider": "cohere", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["rag", "general"], "recommendationReason": "RAG 场景专精" },
+    { "id": "command-r-plus", "name": "Command R+", "provider": "cohere", "costPer1KToken": 0.002, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["rag", "reasoning", "complex-tasks"], "recommendationReason": "RAG + 推理，企业级" }
+  ],
+  "lastUpdated": "2026-04-15",
+  "dataSource": "各模型提供商官方定价页面，2026年4月数据"
+}
