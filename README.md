@@ -2,7 +2,8 @@
 
 > 为 OpenClaw 用户打造的智能模型路由配置工具 — 节省 60-80% 的 API 费用。
 
-[![Deploy with Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com)
+[English](./README.en.md) | 简体中文
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/tancau/clawroute?style=flat-square)](https://github.com/tancau/clawroute)
 
@@ -79,36 +80,18 @@ pnpm test
 
 ---
 
-## 📦 一键部署到 Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tancau/clawroute)
-
-或者手动部署：
-
-```bash
-# 安装 Vercel CLI
-npm i -g vercel
-
-# 登录并部署
-vercel
-
-# 生产环境部署
-vercel --prod
-```
-
----
-
 ## 🧩 技术栈
 
 | 层 | 技术 |
 |---|------|
 | 框架 | Next.js 14 (App Router) |
+| 国际化 | next-intl |
 | 语言 | TypeScript |
 | 样式 | Tailwind CSS + shadcn/ui |
 | 状态管理 | Zustand |
 | 拖拽排序 | @dnd-kit |
 | 测试 | Vitest |
-| 部署 | Vercel（免费） |
+| 部署 | Vercel |
 
 ---
 
@@ -116,26 +99,18 @@ vercel --prod
 
 ```
 clawroute/
-├── app/                    # Next.js App Router 页面
-│   ├── page.tsx           # 首页（场景选择）
-│   ├── configure/         # 配置页（规则编辑 + 预览）
-│   └── templates/          # 模板市场
-├── components/            # React 组件
-│   ├── SceneSelector.tsx   # 场景选择卡片
-│   ├── RuleEditor.tsx      # 拖拽式规则编辑器
-│   ├── ModelComparePanel.tsx # 模型对比面板
-│   ├── ConfigPreview.tsx    # YAML 预览 & 导出
-│   └── ui/                # shadcn/ui 基础组件
-├── lib/                   # 核心业务逻辑
-│   ├── models-db.ts        # 模型数据库（24+ 模型元数据）
-│   ├── router-engine.ts    # 路由规则引擎（CRUD + 排序）
-│   └── yaml-generator.ts   # YAML 配置生成器
-├── data/                  # 静态数据
-│   ├── models.json         # 模型价格/能力数据
-│   ├── scenes.json        # 场景定义
-│   └── templates.json     # 预设路由模板
-└── store/
-    └── use-app-store.ts   # Zustand 全局状态
+├── app/
+│   └── [locale]/           # 国际化路由 (zh/en)
+│       ├── page.tsx        # 首页（场景选择）
+│       ├── configure/      # 配置页（规则编辑 + 预览）
+│       └── templates/      # 模板市场
+├── components/             # React 组件
+├── lib/                    # 核心业务逻辑
+├── data/                   # 静态数据
+├── messages/               # 国际化翻译文件
+│   ├── zh.json
+│   └── en.json
+└── store/                  # Zustand 全局状态
 ```
 
 ---
