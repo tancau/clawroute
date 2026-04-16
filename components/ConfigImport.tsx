@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Heart, AlertCircle, CheckCircle2, Trash2, ChevronDown, ChevronRight, AlertTriangle, Info } from 'lucide-react';
+import { Heart, Activity, AlertCircle, CheckCircle2, Trash2, ChevronDown, ChevronRight, AlertTriangle, Info, Loader2, Wifi, WifiOff, Shield, Clock } from 'lucide-react';
 import { diagnoseConfig, HealthIssue, HealthReport } from '@/lib/config-doctor';
 
 interface ParsedProvider {
@@ -20,6 +20,16 @@ interface ParsedProvider {
   }>;
 }
 
+interface PingResult {
+  id: string;
+  status: 'online' | 'auth-required' | 'rate-limited' | 'degraded' | 'timeout' | 'offline';
+  latency: number;
+  modelCount?: number;
+  httpStatus?: number;
+  hint?: string;
+  error?: string;
+}
+
 export function ConfigImport() {
   const t = useTranslations('configImport');
   const [pasteText, setPasteText] = useState('');
@@ -27,11 +37,14 @@ export function ConfigImport() {
   const [report, setReport] = useState<HealthReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set());
+  const [pingResults, setPingResults] = useState<PingResult[] | null>(null);
+  const [pinging, setPinging] = useState(false);
 
   const parseConfig = () => {
     setError(null);
     setParsed(null);
     setReport(null);
+    setPingResults(null);
 
     const text = pasteText.trim();
     if (!text) return;
@@ -45,11 +58,9 @@ export function ConfigImport() {
         return;
       }
 
-      // Run health check
       const healthReport = diagnoseConfig(data);
       setReport(healthReport);
 
-      // Parse providers for display
       const providers: ParsedProvider[] = [];
       const modelsSection = data.models as Record<string, unknown> | undefined;
 
@@ -78,6 +89,32 @@ export function ConfigImport() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('parseError'));
+    }
+  };
+
+  const handlePing = async () => {
+    if (!parsed || parsed.length === 0) return;
+    setPinging(true);
+    setPingResults(null);
+
+    try {
+      const response = await fetch('/api/ping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          providers: parsed.map(p => ({
+            id: p.id,
+            baseUrl: p.baseUrl,
+            apiKey: p.apiKey || undefined,
+          })),
+        }),
+      });
+      const data = await response.json();
+      setPingResults(data.results || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ping failed');
+    } finally {
+      setPinging(false);
     }
   };
 
@@ -122,6 +159,39 @@ export function ConfigImport() {
     if (score >= 70) return t('scoreGood');
     if (score >= 50) return t('scoreFair');
     return t('scorePoor');
+  };
+
+  const getPingStatusIcon = (status: PingResult['status']) => {
+    switch (status) {
+      case 'online': return <Wifi className="h-3.5 w-3.5 text-green-500" />;
+      case 'auth-required': return <Shield className="h-3.5 w-3.5 text-yellow-500" />;
+      case 'rate-limited': return <Clock className="h-3.5 w-3.5 text-orange-500" />;
+      case 'degraded': return <AlertTriangle className="h-3.5 w-3.5 text-yellow-600" />;
+      case 'timeout': return <Clock className="h-3.5 w-3.5 text-red-400" />;
+      case 'offline': return <WifiOff className="h-3.5 w-3.5 text-red-500" />;
+    }
+  };
+
+  const getPingStatusLabel = (r: PingResult) => {
+    switch (r.status) {
+      case 'online': return `${r.modelCount} models · ${r.latency}ms`;
+      case 'auth-required': return t('pingAuth');
+      case 'rate-limited': return t('pingRateLimit');
+      case 'degraded': return `HTTP ${r.httpStatus} · ${r.latency}ms`;
+      case 'timeout': return t('pingTimeout');
+      case 'offline': return t('pingOffline');
+    }
+  };
+
+  const getPingBg = (status: PingResult['status']) => {
+    switch (status) {
+      case 'online': return 'bg-green-500/5 border-green-500/20';
+      case 'auth-required': return 'bg-yellow-500/5 border-yellow-500/20';
+      case 'rate-limited': return 'bg-orange-500/5 border-orange-500/20';
+      case 'degraded': return 'bg-yellow-500/5 border-yellow-500/20';
+      case 'timeout': return 'bg-red-500/5 border-red-500/20';
+      case 'offline': return 'bg-red-500/5 border-red-500/20';
+    }
   };
 
   return (
@@ -193,38 +263,71 @@ export function ConfigImport() {
             </div>
           )}
 
+          {/* Availability Test */}
+          {parsed && parsed.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium">{t('availabilityTest')}</h4>
+                <Button variant="outline" size="sm" onClick={handlePing} disabled={pinging}>
+                  {pinging && <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />}
+                  {!pinging && <Activity className="h-3.5 w-3.5 mr-1.5" />}
+                  {pinging ? t('pinging') : t('testAvailability')}
+                </Button>
+              </div>
+
+              {pingResults && (
+                <div className="space-y-1.5">
+                  {pingResults.map((r) => (
+                    <div key={r.id} className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs ${getPingBg(r.status)}`}>
+                      {getPingStatusIcon(r.status)}
+                      <span className="font-medium">{r.id}</span>
+                      <span className="text-muted-foreground">{getPingStatusLabel(r)}</span>
+                      {r.hint && <span className="opacity-60 ml-auto">{r.hint}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Provider list */}
           {parsed && parsed.length > 0 && (
             <div className="space-y-1">
               <h4 className="text-sm font-medium">{t('providers')}</h4>
-              {parsed.map(provider => (
-                <div key={provider.id} className="border rounded-md">
-                  <button
-                    className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted/50"
-                    onClick={() => toggleProvider(provider.id)}
-                  >
-                    <span className="font-medium">{provider.id}</span>
-                    <span className="text-muted-foreground text-xs">
-                      {provider.models.length} models
-                      {provider.apiKey ? ' 🔑' : ' ⚠️ no key'}
-                    </span>
-                    {expandedProviders.has(provider.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </button>
-                  {expandedProviders.has(provider.id) && (
-                    <div className="border-t px-2 pb-2">
-                      <div className="text-xs text-muted-foreground p-1">{provider.baseUrl}</div>
-                      {provider.models.map(m => (
-                        <div key={m.id} className="flex items-center justify-between text-xs px-1 py-0.5 hover:bg-muted/30 rounded">
-                          <span className="font-mono">{provider.id}/{m.id}</span>
-                          <span className="text-muted-foreground">
-                            {m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}K` : ''}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {parsed.map(provider => {
+                const ping = pingResults?.find(p => p.id === provider.id);
+                return (
+                  <div key={provider.id} className="border rounded-md">
+                    <button
+                      className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted/50"
+                      onClick={() => toggleProvider(provider.id)}
+                    >
+                      <div className="flex items-center gap-2">
+                        {ping ? getPingStatusIcon(ping.status) : null}
+                        <span className="font-medium">{provider.id}</span>
+                      </div>
+                      <span className="text-muted-foreground text-xs">
+                        {provider.models.length} models
+                        {provider.apiKey ? ' 🔑' : ' ⚠️ no key'}
+                      </span>
+                      {expandedProviders.has(provider.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    </button>
+                    {expandedProviders.has(provider.id) && (
+                      <div className="border-t px-2 pb-2">
+                        <div className="text-xs text-muted-foreground p-1">{provider.baseUrl}</div>
+                        {provider.models.map(m => (
+                          <div key={m.id} className="flex items-center justify-between text-xs px-1 py-0.5 hover:bg-muted/30 rounded">
+                            <span className="font-mono">{provider.id}/{m.id}</span>
+                            <span className="text-muted-foreground">
+                              {m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}K` : ''}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -236,7 +339,7 @@ export function ConfigImport() {
             <Button variant="outline" className="flex-1" onClick={downloadFixed}>
               💾 {t('downloadConfig')}
             </Button>
-            <Button variant="outline" size="icon" onClick={() => { setParsed(null); setPasteText(''); setReport(null); }}>
+            <Button variant="outline" size="icon" onClick={() => { setParsed(null); setPasteText(''); setReport(null); setPingResults(null); }}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>

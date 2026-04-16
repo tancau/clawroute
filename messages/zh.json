@@ -176,7 +176,14 @@
     "prepareConfig": "准备配置",
     "copyConfig": "复制配置",
     "downloadConfig": "下载配置",
-    "copied": "已复制！"
+    "copied": "已复制！",
+    "availabilityTest": "可用性测试",
+    "testAvailability": "测试可用性",
+    "pinging": "探测中...",
+    "pingAuth": "需要认证",
+    "pingRateLimit": "限速中",
+    "pingTimeout": "超时 (>8s)",
+    "pingOffline": "离线"
   },
   "errorBoundary": {
     "title": "出了点问题",

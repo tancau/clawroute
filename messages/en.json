@@ -176,7 +176,14 @@
     "prepareConfig": "Prepare Config",
     "copyConfig": "Copy Config",
     "downloadConfig": "Download Config",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "availabilityTest": "Availability Test",
+    "testAvailability": "Test Availability",
+    "pinging": "Pinging...",
+    "pingAuth": "Auth required",
+    "pingRateLimit": "Rate limited",
+    "pingTimeout": "Timeout (>8s)",
+    "pingOffline": "Offline"
   },
   "errorBoundary": {
     "title": "Something went wrong",
