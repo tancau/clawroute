@@ -137,6 +137,23 @@
     "zh": "中文",
     "en": "English"
   },
+  "apiDiscovery": {
+    "title": "API 模型发现",
+    "description": "输入你的 API 端点和密钥，自动发现可用模型并生成 OpenClaw 配置",
+    "baseUrlLabel": "API 端点",
+    "baseUrlPlaceholder": "https://api.openai.com/v1 或 https://openrouter.ai/api/v1",
+    "apiKeyLabel": "API Key（可选，部分端点不需要）",
+    "apiKeyPlaceholder": "sk-...",
+    "discover": "发现模型",
+    "discovering": "正在发现...",
+    "foundModels": "发现 {count} 个模型",
+    "modelId": "模型 ID",
+    "owner": "所有者",
+    "context": "上下文",
+    "generateConfig": "生成并复制配置",
+    "downloadConfig": "下载 openclaw.json",
+    "configCopied": "配置已复制到剪贴板！"
+  },
   "errorBoundary": {
     "title": "出了点问题",
     "description": "页面加载遇到错误",

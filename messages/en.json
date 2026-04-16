@@ -137,6 +137,23 @@
     "zh": "中文",
     "en": "English"
   },
+  "apiDiscovery": {
+    "title": "API Model Discovery",
+    "description": "Enter your API endpoint and key to auto-discover available models and generate OpenClaw config",
+    "baseUrlLabel": "API Endpoint",
+    "baseUrlPlaceholder": "https://api.openai.com/v1 or https://openrouter.ai/api/v1",
+    "apiKeyLabel": "API Key (optional, some endpoints don't need one)",
+    "apiKeyPlaceholder": "sk-...",
+    "discover": "Discover Models",
+    "discovering": "Discovering...",
+    "foundModels": "Found {count} models",
+    "modelId": "Model ID",
+    "owner": "Owner",
+    "context": "Context",
+    "generateConfig": "Generate & Copy Config",
+    "downloadConfig": "Download openclaw.json",
+    "configCopied": "Config copied to clipboard!"
+  },
   "errorBoundary": {
     "title": "Something went wrong",
     "description": "An error occurred while loading the page",
