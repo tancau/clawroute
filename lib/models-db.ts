@@ -3,35 +3,6 @@ import modelsDataRaw from '@/data/models.json';
 
 const models: Model[] = modelsDataRaw as Model[];
 
-// Flatten models from providers.json into the existing Model[] format
-function flattenModels(): Model[] {
-  const models: Model[] = [];
-  
-  for (const [providerId, provider] of Object.entries(providersData.providers)) {
-    for (const modelData of provider.models) {
-      models.push({
-        id: modelData.id,
-        name: modelData.name,
-        provider: providerId,
-        costPer1KToken: modelData.costPer1KToken,
-        speedRating: modelData.speedRating as 1 | 2 | 3,
-        qualityRating: modelData.qualityRating as 1 | 2 | 3,
-        capabilityTags: modelData.capabilityTags,
-        recommendationReason: modelData.recommendationReason,
-        // OpenClaw format fields
-        input: ((modelData as Record<string, unknown>).input as string[]) || ['text'],
-        contextWindow: (modelData as Record<string, unknown>).contextWindow as number | undefined,
-        maxTokens: (modelData as Record<string, unknown>).maxTokens as number | undefined,
-        api: (provider as Record<string, unknown>).api as string | undefined,
-      });
-    }
-  }
-  
-  return models;
-}
-
-const models = flattenModels();
-
 /** Get all models */
 export function getAllModels(): Model[] {
   return models;
@@ -40,11 +11,6 @@ export function getAllModels(): Model[] {
 /** Get a single model by ID (provider/model format) */
 export function getModelById(id: string): Model | undefined {
   return models.find((m) => m.id === id);
-}
-
-/** Get all models as flat array (for internal use) */
-export function getAllModelsFlat(): Model[] {
-  return models;
 }
 
 /** Filter models by capability tags */
@@ -84,30 +50,4 @@ export function sortModels(models: Model[], mode: SortMode): Model[] {
       break;
   }
   return sorted;
-}
-
-/** Get all provider IDs */
-export function getAllProviderIds(): string[] {
-  return Object.keys(providersData.providers);
-}
-
-/** Get provider info */
-export function getProviderInfo(providerId: string) {
-  return providersData.providers[providerId as keyof typeof providersData.providers];
-}
-
-/** Get all providers with their metadata */
-export function getAllProviders() {
-  return Object.entries(providersData.providers).map(([id, data]) => ({
-    id,
-    name: data.name,
-    baseUrl: data.baseUrl,
-    apiKeyEnvVar: data.apiKeyEnvVar,
-    api: (data as Record<string, unknown>).api || 'openai-completions',
-  }));
-}
-
-/** Get models for a specific provider */
-export function getModelsByProvider(providerId: string): Model[] {
-  return models.filter((m) => m.provider === providerId);
 }

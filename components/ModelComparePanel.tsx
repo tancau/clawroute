@@ -6,7 +6,6 @@ import { ModelLogo } from '@/components/ModelLogo';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { SortMode } from '@/lib/types';
-import { useTranslations } from 'next-intl';
 
 const sortModeKeys: SortMode[] = ['costFirst', 'qualityFirst', 'speedFirst'];
 
@@ -23,12 +22,6 @@ export function ModelComparePanel() {
   const sortMode = useAppStore((s) => s.sortMode);
   const setSortMode = useAppStore((s) => s.setSortMode);
   const getSortedModelsForSelectedScene = useAppStore((s) => s.getSortedModelsForSelectedScene);
-
-  const sortModes: { key: SortMode; label: string }[] = [
-    { key: 'costFirst', label: t('sortCost') },
-    { key: 'qualityFirst', label: t('sortQuality') },
-    { key: 'speedFirst', label: t('sortSpeed') },
-  ];
 
   const models = getSortedModelsForSelectedScene();
 

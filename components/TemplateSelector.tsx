@@ -5,7 +5,6 @@ import { useAppStore } from '@/store/use-app-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useTranslations } from 'next-intl';
 
 export function TemplateSelector() {
   const t = useTranslations('template');
@@ -24,12 +23,12 @@ export function TemplateSelector() {
           <Card key={template.id} className="overflow-hidden">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
-                <h4 className="text-sm font-medium">{tNames(template.id)}</h4>
+                <h4 className="text-sm font-medium">{template.name}</h4>
                 <Badge variant="secondary" className="text-xs">
                   {t('saving')} {template.estimatedSavingRate}%
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mb-3">{tDescs(template.id)}</p>
+              <p className="text-xs text-muted-foreground mb-3">{template.description}</p>
               <Button
                 variant="outline"
                 size="sm"

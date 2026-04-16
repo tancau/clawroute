@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import type { Template } from '@/lib/types';
-import { useTranslations } from 'next-intl';
 
 function TemplateCard({ template, onApply }: { template: Template; onApply: (id: string) => void }) {
   const tScenes = useTranslations('scenes');
