@@ -2,6 +2,11 @@ import yaml from 'js-yaml';
 import type { RoutingRule, RuleCondition } from './types';
 import { getAllProviders, getModelsByProvider } from './models-db';
 
+/** Round a number to avoid floating point artifacts like 0.0045000000000000005 */
+function roundCost(n: number): number {
+  return Math.round(n * 1e8) / 1e8;
+}
+
 /** Convert a rule condition to YAML routing when field */
 function conditionToWhen(condition: RuleCondition): Record<string, string | boolean> {
   const entry: Record<string, string | boolean> = {};
@@ -22,108 +27,124 @@ function conditionToWhen(condition: RuleCondition): Record<string, string | bool
   return entry;
 }
 
-/** Generate OpenClaw config structure - MUST match official OpenClaw format */
+// findModelProvider removed - lookup is done inline in generateOpenClawConfig
+
+/**
+ * Generate OpenClaw-compatible config YAML.
+ *
+ * Only includes providers/models that are actually referenced in the rules.
+ * Output format matches the real openclaw.json structure.
+ */
 export function generateOpenClawConfig(rules: RoutingRule[]): string {
-  // Get all providers with their models
   const providers = getAllProviders();
-  
-  // Build the config matching OpenClaw's expected format
-  const modelsConfig: Record<string, unknown> = {
-    mode: 'merge',
-    providers: {} as Record<string, unknown>,
-  };
 
-  // Track which models are actually used in rules
+  // 1. Collect which model IDs are used in rules
   const usedModelIds = new Set<string>();
-  const modelRouting: Array<{when?: Record<string, unknown>; use: string}> = [];
-
   for (const rule of rules) {
     usedModelIds.add(rule.targetModelId);
+  }
 
-    // Build routing rule
-    const modelRef = `${rule.targetModelId}`;
+  // 2. Map model IDs to their providers
+  const providerUsedModels: Map<string, Set<string>> = new Map();
+  const usedModelIdList = Array.from(usedModelIds);
+  for (const modelId of usedModelIdList) {
+    for (const provider of providers) {
+      const models = getModelsByProvider(provider.id);
+      if (models.some(m => m.id === modelId)) {
+        if (!providerUsedModels.has(provider.id)) {
+          providerUsedModels.set(provider.id, new Set());
+        }
+        providerUsedModels.get(provider.id)!.add(modelId);
+        break;
+      }
+    }
+  }
+
+  // 3. Build routing rules
+  const modelRouting: Array<{ when?: Record<string, unknown>; use: string }> = [];
+  for (const rule of rules) {
     if (rule.condition) {
       modelRouting.push({
         when: conditionToWhen(rule.condition),
-        use: modelRef,
+        use: rule.targetModelId,
       });
     } else {
-      // Default rule
       modelRouting.push({
-        use: modelRef,
+        use: rule.targetModelId,
       });
     }
   }
 
-  // Add providers with their full model configs
-  for (const provider of providers) {
-    const providerModels = getModelsByProvider(provider.id);
-    if (providerModels.length === 0) continue;
+  // 4. Build provider configs — only used providers and their used models
+  const providersConfig: Record<string, unknown> = {};
 
-    (modelsConfig.providers as Record<string, unknown>)[provider.id] = {
-      // Provider endpoint
+  for (const [providerId, usedModelIdSet] of Array.from(providerUsedModels.entries())) {
+    const provider = providers.find(p => p.id === providerId);
+    if (!provider) continue;
+
+    const allModels = getModelsByProvider(providerId);
+    const modelsForConfig = allModels
+      .filter(m => usedModelIdSet.has(m.id))
+      .map(m => {
+        const modelEntry: Record<string, unknown> = {
+          id: m.id,
+          name: m.name,
+          input: (m as unknown as Record<string, unknown>).input || ['text'],
+        };
+
+        // Add cost if non-zero (skip for free models to keep config clean)
+        const costPer1K = (m as unknown as Record<string, unknown>).costPer1KToken as number;
+        if (costPer1K && costPer1K > 0) {
+          modelEntry.cost = {
+            input: roundCost(costPer1K),
+            output: roundCost(costPer1K * 1.5),
+            cacheRead: 0,
+            cacheWrite: 0,
+          };
+        }
+
+        // Add contextWindow and maxTokens from provider data
+        const cw = (m as unknown as Record<string, unknown>).contextWindow;
+        const mt = (m as unknown as Record<string, unknown>).maxTokens;
+        if (cw) modelEntry.contextWindow = cw;
+        if (mt) modelEntry.maxTokens = mt;
+
+        return modelEntry;
+      });
+
+    providersConfig[providerId] = {
       baseUrl: provider.baseUrl,
-      // Environment variable name for API key (user fills this in their env)
       apiKey: provider.apiKeyEnvVar,
-      // Model list matching OpenClaw format
-      models: providerModels.map(model => ({
-        id: model.id,
-        name: model.name,
-        // OpenClaw cost format: { input, output, cacheRead, cacheWrite }
-        cost: {
-          input: model.costPer1KToken,
-          output: model.costPer1KToken * 1.5, // Estimate output as 1.5x input
-          cacheRead: 0,
-          cacheWrite: 0,
-        },
-        // Optional metadata
-        contextWindow: 128000, // Default context window
-      })),
+      api: (provider as unknown as Record<string, unknown>).api || 'openai-completions',
+      models: modelsForConfig,
     };
   }
 
-  const config = { models: modelsConfig };
+  // 5. Assemble full config
+  const config = {
+    models: {
+      mode: 'merge',
+      providers: providersConfig,
+      // Add routing if we have conditional rules
+      ...(modelRouting.length > 0 && modelRouting.some(r => r.when)
+        ? { routing: modelRouting }
+        : {}),
+    },
+  };
 
-  // Format as YAML with proper quoting
   return yaml.dump(config, {
     indent: 2,
     lineWidth: -1,
     noRefs: true,
     quotingType: '"',
     forceQuotes: false,
+    sortKeys: false,
   });
 }
 
 /** Legacy format - simplified view (for reference only) */
 export function generateYaml(rules: RoutingRule[]): string {
-  const entries: Array<Record<string, unknown>> = [];
-
-  for (const rule of rules) {
-    const entry: Record<string, unknown> = {
-      name: rule.targetModelId,
-    };
-
-    if (rule.condition) {
-      entry.routing = {
-        when: [conditionToWhen(rule.condition)],
-        use: rule.targetModelId,
-      };
-    } else {
-      entry.routing = {
-        use: rule.targetModelId,
-      };
-    }
-
-    entries.push(entry);
-  }
-
-  const output = { models: entries };
-  return yaml.dump(output, {
-    indent: 2,
-    lineWidth: -1,
-    noRefs: true,
-    quotingType: '"',
-  });
+  return generateOpenClawConfig(rules);
 }
 
 /** Validate YAML format */
@@ -132,7 +153,6 @@ export function validateYaml(yamlString: string): boolean {
     const parsed = yaml.load(yamlString);
     if (typeof parsed !== 'object' || parsed === null) return false;
     const obj = parsed as Record<string, unknown>;
-    // Basic validation - has models section
     return 'models' in obj;
   } catch {
     return false;

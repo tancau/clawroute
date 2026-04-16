@@ -55,6 +55,14 @@
     "research-assistant": "Research Assistant",
     "dev-tools": "Dev Tools"
   },
+  "sceneDescriptions": {
+    "trading-bot": "Crypto/stock automated trading, requires fast response and data analysis",
+    "customer-service": "Intelligent customer support, requires language understanding and quick response",
+    "content-creation": "Article writing, copywriting, requires high-quality output",
+    "data-analysis": "Data processing, visualization, statistical analysis, requires reasoning and coding",
+    "research-assistant": "Academic research, literature analysis, requires deep reasoning and long context",
+    "dev-tools": "Code generation, debugging, refactoring, requires code understanding and generation"
+  },
   "configure": {
     "title": "Configure Routing",
     "switchScene": "Switch Scene",
@@ -118,6 +126,22 @@
     "apply": "Apply",
     "applied": "Template applied",
     "backHome": "Back to Home"
+  },
+  "templateNames": {
+    "tpl-trading-bot": "Trading Bot Standard",
+    "tpl-customer-service": "Customer Service Standard",
+    "tpl-content-creation": "Content Creation Standard",
+    "tpl-data-analysis": "Data Analysis Standard",
+    "tpl-research-assistant": "Research Assistant Standard",
+    "tpl-dev-tools": "Dev Tools Standard"
+  },
+  "templateDescriptions": {
+    "tpl-trading-bot": "Free models for simple signals, reasoning models for complex analysis, balanced default",
+    "tpl-customer-service": "Free models for simple Q&A, high-quality models for complex issues",
+    "tpl-content-creation": "Balanced models for simple content, high-quality models for deep writing",
+    "tpl-data-analysis": "Low-cost models for simple queries, reasoning models for complex analysis",
+    "tpl-research-assistant": "Reasoning models for inference tasks, balanced models for general queries",
+    "tpl-dev-tools": "Free models for simple code, professional models for complex code"
   },
   "footer": {
     "dataUpdated": "Data updated",

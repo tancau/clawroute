@@ -19,6 +19,11 @@ function flattenModels(): Model[] {
         qualityRating: modelData.qualityRating as 1 | 2 | 3,
         capabilityTags: modelData.capabilityTags,
         recommendationReason: modelData.recommendationReason,
+        // OpenClaw format fields
+        input: ((modelData as Record<string, unknown>).input as string[]) || ['text'],
+        contextWindow: (modelData as Record<string, unknown>).contextWindow as number | undefined,
+        maxTokens: (modelData as Record<string, unknown>).maxTokens as number | undefined,
+        api: (provider as Record<string, unknown>).api as string | undefined,
       });
     }
   }
@@ -99,6 +104,7 @@ export function getAllProviders() {
     name: data.name,
     baseUrl: data.baseUrl,
     apiKeyEnvVar: data.apiKeyEnvVar,
+    api: (data as Record<string, unknown>).api || 'openai-completions',
   }));
 }
 

@@ -27,6 +27,11 @@ export interface Model {
   qualityRating: 1 | 2 | 3;
   capabilityTags: string[];
   recommendationReason?: string;
+  // OpenClaw format fields
+  input?: string[];
+  contextWindow?: number;
+  maxTokens?: number;
+  api?: string;
 }
 
 export interface RoutingRule {
