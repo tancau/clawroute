@@ -1,11 +1,13 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import type { Scene } from '@/lib/types';
 import { useTranslations } from 'next-intl';
 
 interface SceneCardProps {
   scene: Scene;
   onSelect: (sceneId: string) => void;
+  savingLabel: string;
 }
 
 export function SceneCard({ scene, onSelect }: SceneCardProps) {

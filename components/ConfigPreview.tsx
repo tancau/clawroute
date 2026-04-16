@@ -1,12 +1,14 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
 import { generateOpenClawConfig } from '@/lib/config-generator';
 import { copyToClipboard, downloadJson } from '@/lib/export-utils';
 import { Button } from '@/components/ui/button';
-import { Copy, Download } from 'lucide-react';
+import { Copy, Download, Share2 } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
+import { getShareUrl } from '@/lib/share-config';
 import { toast } from '@/components/ui/use-toast';
 import { useTranslations } from 'next-intl';
 

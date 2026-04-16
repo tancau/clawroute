@@ -2,42 +2,42 @@
   "scenes": [
     {
       "id": "trading-bot",
-      "name": "交易 Bot",
+      "name": "Trading Bot",
       "icon": "🤖",
       "description": "加密货币/股票交易自动化，需要快速响应和数据分析能力",
       "estimatedSaving": "60-80%"
     },
     {
       "id": "customer-service",
-      "name": "客服助手",
+      "name": "Customer Service",
       "icon": "💬",
       "description": "智能客服对话，需要中文理解和快速响应",
       "estimatedSaving": "40-60%"
     },
     {
       "id": "content-creation",
-      "name": "内容创作",
+      "name": "Content Creation",
       "icon": "✍️",
       "description": "文章撰写、文案生成，需要高质量输出",
       "estimatedSaving": "30-50%"
     },
     {
       "id": "data-analysis",
-      "name": "数据分析",
+      "name": "Data Analysis",
       "icon": "📊",
       "description": "数据处理、可视化、统计分析，需要推理和代码能力",
       "estimatedSaving": "50-70%"
     },
     {
       "id": "research-assistant",
-      "name": "研究助手",
+      "name": "Research Assistant",
       "icon": "🔍",
       "description": "学术研究、文献分析，需要深度推理和长上下文",
       "estimatedSaving": "35-55%"
     },
     {
       "id": "dev-tools",
-      "name": "开发工具",
+      "name": "Dev Tools",
       "icon": "🛠️",
       "description": "代码生成、调试、重构，需要代码理解和生成能力",
       "estimatedSaving": "45-65%"

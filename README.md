@@ -1,176 +1,161 @@
 # 🦞 ClawRoute
 
-> 为 OpenClaw 用户打造的智能模型路由配置工具 — 节省 60-80% 的 API 费用。
+> Smart model routing config generator for OpenClaw users — Save 60-80% on API costs.
 
-[![Deploy with Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com)
+English | [简体中文](./README.zh.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/tancau/clawroute?style=flat-square)](https://github.com/tancau/clawroute)
 
-**在线体验**：[https://clawroute.vercel.app](https://clawroute.vercel.app)
+**Live Demo**: [https://clawroute.vercel.app](https://clawroute.vercel.app)
 
 ---
 
-## 🎯 ClawRoute 是什么？
+## 🎬 Demo Video
 
-OpenClaw 默认把所有请求都发送到同一个模型 — 这就像用法拉利去买菜。
+Watch how ClawRoute helps you save 60-80% on OpenClaw costs in under 30 seconds:
 
-ClawRoute 是一个**可视化的路由配置生成器**，帮你：
-1. 选择使用场景
-2. 拖拽调整路由规则
-3. 一键导出 OpenClaw 可用的 YAML 配置
+[![ClawRoute Demo](https://img.shields.io/badge/Video-Coming%20Soon-blue?style=for-the-badge)](https://github.com/tancau/clawroute/discussions)
 
-**简单来说**：你告诉 ClawRoute 你用 OpenClaw 做什么，它帮你生成最优的模型路由配置。
+*Video coming soon — showing scene selection → config generation → export*
 
 ---
 
-## ✨ 核心功能
+## 🎯 What is ClawRoute?
 
-### 🤖 场景选择器
-选择你的使用场景，获取针对该场景优化的路由配置：
+OpenClaw sends all requests to the same model by default — like driving a Ferrari to buy groceries.
 
-| 场景 | 节省 | 说明 |
-|------|------|------|
-| 🤖 交易 Bot | 60-80% | 加密货币/股票自动化交易 |
-| 💬 客服助手 | 40-60% | 智能客服对话 |
-| ✍️ 内容创作 | 30-50% | 文章撰写、文案生成 |
-| 📊 数据分析 | 50-70% | 数据处理、统计分析 |
-| 🔍 研究助手 | 35-55% | 学术研究、文献分析 |
-| 🛠️ 开发工具 | 45-65% | 代码生成、调试、重构 |
+ClawRoute is a **visual routing config generator** that helps you:
+1. Select your use case
+2. Drag-and-drop to adjust routing rules
+3. Export OpenClaw-compatible YAML config with one click
 
-### 🔧 拖拽式规则编辑器
-可视化编辑路由规则，无需手写 YAML：
-- 支持 4 种条件属性：复杂度 / 包含代码 / 需要推理 / Token 长度
-- 拖拽排序，调整优先级
-- 默认规则兜底
-
-### 📊 模型对比面板
-- 覆盖 24+ 主流模型（Qwen / DeepSeek / Claude / GPT / Gemini / Llama 等）
-- 按成本 / 质量 / 速度排序
-- 显示每千 token 价格
-
-### 📋 模板市场
-6 套预设场景模板，一键导入并修改
+**Simply put**: Tell ClawRoute what you use OpenClaw for, and it generates the optimal model routing configuration.
 
 ---
 
-## 🚀 快速开始
+## ✨ Core Features
 
-### 在线体验（无需安装）
+### 🤖 Scene Selector
+Choose your use case and get optimized routing configuration:
+
+| Scene | Savings | Description |
+|-------|---------|-------------|
+| 🤖 Trading Bot | 60-80% | Crypto/stock automated trading |
+| 💬 Customer Service | 40-60% | Intelligent customer support |
+| ✍️ Content Creation | 30-50% | Article writing, copywriting |
+| 📊 Data Analysis | 50-70% | Data processing, statistical analysis |
+| 🔍 Research Assistant | 35-55% | Academic research, literature analysis |
+| 🛠️ Dev Tools | 45-65% | Code generation, debugging, refactoring |
+
+### 🔧 Drag-and-Drop Rule Editor
+Visual editing of routing rules, no YAML writing required:
+- 4 condition attributes: Complexity / Contains Code / Needs Reasoning / Token Length
+- Drag to reorder priorities
+- Default rule as fallback
+
+### 📊 Model Comparison Panel
+- 24+ mainstream models (Qwen / DeepSeek / Claude / GPT / Gemini / Llama, etc.)
+- Sort by Cost / Quality / Speed
+- Display price per 1K tokens
+
+### 📋 Template Market
+6 preset scene templates, import and customize with one click
+
+---
+
+## 🚀 Quick Start
+
+### Live Demo (No Installation)
 👉 [https://clawroute.vercel.app](https://clawroute.vercel.app)
 
-### 本地运行
+### Run Locally
 
 ```bash
-# 克隆仓库
+# Clone the repo
 git clone https://github.com/tancau/clawroute.git
 cd clawroute
 
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 启动开发服务器
+# Start dev server
 pnpm dev
 
-# 运行测试
+# Run tests
 pnpm test
 ```
 
-打开 [http://localhost:3000](http://localhost:3000) 即可使用。
+Open [http://localhost:3000](http://localhost:3000) to use.
 
 ---
 
-## 📦 一键部署到 Vercel
+## 🧩 Tech Stack
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tancau/clawroute)
-
-或者手动部署：
-
-```bash
-# 安装 Vercel CLI
-npm i -g vercel
-
-# 登录并部署
-vercel
-
-# 生产环境部署
-vercel --prod
-```
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 14 (App Router) |
+| i18n | next-intl |
+| Language | TypeScript |
+| Styling | Tailwind CSS + shadcn/ui |
+| State | Zustand |
+| Drag & Drop | @dnd-kit |
+| Testing | Vitest |
+| Deployment | Vercel |
 
 ---
 
-## 🧩 技术栈
-
-| 层 | 技术 |
-|---|------|
-| 框架 | Next.js 14 (App Router) |
-| 语言 | TypeScript |
-| 样式 | Tailwind CSS + shadcn/ui |
-| 状态管理 | Zustand |
-| 拖拽排序 | @dnd-kit |
-| 测试 | Vitest |
-| 部署 | Vercel（免费） |
-
----
-
-## 📐 项目架构
+## 📐 Project Structure
 
 ```
 clawroute/
-├── app/                    # Next.js App Router 页面
-│   ├── page.tsx           # 首页（场景选择）
-│   ├── configure/         # 配置页（规则编辑 + 预览）
-│   └── templates/          # 模板市场
-├── components/            # React 组件
-│   ├── SceneSelector.tsx   # 场景选择卡片
-│   ├── RuleEditor.tsx      # 拖拽式规则编辑器
-│   ├── ModelComparePanel.tsx # 模型对比面板
-│   ├── ConfigPreview.tsx    # YAML 预览 & 导出
-│   └── ui/                # shadcn/ui 基础组件
-├── lib/                   # 核心业务逻辑
-│   ├── models-db.ts        # 模型数据库（24+ 模型元数据）
-│   ├── router-engine.ts    # 路由规则引擎（CRUD + 排序）
-│   └── yaml-generator.ts   # YAML 配置生成器
-├── data/                  # 静态数据
-│   ├── models.json         # 模型价格/能力数据
-│   ├── scenes.json        # 场景定义
-│   └── templates.json     # 预设路由模板
-└── store/
-    └── use-app-store.ts   # Zustand 全局状态
+├── app/
+│   └── [locale]/           # i18n routes (zh/en)
+│       ├── page.tsx        # Home (scene selector)
+│       ├── configure/      # Config page (rule editor + preview)
+│       └── templates/      # Template market
+├── components/             # React components
+├── lib/                    # Core business logic
+├── data/                   # Static data
+├── messages/               # i18n translation files
+│   ├── zh.json
+│   └── en.json
+└── store/                  # Zustand global state
 ```
 
 ---
 
-## 🤝 如何贡献
+## 🤝 Contributing
 
-欢迎提交 Issue 和 PR！
+Issues and PRs are welcome!
 
-**贡献方式**：
-- 🐛 报告 Bug
-- 💡 提出新功能建议
-- 📝 提交新的场景模板
-- 🔧 改进代码或文档
-
----
-
-## 📄 许可
-
-MIT License — 可免费商用，但请保留署名。
+**Ways to contribute**:
+- 🐛 Report bugs
+- 💡 Suggest new features
+- 📝 Submit new scene templates
+- 🔧 Improve code or documentation
 
 ---
 
-## 🔗 相关链接
+## 📄 License
 
-- 🌐 **在线体验**：[https://clawroute.vercel.app](https://clawroute.vercel.app)
-- 📂 **GitHub**：[github.com/tancau/clawroute](https://github.com/tancau/clawroute)
-- 📖 **OpenClaw 文档**：[docs.openclaw.ai](https://docs.openclaw.ai)
-- 🤖 **OpenRouter**：[openrouter.ai](https://openrouter.ai) — 模型聚合平台
+MIT License — Free for commercial use, but please keep attribution.
 
-## 📸 截图
+---
 
-| 首页 | 配置页 | 模板市场 |
+## 🔗 Links
+
+- 🌐 **Live Demo**: [https://clawroute.vercel.app](https://clawroute.vercel.app)
+- 📂 **GitHub**: [github.com/tancau/clawroute](https://github.com/tancau/clawroute)
+- 📖 **OpenClaw Docs**: [docs.openclaw.ai](https://docs.openclaw.ai)
+- 🤖 **OpenRouter**: [openrouter.ai](https://openrouter.ai) — Model aggregation platform
+
+## 📸 Screenshots
+
+| Home | Configure | Templates |
 |:---:|:---:|:---:|
 | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-home.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-config.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-tpl.png" width="300"/> |
 
 ---
 
-*如果你觉得 ClawRoute 有用，请给我们一个 ⭐*
+*If you find ClawRoute useful, please give us a ⭐*

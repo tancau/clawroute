@@ -31,6 +31,14 @@
     "research-assistant": "研究助手",
     "dev-tools": "开发工具"
   },
+  "sceneDescriptions": {
+    "trading-bot": "加密货币/股票交易自动化，需要快速响应和数据分析能力",
+    "customer-service": "智能客服对话，需要中文理解和快速响应",
+    "content-creation": "文章撰写、文案生成，需要高质量输出",
+    "data-analysis": "数据处理、可视化、统计分析，需要推理和代码能力",
+    "research-assistant": "学术研究、文献分析，需要深度推理和长上下文",
+    "dev-tools": "代码生成、调试、重构，需要代码理解和生成能力"
+  },
   "configure": {
     "title": "配置路由",
     "switchScene": "切换场景",
@@ -73,7 +81,7 @@
       "true": "是",
       "false": "否",
       "short": "短（<1K）",
-      "medium": "中（1K-10K）",
+      "mediumRange": "中（1K-10K）",
       "long": "长（>10K）"
     }
   },
