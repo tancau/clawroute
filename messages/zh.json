@@ -183,7 +183,14 @@
     "pingAuth": "需要认证",
     "pingRateLimit": "限速中",
     "pingTimeout": "超时 (>8s)",
-    "pingOffline": "离线"
+    "pingOffline": "离线",
+    "completionTest": "模型能力测试",
+    "testModel": "测试模型",
+    "testingModel": "测试中...",
+    "completionTestDesc": "发送真实对话请求，验证模型能否正常回答问题",
+    "modelCanAnswer": "能回答",
+    "noKey": "无 Key，跳过",
+    "noKeysForTest": "没有配置 API Key，无法测试模型能力"
   },
   "errorBoundary": {
     "title": "出了点问题",

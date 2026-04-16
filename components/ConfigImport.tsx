@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Heart, Activity, AlertCircle, CheckCircle2, Trash2, ChevronDown, ChevronRight, AlertTriangle, Info, Loader2, Wifi, WifiOff, Shield, Clock } from 'lucide-react';
+import { Heart, Activity, AlertCircle, CheckCircle2, Trash2, ChevronDown, ChevronRight, AlertTriangle, Info, Loader2, Wifi, WifiOff, Shield, Clock, MessageSquare } from 'lucide-react';
 import { diagnoseConfig, HealthIssue, HealthReport } from '@/lib/config-doctor';
 
 interface ParsedProvider {
@@ -30,6 +30,17 @@ interface PingResult {
   error?: string;
 }
 
+interface CompletionResult {
+  id: string;
+  model: string;
+  status: 'working' | 'auth-failed' | 'rate-limited' | 'model-not-found' | 'error' | 'timeout' | 'offline' | 'no-key';
+  latency?: number;
+  response?: string;
+  tokens?: { prompt: number; completion: number; total: number };
+  httpStatus?: number;
+  error?: string;
+}
+
 export function ConfigImport() {
   const t = useTranslations('configImport');
   const [pasteText, setPasteText] = useState('');
@@ -39,12 +50,15 @@ export function ConfigImport() {
   const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set());
   const [pingResults, setPingResults] = useState<PingResult[] | null>(null);
   const [pinging, setPinging] = useState(false);
+  const [completionResults, setCompletionResults] = useState<CompletionResult[] | null>(null);
+  const [testingCompletion, setTestingCompletion] = useState(false);
 
   const parseConfig = () => {
     setError(null);
     setParsed(null);
     setReport(null);
     setPingResults(null);
+    setCompletionResults(null);
 
     const text = pasteText.trim();
     if (!text) return;
@@ -115,6 +129,42 @@ export function ConfigImport() {
       setError(err instanceof Error ? err.message : 'Ping failed');
     } finally {
       setPinging(false);
+    }
+  };
+
+  const handleCompletionTest = async () => {
+    if (!parsed || parsed.length === 0) return;
+    setTestingCompletion(true);
+    setCompletionResults(null);
+
+    try {
+      // Build test list: one model per provider (first model)
+      const testProviders = parsed
+        .filter(p => p.apiKey && p.models.length > 0)
+        .map(p => ({
+          id: p.id,
+          baseUrl: p.baseUrl,
+          apiKey: p.apiKey,
+          model: p.models[0]!.id,
+        }));
+
+      if (testProviders.length === 0) {
+        setError(t('noKeysForTest'));
+        setTestingCompletion(false);
+        return;
+      }
+
+      const response = await fetch('/api/test-completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ providers: testProviders }),
+      });
+      const data = await response.json();
+      setCompletionResults(data.results || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Test failed');
+    } finally {
+      setTestingCompletion(false);
     }
   };
 
@@ -290,6 +340,57 @@ export function ConfigImport() {
             </div>
           )}
 
+          {/* Completion Test - actually test if models can answer */}
+          {parsed && parsed.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium">{t('completionTest')}</h4>
+                <Button variant="outline" size="sm" onClick={handleCompletionTest} disabled={testingCompletion}>
+                  {testingCompletion && <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />}
+                  {!testingCompletion && <MessageSquare className="h-3.5 w-3.5 mr-1.5" />}
+                  {testingCompletion ? t('testingModel') : t('testModel')}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">{t('completionTestDesc')}</p>
+
+              {completionResults && (
+                <div className="space-y-1.5">
+                  {completionResults.map((r) => {
+                    const isWorking = r.status === 'working';
+                    return (
+                      <div key={r.id} className={`px-3 py-2.5 rounded-md border text-xs ${
+                        isWorking ? 'bg-green-500/5 border-green-500/20' :
+                        r.status === 'no-key' ? 'bg-gray-500/5 border-gray-500/20' :
+                        'bg-red-500/5 border-red-500/20'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          {isWorking ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> :
+                           r.status === 'no-key' ? <Info className="h-3.5 w-3.5 text-gray-400" /> :
+                           <AlertCircle className="h-3.5 w-3.5 text-red-500" />}
+                          <span className="font-medium">{r.id}/{r.model}</span>
+                          {isWorking && <span className="text-green-600 ml-auto">✅ {t('modelCanAnswer')}</span>}
+                          {!isWorking && r.status !== 'no-key' && <span className="text-red-500 ml-auto">❌ {r.error || r.status}</span>}
+                          {r.status === 'no-key' && <span className="text-gray-400 ml-auto">{t('noKey')}</span>}
+                        </div>
+                        {isWorking && (
+                          <div className="mt-1.5 pl-5.5 space-y-0.5">
+                            <div className="flex gap-3 text-muted-foreground">
+                              <span>⏱ {r.latency}ms</span>
+                              {r.tokens && <span>🔤 {r.tokens.total} tokens</span>}
+                            </div>
+                            <div className="font-mono bg-muted/30 rounded px-2 py-1 mt-1">
+                              💬 &ldquo;{r.response}&rdquo;
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Provider list */}
           {parsed && parsed.length > 0 && (
             <div className="space-y-1">
@@ -339,7 +440,7 @@ export function ConfigImport() {
             <Button variant="outline" className="flex-1" onClick={downloadFixed}>
               💾 {t('downloadConfig')}
             </Button>
-            <Button variant="outline" size="icon" onClick={() => { setParsed(null); setPasteText(''); setReport(null); setPingResults(null); }}>
+            <Button variant="outline" size="icon" onClick={() => { setParsed(null); setPasteText(''); setReport(null); setPingResults(null); setCompletionResults(null); }}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>

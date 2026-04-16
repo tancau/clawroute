@@ -183,7 +183,14 @@
     "pingAuth": "Auth required",
     "pingRateLimit": "Rate limited",
     "pingTimeout": "Timeout (>8s)",
-    "pingOffline": "Offline"
+    "pingOffline": "Offline",
+    "completionTest": "Model Capability Test",
+    "testModel": "Test Models",
+    "testingModel": "Testing...",
+    "completionTestDesc": "Send a real chat request to verify models can actually answer questions",
+    "modelCanAnswer": "Can answer",
+    "noKey": "No key, skipped",
+    "noKeysForTest": "No API keys configured, cannot test model capabilities"
   },
   "errorBoundary": {
     "title": "Something went wrong",
