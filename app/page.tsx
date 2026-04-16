@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { SceneSelector } from '@/components/SceneSelector';
 import { TestimonialCard } from '@/components/TestimonialCard';
 import { CodeBlock } from '@/components/CodeBlock';
+import { useTranslations } from 'next-intl';
 
 export default function Home() {
+  const t = useTranslations('home');
+
   const testimonials = [
     {
       quote: 'Wow, this actually saves me 70% on my OpenClaw bills!',
@@ -27,33 +32,32 @@ export default function Home() {
       <section className="px-4 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] bg-clip-text text-transparent">让 OpenClaw 用户</span>
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{t('heroTitle')}</span>
           </h1>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-[#f8fafc]">
-            用最少的配置工作，获得最大的成本节省。
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
+            {t('heroSubtitle')}
           </h2>
-          <p className="text-xl text-[#94a3b8] mb-10 max-w-2xl mx-auto">
-            选择你的使用场景，一键生成优化好的路由配置，
-            立即节省 60-80% 的 OpenClaw 费用。
+          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            {t('heroDescription')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="#scenes"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] text-[#0f172a] font-semibold rounded-xl hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity"
             >
-              开始配置
+              {t('startConfig')}
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </a>
             <Link
               href="/templates"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-[#2a2d3a] text-[#f8fafc] font-semibold rounded-xl hover:border-[#00c9ff]/50 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 border border-border text-foreground font-semibold rounded-xl hover:border-primary/50 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              浏览模板市场
+              {t('browseTemplates')}
             </Link>
           </div>
         </div>
@@ -62,10 +66,10 @@ export default function Home() {
       {/* Testimonials */}
       <section className="px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8 text-[#f8fafc]">来自用户的评价</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 text-foreground">{t('testimonialsTitle')}</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            {testimonials.map((t, i) => (
-              <TestimonialCard key={i} {...t} />
+            {testimonials.map((tm, i) => (
+              <TestimonialCard key={i} {...tm} />
             ))}
           </div>
         </div>
@@ -75,11 +79,11 @@ export default function Home() {
       <section id="scenes" className="px-4 py-16">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-[#f8fafc]">
-              你用 OpenClaw 做什么？
+            <h2 className="text-3xl font-bold mb-4 text-foreground">
+              {t('heading')}
             </h2>
-            <p className="text-lg text-[#94a3b8]">
-              选择场景，获取最优配置
+            <p className="text-lg text-muted-foreground">
+              {t('subheading')}
             </p>
           </div>
           <SceneSelector />
@@ -87,9 +91,9 @@ export default function Home() {
       </section>
 
       {/* Code Block */}
-      <section className="px-4 py-12 bg-[#0a0a0a]">
+      <section className="px-4 py-12 bg-surface">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8 text-[#f8fafc]">快速开始</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 text-foreground">{t('quickStartTitle')}</h2>
           <CodeBlock code={installCode} language="bash" />
         </div>
       </section>
@@ -97,28 +101,28 @@ export default function Home() {
       {/* Features */}
       <section className="px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-[#f8fafc]">为什么选择 ClawRoute</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-foreground">{t('featuresTitle')}</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#00c9ff] to-[#92fe9d] flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <span className="text-2xl">💰</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-[#f8fafc]">显著节省</h3>
-              <p className="text-[#94a3b8]">智能路由让你节省 60-80% 的 OpenClaw 费用</p>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">{t('featureSavingTitle')}</h3>
+              <p className="text-muted-foreground">{t('featureSavingDesc')}</p>
             </div>
             <div className="text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-secondary to-secondary-accent flex items-center justify-center">
                 <span className="text-2xl">⚡</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-[#f8fafc]">开箱即用</h3>
-              <p className="text-[#94a3b8]">预设场景模板，无需手动配置复杂的 YAML</p>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">{t('featureOOTBTitle')}</h3>
+              <p className="text-muted-foreground">{t('featureOOTBDesc')}</p>
             </div>
             <div className="text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#92fe9d] to-[#00c9ff] flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center">
                 <span className="text-2xl">🔧</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-[#f8fafc]">完全开源</h3>
-              <p className="text-[#94a3b8]">所有代码完全开源，社区驱动持续改进</p>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">{t('featureOSTitle')}</h3>
+              <p className="text-muted-foreground">{t('featureOSDesc')}</p>
             </div>
           </div>
         </div>

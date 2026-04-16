@@ -14,8 +14,6 @@ export interface Scene {
   icon: string;
   description: string;
   estimatedSaving: string;
-  candidateModelIds: string[];
-  defaultTemplateId: string;
 }
 
 export interface Model {

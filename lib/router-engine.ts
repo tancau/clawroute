@@ -1,13 +1,17 @@
 import type { RoutingRule } from './types';
 import templatesData from '@/data/templates.json';
 
-let ruleCounter = 0;
-
-/** Generate a unique rule ID */
-export function generateRuleId(): string {
-  ruleCounter += 1;
-  return `rule-${Date.now()}-${ruleCounter}`;
+/** Create a factory function for generating unique rule IDs with isolated state */
+function createRuleIdGenerator() {
+  let counter = 0;
+  return () => {
+    counter += 1;
+    return `rule-${Date.now()}-${counter}-${Math.random().toString(36).slice(2, 6)}`;
+  };
 }
+
+/** Default instance for production use */
+const generateRuleId = createRuleIdGenerator();
 
 /** Create default rules list from a scene template */
 export function createDefaultRules(sceneId: string, templateId: string): RoutingRule[] {
@@ -15,7 +19,6 @@ export function createDefaultRules(sceneId: string, templateId: string): Routing
     (t) => t.id === templateId && t.sceneId === sceneId
   );
   if (!template) {
-    // Return a single default rule if no template found
     return [
       {
         id: generateRuleId(),
@@ -58,7 +61,6 @@ export function reorderRules(rules: RoutingRule[], orderedIds: string[]): Routin
     .map((id) => nonDefaultRules.find((r) => r.id === id))
     .filter((r): r is RoutingRule => r !== undefined);
 
-  // Add any rules not in orderedIds at the end (before default)
   const missingRules = nonDefaultRules.filter(
     (r) => !orderedIds.includes(r.id)
   );
@@ -74,7 +76,7 @@ export function updateRule(
 ): RoutingRule[] {
   return rules.map((rule) => {
     if (rule.id !== ruleId) return rule;
-    return { ...rule, ...partial, id: rule.id }; // Preserve ID
+    return { ...rule, ...partial, id: rule.id };
   });
 }
 
@@ -87,3 +89,5 @@ export function createEmptyRule(): RoutingRule {
     isDefault: false,
   };
 }
+
+export { createRuleIdGenerator, generateRuleId };

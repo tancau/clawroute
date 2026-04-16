@@ -6,7 +6,22 @@
   "home": {
     "heading": "你用 OpenClaw 做什么？",
     "subheading": "选择场景，获取最优配置",
-    "savingLabel": "通常节省"
+    "savingLabel": "通常节省",
+    "heroTitle": "让 OpenClaw 用户",
+    "heroSubtitle": "用最少的配置工作，获得最大的成本节省。",
+    "heroDescription": "选择你的使用场景，一键生成优化好的路由配置，立即节省 60-80% 的 OpenClaw 费用。",
+    "startConfig": "开始配置",
+    "browseTemplates": "浏览模板市场",
+    "testimonialsTitle": "来自用户的评价",
+    "featuresTitle": "为什么选择 ClawRoute",
+    "featureSavingTitle": "显著节省",
+    "featureSavingDesc": "智能路由让你节省 60-80% 的 OpenClaw 费用",
+    "featureOOTBTitle": "开箱即用",
+    "featureOOTBDesc": "预设场景模板，无需手动配置复杂的 YAML",
+    "featureOSTitle": "完全开源",
+    "featureOSDesc": "所有代码完全开源，社区驱动持续改进",
+    "quickStartTitle": "快速开始",
+    "savingLabelShort": "节省"
   },
   "scenes": {
     "trading-bot": "交易 Bot",
@@ -20,7 +35,8 @@
     "title": "配置路由",
     "switchScene": "切换场景",
     "noScene": "请先选择一个使用场景",
-    "goHome": "返回首页"
+    "goHome": "返回首页",
+    "loading": "加载中..."
   },
   "modelCompare": {
     "title": "模型比较",
@@ -43,6 +59,7 @@
     "remove": "删除",
     "moveUp": "上移",
     "moveDown": "下移",
+    "selectModel": "选择模型",
     "attribute": {
       "complexity": "请求复杂度",
       "hasCode": "包含代码",
@@ -65,20 +82,47 @@
     "copy": "复制",
     "download": "下载",
     "copySuccess": "复制成功",
-    "copyFailed": "复制失败，请手动复制"
+    "copyFailed": "复制失败，请手动复制",
+    "copiedToClipboard": "已复制到剪贴板",
+    "yamlCopied": "YAML 配置已复制",
+    "copyFailedTitle": "复制失败",
+    "copyManually": "请手动复制",
+    "downloadSuccess": "下载成功",
+    "yamlDownloaded": "models.yaml 已下载"
   },
   "template": {
     "title": "预设模板",
-    "apply": "应用",
+    "apply": "应用模板",
+    "useTemplate": "使用模板",
     "savingRate": "节省率",
-    "applied": "模板已应用"
+    "applied": "模板已应用",
+    "saving": "节省",
+    "by": "by"
+  },
+  "templates": {
+    "title": "模板市场",
+    "description": "浏览和搜索社区贡献的路由配置模板",
+    "searchPlaceholder": "搜索模板...",
+    "all": "全部",
+    "noMatch": "没有找到匹配的模板",
+    "goHome": "返回首页选择场景"
   },
   "footer": {
     "dataUpdated": "数据更新日期",
     "openSource": "开源项目"
   },
+  "codeBlock": {
+    "clickToCopy": "点击复制",
+    "copied": "已复制",
+    "copyFailed": "复制失败"
+  },
   "language": {
     "zh": "中文",
     "en": "English"
+  },
+  "errorBoundary": {
+    "title": "出了点问题",
+    "description": "页面加载遇到错误",
+    "reload": "重新加载"
   }
 }

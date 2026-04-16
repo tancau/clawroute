@@ -4,12 +4,9 @@ import { useAppStore } from '@/store/use-app-store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { SortMode } from '@/lib/types';
+import { useTranslations } from 'next-intl';
 
-const sortModes: { key: SortMode; label: string }[] = [
-  { key: 'costFirst', label: '成本优先' },
-  { key: 'qualityFirst', label: '质量优先' },
-  { key: 'speedFirst', label: '速度优先' },
-];
+const sortModeKeys: SortMode[] = ['costFirst', 'qualityFirst', 'speedFirst'];
 
 function SpeedRating({ rating }: { rating: number }) {
   return <span>{'⚡'.repeat(rating)}</span>;
@@ -20,26 +17,33 @@ function QualityRating({ rating }: { rating: number }) {
 }
 
 export function ModelComparePanel() {
+  const t = useTranslations('modelCompare');
   const sortMode = useAppStore((s) => s.sortMode);
   const setSortMode = useAppStore((s) => s.setSortMode);
   const getSortedModelsForSelectedScene = useAppStore((s) => s.getSortedModelsForSelectedScene);
 
   const models = getSortedModelsForSelectedScene();
 
+  const sortModeLabels: Record<SortMode, string> = {
+    costFirst: t('sortCost'),
+    qualityFirst: t('sortQuality'),
+    speedFirst: t('sortSpeed'),
+  };
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">模型比较</h3>
+      <h3 className="text-lg font-semibold">{t('title')}</h3>
 
       {/* Sort mode selector */}
       <div className="flex gap-2">
-        {sortModes.map(({ key, label }) => (
+        {sortModeKeys.map((key) => (
           <Button
             key={key}
             variant={sortMode === key ? 'default' : 'outline'}
             size="sm"
             onClick={() => setSortMode(key)}
           >
-            {label}
+            {sortModeLabels[key]}
           </Button>
         ))}
       </div>
@@ -49,11 +53,11 @@ export function ModelComparePanel() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b">
-              <th className="text-left py-2 px-2">模型</th>
-              <th className="text-left py-2 px-2">速度</th>
-              <th className="text-left py-2 px-2">质量</th>
-              <th className="text-left py-2 px-2">成本/1K token</th>
-              <th className="text-left py-2 px-2">推荐理由</th>
+              <th className="text-left py-2 px-2">{t('modelName')}</th>
+              <th className="text-left py-2 px-2">{t('speed')}</th>
+              <th className="text-left py-2 px-2">{t('quality')}</th>
+              <th className="text-left py-2 px-2">{t('costPer1K')}</th>
+              <th className="text-left py-2 px-2">{t('reason')}</th>
             </tr>
           </thead>
           <tbody>

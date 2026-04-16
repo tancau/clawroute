@@ -2,11 +2,14 @@ import { create } from 'zustand';
 import type { Scene, Model, RoutingRule, Template, SortMode, Locale } from '@/lib/types';
 import { getAllModels, getModelsByScene, sortModels } from '@/lib/models-db';
 import { createDefaultRules, addRule, removeRule, reorderRules, updateRule, createEmptyRule } from '@/lib/router-engine';
-import scenesData from '@/data/scenes.json';
-import templatesData from '@/data/templates.json';
+import scenesDataRaw from '@/data/scenes.json';
+import templatesDataRaw from '@/data/templates.json';
 import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
+import { isScenesData, isTemplatesData, isSceneModelMapping, validateOrThrow } from '@/lib/validate-data';
 
-const sceneModelMapping = sceneModelMappingRaw as Record<string, { candidateModelIds: string[]; defaultTemplateId: string }>;
+const scenesData = validateOrThrow(scenesDataRaw, isScenesData, 'scenes.json');
+const templatesData = validateOrThrow(templatesDataRaw, isTemplatesData, 'templates.json');
+const sceneModelMapping = validateOrThrow(sceneModelMappingRaw, isSceneModelMapping, 'scene-model-mapping.json');
 
 interface AppStore {
   // Scene slice
@@ -44,7 +47,7 @@ interface AppStore {
 
 export const useAppStore = create<AppStore>((set, get) => ({
   // Scene slice
-  scenes: scenesData.scenes as Scene[],
+  scenes: scenesData.scenes,
   selectedSceneId: null,
   selectScene: (sceneId: string) => {
     const mapping = sceneModelMapping[sceneId];
@@ -103,7 +106,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   // Template slice
-  templates: templatesData.templates as Template[],
+  templates: templatesData.templates,
   getTemplatesForSelectedScene: () => {
     const { selectedSceneId, templates } = get();
     if (!selectedSceneId) return [];

@@ -5,54 +5,42 @@
       "name": "交易 Bot",
       "icon": "🤖",
       "description": "加密货币/股票交易自动化，需要快速响应和数据分析能力",
-      "estimatedSaving": "60-80%",
-      "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-haiku", "gpt4o-mini", "gemini-flash"],
-      "defaultTemplateId": "tpl-trading-bot"
+      "estimatedSaving": "60-80%"
     },
     {
       "id": "customer-service",
       "name": "客服助手",
       "icon": "💬",
       "description": "智能客服对话，需要中文理解和快速响应",
-      "estimatedSaving": "40-60%",
-      "candidateModelIds": ["qwen3-coder-free", "qwen36-plus", "deepseek-v3", "claude-haiku", "gpt4o-mini", "gemini-flash", "mistral-small"],
-      "defaultTemplateId": "tpl-customer-service"
+      "estimatedSaving": "40-60%"
     },
     {
       "id": "content-creation",
       "name": "内容创作",
       "icon": "✍️",
       "description": "文章撰写、文案生成，需要高质量输出",
-      "estimatedSaving": "30-50%",
-      "candidateModelIds": ["qwen36-plus", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro"],
-      "defaultTemplateId": "tpl-content-creation"
+      "estimatedSaving": "30-50%"
     },
     {
       "id": "data-analysis",
       "name": "数据分析",
       "icon": "📊",
       "description": "数据处理、可视化、统计分析，需要推理和代码能力",
-      "estimatedSaving": "50-70%",
-      "candidateModelIds": ["qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-sonnet", "gpt4o", "gemini-pro", "llama-70b"],
-      "defaultTemplateId": "tpl-data-analysis"
+      "estimatedSaving": "50-70%"
     },
     {
       "id": "research-assistant",
       "name": "研究助手",
       "icon": "🔍",
       "description": "学术研究、文献分析，需要深度推理和长上下文",
-      "estimatedSaving": "35-55%",
-      "candidateModelIds": ["deepseek-r1", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro", "command-r-plus"],
-      "defaultTemplateId": "tpl-research-assistant"
+      "estimatedSaving": "35-55%"
     },
     {
       "id": "dev-tools",
       "name": "开发工具",
       "icon": "🛠️",
       "description": "代码生成、调试、重构，需要代码理解和生成能力",
-      "estimatedSaving": "45-65%",
-      "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "qwen35-coder-plus", "deepseek-coder", "deepseek-r1", "claude-haiku", "claude-sonnet", "gpt4o-mini", "gpt4o"],
-      "defaultTemplateId": "tpl-dev-tools"
+      "estimatedSaving": "45-65%"
     }
   ],
   "lastUpdated": "2026-04-15"

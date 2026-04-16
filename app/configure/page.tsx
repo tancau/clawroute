@@ -9,8 +9,12 @@ import { ConfigPreview } from '@/components/ConfigPreview';
 import { TemplateSelector } from '@/components/TemplateSelector';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 function ConfigureContent() {
+  const t = useTranslations('configure');
+  const tError = useTranslations('errorBoundary');
   const searchParams = useSearchParams();
   const sceneId = searchParams.get('scene');
   const selectedSceneId = useAppStore((s) => s.selectedSceneId);
@@ -28,9 +32,9 @@ function ConfigureContent() {
   if (!currentScene) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">请先选择一个使用场景</p>
+        <p className="text-muted-foreground">{t('noScene')}</p>
         <Link href="/">
-          <Button variant="outline">返回首页</Button>
+          <Button variant="outline">{t('goHome')}</Button>
         </Link>
       </div>
     );
@@ -43,7 +47,7 @@ function ConfigureContent() {
         <span className="text-2xl">{currentScene.icon}</span>
         <h2 className="text-xl font-semibold">{currentScene.name}</h2>
         <Link href="/" className="text-sm text-muted-foreground hover:underline ml-2">
-          切换场景
+          {t('switchScene')}
         </Link>
       </div>
 
@@ -57,8 +61,12 @@ function ConfigureContent() {
 
         {/* Right: Rule editor + Config preview */}
         <div className="space-y-6">
-          <RuleEditor />
-          <ConfigPreview />
+          <ErrorBoundary errorTitle={tError('title')} errorDescription={tError('description')} reloadLabel={tError('reload')}>
+            <RuleEditor />
+          </ErrorBoundary>
+          <ErrorBoundary errorTitle={tError('title')} errorDescription={tError('description')} reloadLabel={tError('reload')}>
+            <ConfigPreview />
+          </ErrorBoundary>
         </div>
       </div>
     </div>
@@ -66,9 +74,14 @@ function ConfigureContent() {
 }
 
 export default function ConfigurePage() {
+  const t = useTranslations('configure');
+  const tError = useTranslations('errorBoundary');
+
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">加载中...</div>}>
-      <ConfigureContent />
-    </Suspense>
+    <ErrorBoundary errorTitle={tError('title')} errorDescription={tError('description')} reloadLabel={tError('reload')}>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">{t('loading')}</div>}>
+        <ConfigureContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

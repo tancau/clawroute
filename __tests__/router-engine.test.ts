@@ -6,6 +6,7 @@ import {
   reorderRules,
   updateRule,
   createEmptyRule,
+  createRuleIdGenerator,
 } from '@/lib/router-engine';
 import type { RoutingRule } from '@/lib/types';
 
@@ -65,5 +66,19 @@ describe('router-engine', () => {
     const rule = createEmptyRule();
     expect(rule.isDefault).toBe(false);
     expect(rule.condition).not.toBeNull();
+  });
+
+  it('createRuleIdGenerator produces unique IDs with isolated state', () => {
+    const gen1 = createRuleIdGenerator();
+    const id1 = gen1();
+    const id2 = gen1();
+    // Same generator produces different IDs (counter increments)
+    expect(id1).not.toBe(id2);
+    // Different generator instance has independent counter
+    const gen2 = createRuleIdGenerator();
+    const id3 = gen2();
+    // gen2 starts from counter=1, gen1 is at counter=2, so IDs differ
+    expect(id1).not.toBe(id3);
+    expect(id2).not.toBe(id3);
   });
 });

@@ -24,6 +24,7 @@ const config: Config = {
           DEFAULT: "#6366f1",
           foreground: "#ffffff",
         },
+        "secondary-accent": "#8b5cf6",
         accent: {
           DEFAULT: "#92fe9d",
         },
@@ -43,6 +44,10 @@ const config: Config = {
           DEFAULT: "#1a1d29",
           foreground: "#f8fafc",
         },
+        surface: "#0a0a0a",
+        "window-red": "#ff5f56",
+        "window-yellow": "#ffbd2e",
+        "window-green": "#27ca40",
       },
       borderRadius: {
         lg: "var(--radius)",

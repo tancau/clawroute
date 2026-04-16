@@ -6,7 +6,22 @@
   "home": {
     "heading": "What do you use OpenClaw for?",
     "subheading": "Select a scenario, get the optimal config",
-    "savingLabel": "Typically saves"
+    "savingLabel": "Typically saves",
+    "heroTitle": "For OpenClaw Users",
+    "heroSubtitle": "Minimal config effort, maximum cost savings.",
+    "heroDescription": "Select your use case, generate optimized routing config with one click, and save 60-80% on OpenClaw costs instantly.",
+    "startConfig": "Start Configuring",
+    "browseTemplates": "Browse Templates",
+    "testimonialsTitle": "What Users Say",
+    "featuresTitle": "Why Choose ClawRoute",
+    "featureSavingTitle": "Significant Savings",
+    "featureSavingDesc": "Smart routing saves you 60-80% on OpenClaw costs",
+    "featureOOTBTitle": "Ready to Use",
+    "featureOOTBDesc": "Preset scenario templates, no need to manually configure complex YAML",
+    "featureOSTitle": "Fully Open Source",
+    "featureOSDesc": "All code is fully open source, community-driven continuous improvement",
+    "quickStartTitle": "Quick Start",
+    "savingLabelShort": "Saves"
   },
   "scenes": {
     "trading-bot": "Trading Bot",
@@ -20,7 +35,8 @@
     "title": "Configure Routing",
     "switchScene": "Switch Scene",
     "noScene": "Please select a scenario first",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "loading": "Loading..."
   },
   "modelCompare": {
     "title": "Model Comparison",
@@ -43,6 +59,7 @@
     "remove": "Remove",
     "moveUp": "Move Up",
     "moveDown": "Move Down",
+    "selectModel": "Select Model",
     "attribute": {
       "complexity": "Request Complexity",
       "hasCode": "Contains Code",
@@ -65,20 +82,47 @@
     "copy": "Copy",
     "download": "Download",
     "copySuccess": "Copied!",
-    "copyFailed": "Copy failed, please copy manually"
+    "copyFailed": "Copy failed, please copy manually",
+    "copiedToClipboard": "Copied to clipboard",
+    "yamlCopied": "YAML config copied",
+    "copyFailedTitle": "Copy failed",
+    "copyManually": "Please copy manually",
+    "downloadSuccess": "Download successful",
+    "yamlDownloaded": "models.yaml downloaded"
   },
   "template": {
     "title": "Preset Templates",
-    "apply": "Apply",
+    "apply": "Apply Template",
+    "useTemplate": "Use Template",
     "savingRate": "Saving Rate",
-    "applied": "Template applied"
+    "applied": "Template applied",
+    "saving": "Saves",
+    "by": "by"
+  },
+  "templates": {
+    "title": "Template Marketplace",
+    "description": "Browse and search community-contributed routing config templates",
+    "searchPlaceholder": "Search templates...",
+    "all": "All",
+    "noMatch": "No matching templates found",
+    "goHome": "Go Home to Select Scenario"
   },
   "footer": {
     "dataUpdated": "Data updated",
     "openSource": "Open Source"
   },
+  "codeBlock": {
+    "clickToCopy": "Click to copy",
+    "copied": "Copied",
+    "copyFailed": "Copy failed"
+  },
   "language": {
     "zh": "中文",
     "en": "English"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An error occurred while loading the page",
+    "reload": "Reload"
   }
 }

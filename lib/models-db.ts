@@ -1,9 +1,12 @@
 import type { Model, SortMode } from './types';
-import modelsData from '@/data/models.json';
+import modelsDataRaw from '@/data/models.json';
 import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
+import { isModelsData, isSceneModelMapping, validateOrThrow } from './validate-data';
 
-const models: Model[] = modelsData.models as Model[];
-const sceneModelMapping = sceneModelMappingRaw as Record<string, { candidateModelIds: string[]; defaultTemplateId: string }>;
+const modelsData = validateOrThrow(modelsDataRaw, isModelsData, 'models.json');
+const sceneModelMapping = validateOrThrow(sceneModelMappingRaw, isSceneModelMapping, 'scene-model-mapping.json');
+
+const models: Model[] = modelsData.models;
 
 /** Get all models */
 export function getAllModels(): Model[] {
