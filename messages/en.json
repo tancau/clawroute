@@ -152,7 +152,24 @@
     "context": "Context",
     "generateConfig": "Generate & Copy Config",
     "downloadConfig": "Download openclaw.json",
+    "verifyKey": "Verify Key",
+    "verifying": "Verifying...",
+    "keyValid": "✅ Key is valid!",
+    "keyInvalid": "❌ Key is invalid",
     "configCopied": "Config copied to clipboard!"
+  },
+  "configImport": {
+    "title": "Import Existing Config",
+    "description": "Paste your existing openclaw.json to view, edit, or merge",
+    "pastePlaceholder": "Paste your openclaw.json content...",
+    "analyze": "Analyze Config",
+    "invalidJson": "Invalid JSON format",
+    "parseError": "Parse failed",
+    "parsedOk": "Parsed! {providers} providers, {models} models",
+    "prepareConfig": "Prepare Config",
+    "copyConfig": "Copy Config",
+    "downloadConfig": "Download Config",
+    "copied": "Copied!"
   },
   "errorBoundary": {
     "title": "Something went wrong",

@@ -9,6 +9,7 @@ import { ModelSelector } from '@/components/ModelSelector';
 import { ConfigPreview } from '@/components/ConfigPreview';
 import { TemplateSelector } from '@/components/TemplateSelector';
 import { ApiDiscovery } from '@/components/ApiDiscovery';
+import { ConfigImport } from '@/components/ConfigImport';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -54,11 +55,12 @@ function ConfigureContent() {
 
       {/* Main layout: left panel (model compare) + right panel (rules + preview) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left: Model comparison + Templates + API Discovery */}
+        {/* Left: Model comparison + Templates + API Discovery + Import */}
         <div className="space-y-6">
           <ModelComparePanel />
           <TemplateSelector />
           <ApiDiscovery />
+          <ConfigImport />
         </div>
 
         {/* Right: Rule editor + Config preview */}

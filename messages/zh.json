@@ -152,7 +152,24 @@
     "context": "上下文",
     "generateConfig": "生成并复制配置",
     "downloadConfig": "下载 openclaw.json",
+    "verifyKey": "验证 Key",
+    "verifying": "验证中...",
+    "keyValid": "✅ Key 有效！",
+    "keyInvalid": "❌ Key 无效",
     "configCopied": "配置已复制到剪贴板！"
+  },
+  "configImport": {
+    "title": "导入现有配置",
+    "description": "粘贴你现有的 openclaw.json 内容，解析后可查看或修改",
+    "pastePlaceholder": "粘贴你的 openclaw.json 内容...",
+    "analyze": "解析配置",
+    "invalidJson": "无效的 JSON 格式",
+    "parseError": "解析失败",
+    "parsedOk": "解析成功！{providers} 个 Provider，{models} 个模型",
+    "prepareConfig": "准备配置",
+    "copyConfig": "复制配置",
+    "downloadConfig": "下载配置",
+    "copied": "已复制！"
   },
   "errorBoundary": {
     "title": "出了点问题",
