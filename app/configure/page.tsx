@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { useAppStore } from '@/store/use-app-store';
 import { ModelComparePanel } from '@/components/ModelComparePanel';
-import { RuleEditor } from '@/components/RuleEditor';
+import { ModelSelector } from '@/components/ModelSelector';
 import { ConfigPreview } from '@/components/ConfigPreview';
 import { TemplateSelector } from '@/components/TemplateSelector';
 import { Button } from '@/components/ui/button';
@@ -62,7 +62,7 @@ function ConfigureContent() {
         {/* Right: Rule editor + Config preview */}
         <div className="space-y-6">
           <ErrorBoundary errorTitle={tError('title')} errorDescription={tError('description')} reloadLabel={tError('reload')}>
-            <RuleEditor />
+            <ModelSelector />
           </ErrorBoundary>
           <ErrorBoundary errorTitle={tError('title')} errorDescription={tError('description')} reloadLabel={tError('reload')}>
             <ConfigPreview />

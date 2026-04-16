@@ -1,15 +1,13 @@
 import { create } from 'zustand';
-import type { Scene, Model, RoutingRule, Template, SortMode, Locale } from '@/lib/types';
+import type { Scene, Model, ModelSelection, Template, SortMode, Locale } from '@/lib/types';
 import { getAllModels, getModelsByScene, sortModels } from '@/lib/models-db';
-import { createDefaultRules, addRule, removeRule, reorderRules, updateRule, createEmptyRule } from '@/lib/router-engine';
 import scenesDataRaw from '@/data/scenes.json';
 import templatesDataRaw from '@/data/templates.json';
 import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
-import { isScenesData, isTemplatesData, isSceneModelMapping, validateOrThrow } from '@/lib/validate-data';
 
-const scenesData = validateOrThrow(scenesDataRaw, isScenesData, 'scenes.json');
-const templatesData = validateOrThrow(templatesDataRaw, isTemplatesData, 'templates.json');
-const sceneModelMapping = validateOrThrow(sceneModelMappingRaw, isSceneModelMapping, 'scene-model-mapping.json');
+const scenesData = scenesDataRaw as { scenes: Scene[]; lastUpdated: string };
+const templatesData = templatesDataRaw as { templates: Template[] };
+const sceneModelMapping = sceneModelMappingRaw as Record<string, { candidateModelIds: string[]; defaultTemplateId: string }>;
 
 interface AppStore {
   // Scene slice
@@ -24,13 +22,14 @@ interface AppStore {
   getModelsForSelectedScene: () => Model[];
   getSortedModelsForSelectedScene: () => Model[];
 
-  // Rule slice
-  rules: RoutingRule[];
-  addNewRule: () => void;
-  removeRuleById: (ruleId: string) => void;
-  reorderRuleList: (orderedIds: string[]) => void;
-  updateRuleById: (ruleId: string, partial: Partial<RoutingRule>) => void;
-  loadRulesFromTemplate: (templateId: string) => void;
+  // Model selection slice (replaces old routing rules)
+  selection: ModelSelection;
+  setPrimaryModel: (modelId: string) => void;
+  setFallbackModels: (modelIds: string[]) => void;
+  addFallbackModel: (modelId: string) => void;
+  removeFallbackModel: (modelId: string) => void;
+  reorderFallbacks: (orderedIds: string[]) => void;
+  loadSelectionFromTemplate: (templateId: string) => void;
   resetToDefault: () => void;
 
   // Template slice
@@ -52,20 +51,24 @@ export const useAppStore = create<AppStore>((set, get) => ({
   selectScene: (sceneId: string) => {
     const mapping = sceneModelMapping[sceneId];
     const templateId = mapping?.defaultTemplateId;
-    const rules = templateId
-      ? createDefaultRules(sceneId, templateId)
-      : [{ id: 'default', condition: null, targetModelId: '', isDefault: true }];
-    set({ selectedSceneId: sceneId, rules });
+    let selection: ModelSelection = { primaryModelId: '', fallbackModelIds: [] };
+    if (templateId) {
+      const template = templatesData.templates.find(t => t.id === templateId);
+      if (template) {
+        selection = { ...template.selection };
+      }
+    }
+    set({ selectedSceneId: sceneId, selection });
   },
 
   // Model slice
   allModels: getAllModels(),
   sortMode: 'costFirst' as SortMode,
-  setSortMode: (mode: SortMode) => set({ sortMode: mode }),
+  setSortMode: (mode) => set({ sortMode: mode }),
   getModelsForSelectedScene: () => {
     const { selectedSceneId } = get();
     if (!selectedSceneId) return [];
-    return getModelsByScene(selectedSceneId);
+    return getModelsByScene(selectedSceneId, sceneModelMapping);
   },
   getSortedModelsForSelectedScene: () => {
     const { sortMode } = get();
@@ -73,36 +76,45 @@ export const useAppStore = create<AppStore>((set, get) => ({
     return sortModels(models, sortMode);
   },
 
-  // Rule slice
-  rules: [{ id: 'default', condition: null, targetModelId: '', isDefault: true }],
-  addNewRule: () => {
-    const newRule = createEmptyRule();
-    set({ rules: addRule(get().rules, newRule) });
+  // Model selection slice
+  selection: { primaryModelId: '', fallbackModelIds: [] },
+  setPrimaryModel: (modelId: string) => {
+    set({ selection: { ...get().selection, primaryModelId: modelId } });
   },
-  removeRuleById: (ruleId: string) => {
-    set({ rules: removeRule(get().rules, ruleId) });
+  setFallbackModels: (modelIds: string[]) => {
+    set({ selection: { ...get().selection, fallbackModelIds: modelIds } });
   },
-  reorderRuleList: (orderedIds: string[]) => {
-    set({ rules: reorderRules(get().rules, orderedIds) });
+  addFallbackModel: (modelId: string) => {
+    const { fallbackModelIds } = get().selection;
+    if (!fallbackModelIds.includes(modelId)) {
+      set({ selection: { ...get().selection, fallbackModelIds: [...fallbackModelIds, modelId] } });
+    }
   },
-  updateRuleById: (ruleId: string, partial: Partial<RoutingRule>) => {
-    set({ rules: updateRule(get().rules, ruleId, partial) });
+  removeFallbackModel: (modelId: string) => {
+    set({ selection: { ...get().selection, fallbackModelIds: get().selection.fallbackModelIds.filter(id => id !== modelId) } });
   },
-  loadRulesFromTemplate: (templateId: string) => {
-    const { selectedSceneId } = get();
-    if (!selectedSceneId) return;
-    const rules = createDefaultRules(selectedSceneId, templateId);
-    set({ rules });
+  reorderFallbacks: (orderedIds: string[]) => {
+    set({ selection: { ...get().selection, fallbackModelIds: orderedIds } });
+  },
+  loadSelectionFromTemplate: (templateId: string) => {
+    const template = templatesData.templates.find(t => t.id === templateId);
+    if (template) {
+      set({ selection: { ...template.selection } });
+    }
   },
   resetToDefault: () => {
     const { selectedSceneId } = get();
     if (!selectedSceneId) return;
     const mapping = sceneModelMapping[selectedSceneId];
     const templateId = mapping?.defaultTemplateId;
-    const rules = templateId
-      ? createDefaultRules(selectedSceneId, templateId)
-      : [{ id: 'default', condition: null, targetModelId: '', isDefault: true }];
-    set({ rules });
+    if (templateId) {
+      const template = templatesData.templates.find(t => t.id === templateId);
+      if (template) {
+        set({ selection: { ...template.selection } });
+        return;
+      }
+    }
+    set({ selection: { primaryModelId: '', fallbackModelIds: [] } });
   },
 
   // Template slice
@@ -113,12 +125,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
     return templates.filter((t) => t.sceneId === selectedSceneId);
   },
   applyTemplate: (templateId: string) => {
-    get().loadRulesFromTemplate(templateId);
+    get().loadSelectionFromTemplate(templateId);
   },
 
   // UI slice
   locale: 'zh' as Locale,
-  setLocale: (locale: Locale) => set({ locale }),
+  setLocale: (locale) => set({ locale }),
   copySuccess: false,
-  setCopySuccess: (success: boolean) => set({ copySuccess: success }),
+  setCopySuccess: (success) => set({ copySuccess: success }),
 }));

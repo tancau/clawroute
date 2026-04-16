@@ -1,19 +1,14 @@
 import type { Model, SortMode } from './types';
 import modelsDataRaw from '@/data/models.json';
-import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
-import { isModelsData, isSceneModelMapping, validateOrThrow } from './validate-data';
 
-const modelsData = validateOrThrow(modelsDataRaw, isModelsData, 'models.json');
-const sceneModelMapping = validateOrThrow(sceneModelMappingRaw, isSceneModelMapping, 'scene-model-mapping.json');
-
-const models: Model[] = modelsData.models;
+const models: Model[] = modelsDataRaw as Model[];
 
 /** Get all models */
 export function getAllModels(): Model[] {
   return models;
 }
 
-/** Get a single model by ID */
+/** Get a single model by ID (provider/model format) */
 export function getModelById(id: string): Model | undefined {
   return models.find((m) => m.id === id);
 }
@@ -26,7 +21,7 @@ export function getModelsByCapabilities(tags: string[]): Model[] {
 }
 
 /** Get candidate models for a scene */
-export function getModelsByScene(sceneId: string): Model[] {
+export function getModelsByScene(sceneId: string, sceneModelMapping: Record<string, { candidateModelIds: string[] }>): Model[] {
   const mapping = sceneModelMapping[sceneId];
   if (!mapping) return [];
   return mapping.candidateModelIds

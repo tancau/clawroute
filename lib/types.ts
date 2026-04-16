@@ -1,10 +1,6 @@
 // ===== Enums =====
 export type SortMode = 'costFirst' | 'qualityFirst' | 'speedFirst';
 
-export type RequestAttribute = 'complexity' | 'hasCode' | 'needsReasoning' | 'inputTokenRange';
-
-export type ComplexityLevel = 'simple' | 'medium' | 'complex';
-
 export type Locale = 'zh' | 'en';
 
 // ===== Core Data Models =====
@@ -17,7 +13,7 @@ export interface Scene {
 }
 
 export interface Model {
-  id: string;
+  id: string;           // e.g. "qwen/qwen3-coder"
   name: string;
   provider: string;
   costPer1KToken: number;
@@ -25,18 +21,17 @@ export interface Model {
   qualityRating: 1 | 2 | 3;
   capabilityTags: string[];
   recommendationReason?: string;
+  // OpenClaw format fields
+  input?: string[];
+  contextWindow?: number;
+  maxTokens?: number;
+  api?: string;
 }
 
-export interface RoutingRule {
-  id: string;
-  condition: RuleCondition | null; // null means default rule
-  targetModelId: string;
-  isDefault: boolean;
-}
-
-export interface RuleCondition {
-  attribute: RequestAttribute;
-  matchValue: string;
+/** Model selection for OpenClaw: primary + fallbacks */
+export interface ModelSelection {
+  primaryModelId: string;        // provider/model format
+  fallbackModelIds: string[];    // ordered fallback list, provider/model format
 }
 
 export interface Template {
@@ -44,20 +39,9 @@ export interface Template {
   name: string;
   description: string;
   sceneId: string;
-  rules: RoutingRule[];
+  selection: ModelSelection;     // replaces old "rules"
   estimatedSavingRate: number;
   author: string;
-}
-
-// ===== YAML Generation Intermediate Types =====
-export interface YamlModelEntry {
-  name: string;
-  provider: string;
-  model: string;
-  routing: {
-    when?: Array<Record<string, string | boolean>>;
-    use: string;
-  };
 }
 
 // ===== Data File Types =====
@@ -80,5 +64,43 @@ export interface SceneModelMapping {
   [sceneId: string]: {
     candidateModelIds: string[];
     defaultTemplateId: string;
+  };
+}
+
+// ===== Config Generation Types =====
+export interface OpenClawModelEntry {
+  id: string;
+  name: string;
+  input: string[];
+  contextWindow?: number;
+  maxTokens?: number;
+  cost?: {
+    input: number;
+    output: number;
+    cacheRead: number;
+    cacheWrite: number;
+  };
+}
+
+export interface OpenClawProviderEntry {
+  baseUrl: string;
+  apiKey: string;
+  api: string;
+  models: OpenClawModelEntry[];
+}
+
+export interface OpenClawConfig {
+  models: {
+    mode: string;
+    providers: Record<string, OpenClawProviderEntry>;
+  };
+  agents: {
+    defaults: {
+      model: {
+        primary: string;
+        fallbacks: string[];
+      };
+      models: Record<string, { alias: string }>;
+    };
   };
 }

@@ -60,7 +60,9 @@ function isTemplate(data: unknown): data is import('./types').Template {
     typeof obj.name === 'string' &&
     typeof obj.description === 'string' &&
     typeof obj.sceneId === 'string' &&
-    Array.isArray(obj.rules) &&
+    typeof obj.selection === 'object' && obj.selection !== null &&
+    typeof (obj.selection as Record<string, unknown>).primaryModelId === 'string' &&
+    Array.isArray((obj.selection as Record<string, unknown>).fallbackModelIds) &&
     typeof obj.estimatedSavingRate === 'number' &&
     typeof obj.author === 'string'
   );

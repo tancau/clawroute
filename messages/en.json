@@ -77,6 +77,15 @@
       "long": "Long (>10K)"
     }
   },
+  "modelSelector": {
+    "title": "Model Selection",
+    "primaryLabel": "Primary Model",
+    "selectPrimary": "Select primary model",
+    "primaryHint": "This is the default model. Prefer low cost and fast speed.",
+    "fallbackLabel": "Fallback Models",
+    "addFallback": "Add fallback model",
+    "fallbackHint": "Used when the primary model is unavailable, ordered by priority"
+  },
   "configPreview": {
     "title": "Config Preview",
     "copy": "Copy",
@@ -84,11 +93,11 @@
     "copySuccess": "Copied!",
     "copyFailed": "Copy failed, please copy manually",
     "copiedToClipboard": "Copied to clipboard",
-    "yamlCopied": "YAML config copied",
+    "jsonCopied": "openclaw.json config copied",
     "copyFailedTitle": "Copy failed",
     "copyManually": "Please copy manually",
     "downloadSuccess": "Download successful",
-    "yamlDownloaded": "models.yaml downloaded"
+    "jsonDownloaded": "openclaw.json downloaded"
   },
   "template": {
     "title": "Preset Templates",

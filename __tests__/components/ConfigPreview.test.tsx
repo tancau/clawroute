@@ -4,26 +4,24 @@ import userEvent from '@testing-library/user-event';
 import { ConfigPreview } from '@/components/ConfigPreview';
 
 const mockCopyToClipboard = vi.fn().mockResolvedValue(true);
-const mockDownloadYaml = vi.fn();
+const mockDownloadJson = vi.fn();
 
 vi.mock('@/lib/export-utils', () => ({
   copyToClipboard: () => mockCopyToClipboard(),
-  downloadYaml: () => mockDownloadYaml(),
+  downloadJson: () => mockDownloadJson(),
 }));
 
-vi.mock('@/lib/yaml-generator', () => ({
-  generateYaml: () => 'models:\n  - name: test\n    provider: test\n    model: test\n    routing:\n      use: test',
+vi.mock('@/lib/config-generator', () => ({
+  generateOpenClawConfig: () => '{\n  "models": {},\n  "agents": {}\n}',
 }));
 
 vi.mock('@/store/use-app-store', () => ({
   useAppStore: vi.fn((selector) => {
     const store = {
-      rules: [
-        { id: 'rule-1', condition: null, targetModelId: 'model-1', isDefault: true },
-      ],
-      allModels: [
-        { id: 'model-1', name: 'Test Model', provider: 'Test', costPer1KToken: 0.001, speedRating: 2, qualityRating: 2, capabilityTags: [] },
-      ],
+      selection: {
+        primaryModelId: 'qwen/qwen3-coder',
+        fallbackModelIds: ['deepseek/deepseek-v3'],
+      },
     };
     return selector(store);
   }),
@@ -40,11 +38,11 @@ vi.mock('next-intl', () => ({
       'copy': '复制',
       'download': '下载',
       'copiedToClipboard': '已复制到剪贴板',
-      'yamlCopied': 'YAML 配置已复制',
+      'jsonCopied': 'openclaw.json 配置已复制',
       'copyFailedTitle': '复制失败',
       'copyManually': '请手动复制',
       'downloadSuccess': '下载成功',
-      'yamlDownloaded': 'models.yaml 已下载',
+      'jsonDownloaded': 'openclaw.json 已下载',
     };
     return translations[key] ?? key;
   },
@@ -77,11 +75,11 @@ describe('ConfigPreview', () => {
     expect(mockCopyToClipboard).toHaveBeenCalled();
   });
 
-  it('clicking download button calls downloadYaml', async () => {
+  it('clicking download button calls downloadJson', async () => {
     const user = userEvent.setup();
     render(<ConfigPreview />);
     const downloadBtn = screen.getByText('下载');
     await user.click(downloadBtn);
-    expect(mockDownloadYaml).toHaveBeenCalled();
+    expect(mockDownloadJson).toHaveBeenCalled();
   });
 });

@@ -1,26 +1,26 @@
 {
   "trading-bot": {
-    "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-haiku", "gpt4o-mini", "gemini-flash"],
+    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3-coder", "deepseek/deepseek-v3", "deepseek/deepseek-r1", "anthropic/claude-3.5-haiku", "openai/gpt-4o-mini", "google/gemini-2.0-flash"],
     "defaultTemplateId": "tpl-trading-bot"
   },
   "customer-service": {
-    "candidateModelIds": ["qwen3-coder-free", "qwen36-plus", "deepseek-v3", "claude-haiku", "gpt4o-mini", "gemini-flash", "mistral-small"],
+    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3.6-plus", "deepseek/deepseek-v3", "anthropic/claude-3.5-haiku", "openai/gpt-4o-mini", "google/gemini-2.0-flash", "mistral/mistral-small"],
     "defaultTemplateId": "tpl-customer-service"
   },
   "content-creation": {
-    "candidateModelIds": ["qwen36-plus", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro"],
+    "candidateModelIds": ["qwen/qwen3.6-plus", "qwen/qwen3.6-max", "anthropic/claude-3.5-sonnet", "anthropic/claude-3-opus", "openai/gpt-4o", "google/gemini-1.5-pro"],
     "defaultTemplateId": "tpl-content-creation"
   },
   "data-analysis": {
-    "candidateModelIds": ["qwen3-coder", "deepseek-v3", "deepseek-r1", "claude-sonnet", "gpt4o", "gemini-pro", "llama-70b"],
+    "candidateModelIds": ["qwen/qwen3-coder", "deepseek/deepseek-v3", "deepseek/deepseek-r1", "anthropic/claude-3.5-sonnet", "openai/gpt-4o", "google/gemini-1.5-pro", "meta/llama-3.1-70b"],
     "defaultTemplateId": "tpl-data-analysis"
   },
   "research-assistant": {
-    "candidateModelIds": ["deepseek-r1", "qwen36-max", "claude-sonnet", "claude-opus", "gpt4o", "gemini-pro", "command-r-plus"],
+    "candidateModelIds": ["deepseek/deepseek-r1", "qwen/qwen3.6-max", "anthropic/claude-3.5-sonnet", "anthropic/claude-3-opus", "openai/gpt-4o", "google/gemini-1.5-pro", "cohere/command-r-plus"],
     "defaultTemplateId": "tpl-research-assistant"
   },
   "dev-tools": {
-    "candidateModelIds": ["qwen3-coder-free", "qwen3-coder", "qwen35-coder-plus", "deepseek-coder", "deepseek-r1", "claude-haiku", "claude-sonnet", "gpt4o-mini", "gpt4o"],
+    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3-coder", "qwen/qwen3.5-coder-plus", "deepseek/deepseek-coder", "deepseek/deepseek-r1", "anthropic/claude-3.5-haiku", "anthropic/claude-3.5-sonnet", "openai/gpt-4o-mini", "openai/gpt-4o"],
     "defaultTemplateId": "tpl-dev-tools"
   }
 }

@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
-import { generateYaml } from '@/lib/yaml-generator';
-import { copyToClipboard, downloadYaml } from '@/lib/export-utils';
+import { generateOpenClawConfig } from '@/lib/config-generator';
+import { copyToClipboard, downloadJson } from '@/lib/export-utils';
 import { Button } from '@/components/ui/button';
 import { Copy, Download } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
@@ -12,25 +12,27 @@ import { useTranslations } from 'next-intl';
 
 export function ConfigPreview() {
   const t = useTranslations('configPreview');
-  const rules = useAppStore((s) => s.rules);
-  const allModels = useAppStore((s) => s.allModels);
+  const selection = useAppStore((s) => s.selection);
 
-  const yamlContent = useMemo(() => {
-    return generateYaml(rules, allModels);
-  }, [rules, allModels]);
+  const jsonContent = useMemo(() => {
+    if (!selection.primaryModelId) {
+      return '{\n  // Select a primary model to generate config\n}';
+    }
+    return generateOpenClawConfig(selection);
+  }, [selection]);
 
   const handleCopy = async () => {
-    const success = await copyToClipboard(yamlContent);
+    const success = await copyToClipboard(jsonContent);
     if (success) {
-      toast({ title: t('copiedToClipboard'), description: t('yamlCopied') });
+      toast({ title: t('copiedToClipboard'), description: t('jsonCopied') });
     } else {
       toast({ title: t('copyFailedTitle'), description: t('copyManually'), variant: 'destructive' });
     }
   };
 
   const handleDownload = () => {
-    downloadYaml(yamlContent);
-    toast({ title: t('downloadSuccess'), description: t('yamlDownloaded') });
+    downloadJson(jsonContent);
+    toast({ title: t('downloadSuccess'), description: t('jsonDownloaded') });
   };
 
   return (
@@ -50,7 +52,7 @@ export function ConfigPreview() {
       </div>
 
       <div className="border rounded-md overflow-auto max-h-[400px]">
-        <Highlight theme={themes.nightOwlLight} code={yamlContent} language="yaml">
+        <Highlight theme={themes.nightOwlLight} code={jsonContent} language="json">
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
             <pre className={`${className} text-xs p-4`} style={style}>
               {tokens.map((line, i) => (

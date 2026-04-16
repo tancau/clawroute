@@ -77,6 +77,15 @@
       "long": "长（>10K）"
     }
   },
+  "modelSelector": {
+    "title": "模型选择",
+    "primaryLabel": "主力模型 (Primary)",
+    "selectPrimary": "选择主力模型",
+    "primaryHint": "这是默认使用的模型，优先选择成本低、速度快的",
+    "fallbackLabel": "备用模型 (Fallbacks)",
+    "addFallback": "添加备用模型",
+    "fallbackHint": "当主力模型不可用时的备选方案，按优先级排序"
+  },
   "configPreview": {
     "title": "配置预览",
     "copy": "复制",
@@ -84,11 +93,11 @@
     "copySuccess": "复制成功",
     "copyFailed": "复制失败，请手动复制",
     "copiedToClipboard": "已复制到剪贴板",
-    "yamlCopied": "YAML 配置已复制",
+    "jsonCopied": "openclaw.json 配置已复制",
     "copyFailedTitle": "复制失败",
     "copyManually": "请手动复制",
     "downloadSuccess": "下载成功",
-    "yamlDownloaded": "models.yaml 已下载"
+    "jsonDownloaded": "openclaw.json 已下载"
   },
   "template": {
     "title": "预设模板",

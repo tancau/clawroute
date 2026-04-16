@@ -1,16 +1,14 @@
 /** Copy content to clipboard, returns whether successful */
 export async function copyToClipboard(content: string): Promise<boolean> {
-  // Try modern Clipboard API first
   if (navigator?.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(content);
       return true;
     } catch {
-      // Fall through to legacy method
+      // Fall through
     }
   }
 
-  // Fallback to execCommand
   try {
     const textArea = document.createElement('textarea');
     textArea.value = content;
@@ -28,9 +26,9 @@ export async function copyToClipboard(content: string): Promise<boolean> {
   }
 }
 
-/** Trigger YAML file download */
-export function downloadYaml(content: string, filename: string = 'models.yaml'): void {
-  const blob = new Blob([content], { type: 'text/yaml;charset=utf-8' });
+/** Trigger JSON file download */
+export function downloadJson(content: string, filename: string = 'openclaw.json'): void {
+  const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
