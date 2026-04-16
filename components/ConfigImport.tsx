@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Upload, Merge, AlertCircle, CheckCircle2, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Heart, AlertCircle, CheckCircle2, Trash2, ChevronDown, ChevronRight, AlertTriangle, Info } from 'lucide-react';
+import { diagnoseConfig, HealthIssue, HealthReport } from '@/lib/config-doctor';
 
 interface ParsedProvider {
   id: string;
@@ -19,32 +20,23 @@ interface ParsedProvider {
   }>;
 }
 
-interface ParsedConfig {
-  providers: ParsedProvider[];
-  primary?: string;
-  fallbacks?: string[];
-  allowlist: Record<string, { alias?: string }>;
-  rawJson: string;
-}
-
 export function ConfigImport() {
   const t = useTranslations('configImport');
   const [pasteText, setPasteText] = useState('');
-  const [parsed, setParsed] = useState<ParsedConfig | null>(null);
+  const [parsed, setParsed] = useState<ParsedProvider[] | null>(null);
+  const [report, setReport] = useState<HealthReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set());
-  const [mergedJson, setMergedJson] = useState<string | null>(null);
 
   const parseConfig = () => {
     setError(null);
     setParsed(null);
-    setMergedJson(null);
+    setReport(null);
 
     const text = pasteText.trim();
     if (!text) return;
 
     try {
-      // Try JSON first
       let data: Record<string, unknown>;
       try {
         data = JSON.parse(text);
@@ -53,6 +45,11 @@ export function ConfigImport() {
         return;
       }
 
+      // Run health check
+      const healthReport = diagnoseConfig(data);
+      setReport(healthReport);
+
+      // Parse providers for display
       const providers: ParsedProvider[] = [];
       const modelsSection = data.models as Record<string, unknown> | undefined;
 
@@ -75,21 +72,7 @@ export function ConfigImport() {
         }
       }
 
-      // Extract agents.defaults
-      const agents = data.agents as Record<string, unknown> | undefined;
-      const defaults = agents?.defaults as Record<string, unknown> | undefined;
-      const modelCfg = defaults?.model as Record<string, unknown> | undefined;
-      const allowlist = (defaults?.models as Record<string, { alias?: string }>) || {};
-
-      setParsed({
-        providers,
-        primary: modelCfg?.primary as string | undefined,
-        fallbacks: modelCfg?.fallbacks as string[] | undefined,
-        allowlist,
-        rawJson: text,
-      });
-
-      // Auto-expand first provider
+      setParsed(providers);
       if (providers.length > 0) {
         setExpandedProviders(new Set([providers[0]!.id]));
       }
@@ -107,30 +90,38 @@ export function ConfigImport() {
     });
   };
 
-  const handleMergeDownload = () => {
-    if (!parsed) return;
-
-    // The parsed config IS the valid OpenClaw config
-    // Just clean it up and return
-    const config = JSON.parse(parsed.rawJson);
-    setMergedJson(JSON.stringify(config, null, 2));
-  };
-
-  const copyMerged = async () => {
-    if (!mergedJson) return;
-    await navigator.clipboard.writeText(mergedJson);
+  const copyFixed = async () => {
+    await navigator.clipboard.writeText(pasteText);
     alert(t('copied'));
   };
 
-  const downloadMerged = () => {
-    if (!mergedJson) return;
-    const blob = new Blob([mergedJson], { type: 'application/json' });
+  const downloadFixed = () => {
+    const blob = new Blob([pasteText], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = 'openclaw.json';
-    a.click();
+    a.href = url; a.download = 'openclaw.json'; a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const getSeverityIcon = (severity: HealthIssue['severity']) => {
+    switch (severity) {
+      case 'error': return <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />;
+      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-500 shrink-0" />;
+      case 'info': return <Info className="h-4 w-4 text-blue-400 shrink-0" />;
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-500';
+    if (score >= 50) return 'text-yellow-500';
+    return 'text-red-500';
+  };
+
+  const getScoreLabel = (score: number) => {
+    if (score >= 90) return t('scoreGreat');
+    if (score >= 70) return t('scoreGood');
+    if (score >= 50) return t('scoreFair');
+    return t('scorePoor');
   };
 
   return (
@@ -138,7 +129,6 @@ export function ConfigImport() {
       <h3 className="text-lg font-semibold">{t('title')}</h3>
       <p className="text-sm text-muted-foreground">{t('description')}</p>
 
-      {/* Paste area */}
       <div className="space-y-3">
         <textarea
           className="w-full rounded-md border bg-background px-3 py-2 text-xs font-mono h-32 resize-y"
@@ -147,12 +137,11 @@ export function ConfigImport() {
           onChange={(e) => setPasteText(e.target.value)}
         />
         <Button onClick={parseConfig} disabled={!pasteText.trim()} className="w-full">
-          <Upload className="h-4 w-4 mr-2" />
+          <Heart className="h-4 w-4 mr-2" />
           {t('analyze')}
         </Button>
       </div>
 
-      {/* Error */}
       {error && (
         <div className="flex items-start gap-2 p-3 rounded-md bg-destructive/10 text-destructive text-sm">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
@@ -160,81 +149,96 @@ export function ConfigImport() {
         </div>
       )}
 
-      {/* Parsed result */}
-      {parsed && (
+      {/* Health Report */}
+      {report && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-green-600">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{t('parsedOk', { providers: parsed.providers.length, models: parsed.providers.reduce((s, p) => s + p.models.length, 0) })}</span>
+          {/* Score */}
+          <div className="flex items-center gap-3 p-4 rounded-lg border">
+            <div className={`text-3xl font-bold ${getScoreColor(report.score)}`}>
+              {report.score}
+            </div>
+            <div>
+              <div className="font-medium">{getScoreLabel(report.score)}</div>
+              <div className="text-xs text-muted-foreground">
+                {report.stats.providers} providers · {report.stats.models} models · {report.stats.fallbackCount} fallbacks
+              </div>
+            </div>
           </div>
 
-          {/* Model selection info */}
-          {(parsed.primary || parsed.fallbacks) && (
-            <div className="p-3 rounded-md bg-muted/50 text-xs space-y-1">
-              {parsed.primary && <div><span className="font-medium">Primary:</span> {parsed.primary}</div>}
-              {parsed.fallbacks && parsed.fallbacks.length > 0 && <div><span className="font-medium">Fallbacks:</span> {parsed.fallbacks.join(', ')}</div>}
-              <div><span className="font-medium">Allowlist:</span> {Object.keys(parsed.allowlist).length} models</div>
+          {/* Issues */}
+          {report.issues.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">{t('issuesFound', { count: report.issues.length })}</h4>
+              {report.issues.map((issue, i) => (
+                <div key={i} className={`flex items-start gap-2 p-2.5 rounded-md text-xs ${
+                  issue.severity === 'error' ? 'bg-red-500/10 text-red-700' :
+                  issue.severity === 'warning' ? 'bg-yellow-500/10 text-yellow-700' :
+                  'bg-blue-500/10 text-blue-600'
+                }`}>
+                  {getSeverityIcon(issue.severity)}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium">{issue.message}</div>
+                    <div className="opacity-70 mt-0.5">{issue.detail}</div>
+                    {issue.fix && <div className="opacity-60 mt-0.5 italic">💡 {issue.fix}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {report.issues.length === 0 && (
+            <div className="flex items-center gap-2 p-3 rounded-md bg-green-500/10 text-green-700 text-sm">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span>{t('allGood')}</span>
             </div>
           )}
 
           {/* Provider list */}
-          <div className="space-y-1">
-            {parsed.providers.map(provider => (
-              <div key={provider.id} className="border rounded-md">
-                <button
-                  className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted/50"
-                  onClick={() => toggleProvider(provider.id)}
-                >
-                  <span className="font-medium">{provider.id}</span>
-                  <span className="text-muted-foreground text-xs">
-                    {provider.models.length} models
-                    {provider.apiKey ? ' 🔑' : ' ⚠️ no key'}
-                  </span>
-                  {expandedProviders.has(provider.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                </button>
-                {expandedProviders.has(provider.id) && (
-                  <div className="border-t px-2 pb-2">
-                    <div className="text-xs text-muted-foreground p-1">{provider.baseUrl}</div>
-                    {provider.models.map(m => (
-                      <div key={m.id} className="flex items-center justify-between text-xs px-1 py-0.5 hover:bg-muted/30 rounded">
-                        <span className="font-mono">{provider.id}/{m.id}</span>
-                        <span className="text-muted-foreground">
-                          {m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}K` : ''}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          {parsed && parsed.length > 0 && (
+            <div className="space-y-1">
+              <h4 className="text-sm font-medium">{t('providers')}</h4>
+              {parsed.map(provider => (
+                <div key={provider.id} className="border rounded-md">
+                  <button
+                    className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted/50"
+                    onClick={() => toggleProvider(provider.id)}
+                  >
+                    <span className="font-medium">{provider.id}</span>
+                    <span className="text-muted-foreground text-xs">
+                      {provider.models.length} models
+                      {provider.apiKey ? ' 🔑' : ' ⚠️ no key'}
+                    </span>
+                    {expandedProviders.has(provider.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </button>
+                  {expandedProviders.has(provider.id) && (
+                    <div className="border-t px-2 pb-2">
+                      <div className="text-xs text-muted-foreground p-1">{provider.baseUrl}</div>
+                      {provider.models.map(m => (
+                        <div key={m.id} className="flex items-center justify-between text-xs px-1 py-0.5 hover:bg-muted/30 rounded">
+                          <span className="font-mono">{provider.id}/{m.id}</span>
+                          <span className="text-muted-foreground">
+                            {m.contextWindow ? `${(m.contextWindow / 1000).toFixed(0)}K` : ''}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
 
-          {/* Action buttons */}
+          {/* Actions */}
           <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={handleMergeDownload}>
-              <Merge className="h-4 w-4 mr-2" />
-              {t('prepareConfig')}
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => { setParsed(null); setPasteText(''); setMergedJson(null); }}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Merged result */}
-      {mergedJson && (
-        <div className="space-y-3">
-          <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={copyMerged}>
+            <Button variant="outline" className="flex-1" onClick={copyFixed}>
               📋 {t('copyConfig')}
             </Button>
-            <Button variant="outline" className="flex-1" onClick={downloadMerged}>
+            <Button variant="outline" className="flex-1" onClick={downloadFixed}>
               💾 {t('downloadConfig')}
             </Button>
-          </div>
-          <div className="border rounded-md max-h-[200px] overflow-auto">
-            <pre className="text-xs p-3 font-mono">{mergedJson}</pre>
+            <Button variant="outline" size="icon" onClick={() => { setParsed(null); setPasteText(''); setReport(null); }}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       )}
