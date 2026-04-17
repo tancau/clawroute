@@ -47,9 +47,9 @@ describe('User API', () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as { user: { email: string }; token: string };
+    const data = await res.json() as { user: { email: string }; accessToken: string };
     expect(data.user.email).toBe('apitest@example.com');
-    expect(data.token).toBeDefined();
+    expect(data.accessToken).toBeDefined();
   });
 
   it('should reject wrong password', async () => {

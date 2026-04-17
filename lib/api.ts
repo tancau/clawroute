@@ -124,25 +124,46 @@ class ApiClient {
 
   // ===== Auth API =====
   async register(email: string, password: string, name?: string) {
-    return this.request<{ user: User; token: string }>('/v1/users/register', {
+    return this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/v1/users/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, name }),
     });
   }
 
   async login(email: string, password: string) {
-    const result = await this.request<{ user: User; token: string }>('/v1/users/login', {
+    const result = await this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/v1/users/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    if (result.data?.token) {
-      this.setToken(result.data.token);
+    if (result.data?.accessToken) {
+      this.setToken(result.data.accessToken);
     }
     return result;
   }
 
   logout() {
     this.setToken(null);
+  }
+
+  async refreshToken(refreshToken: string) {
+    return this.request<{ accessToken: string; refreshToken: string; expiresIn: number }>('/v1/auth/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ refreshToken }),
+    });
+  }
+
+  async requestPasswordReset(email: string) {
+    return this.request<{ success: boolean; resetToken?: string; message: string }>('/v1/auth/reset-password-request', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(resetToken: string, newPassword: string) {
+    return this.request<{ success: boolean; message: string }>('/v1/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ resetToken, newPassword }),
+    });
   }
 
   async getUser(userId: string) {

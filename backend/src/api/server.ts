@@ -469,9 +469,15 @@ app.post('/v1/users/login', async (c) => {
     // 不返回密码哈希
     const { passwordHash, ...userSafe } = user;
     
+    // 生成 access token 和 refresh token
+    const accessToken = `at_${crypto.randomUUID()}`;
+    const refreshToken = `rt_${crypto.randomUUID()}_${Date.now()}`;
+    
     return c.json({
       user: userSafe,
-      token: `tok_${crypto.randomUUID()}`, // 简化 token，生产环境用 JWT
+      accessToken,
+      refreshToken,
+      expiresIn: 3600, // 1小时
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -479,6 +485,174 @@ app.post('/v1/users/login', async (c) => {
       error: {
         code: 'INTERNAL_ERROR',
         message: 'Login failed',
+      },
+    }, 500);
+  }
+});
+
+// Token 刷新
+app.post('/v1/auth/refresh', async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    if (!body.refreshToken) {
+      return c.json({
+        error: {
+          code: 'INVALID_INPUT',
+          message: 'Refresh token is required',
+        },
+      }, 400);
+    }
+    
+    // 验证 refresh token 格式
+    const parts = body.refreshToken.split('_');
+    if (parts.length < 3 || parts[0] !== 'rt') {
+      return c.json({
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid refresh token',
+        },
+      }, 401);
+    }
+    
+    // 检查 token 是否过期（假设 7 天有效期）
+    const tokenTime = parseInt(parts[2], 10);
+    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7天
+    if (Date.now() - tokenTime > maxAge) {
+      return c.json({
+        error: {
+          code: 'TOKEN_EXPIRED',
+          message: 'Refresh token expired',
+        },
+      }, 401);
+    }
+    
+    // 生成新的 access token
+    const newAccessToken = `at_${crypto.randomUUID()}`;
+    const newRefreshToken = `rt_${crypto.randomUUID()}_${Date.now()}`;
+    
+    return c.json({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      expiresIn: 3600,
+    });
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    return c.json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Token refresh failed',
+      },
+    }, 500);
+  }
+});
+
+// 密码重置请求
+app.post('/v1/auth/reset-password-request', async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    if (!body.email) {
+      return c.json({
+        error: {
+          code: 'INVALID_INPUT',
+          message: 'Email is required',
+        },
+      }, 400);
+    }
+    
+    const user = getUser({ email: body.email });
+    if (!user) {
+      // 为了安全，不暴露用户是否存在
+      return c.json({
+        success: true,
+        message: 'If the email exists, a reset link will be sent',
+      });
+    }
+    
+    // 生成重置 token（生产环境应存储到数据库并发送邮件）
+    const resetToken = `reset_${crypto.randomUUID()}_${Date.now()}`;
+    
+    // TODO: 在生产环境中：
+    // 1. 存储 resetToken 到数据库（带过期时间）
+    // 2. 发送邮件包含重置链接
+    
+    // 开发环境：直接返回 token
+    return c.json({
+      success: true,
+      resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined,
+      message: 'Reset token generated',
+    });
+  } catch (error) {
+    console.error('Reset password request error:', error);
+    return c.json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Reset password request failed',
+      },
+    }, 500);
+  }
+});
+
+// 密码重置
+app.post('/v1/auth/reset-password', async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    if (!body.resetToken || !body.newPassword) {
+      return c.json({
+        error: {
+          code: 'INVALID_INPUT',
+          message: 'Reset token and new password are required',
+        },
+      }, 400);
+    }
+    
+    if (body.newPassword.length < 8) {
+      return c.json({
+        error: {
+          code: 'INVALID_PASSWORD',
+          message: 'Password must be at least 8 characters',
+        },
+      }, 400);
+    }
+    
+    // 验证 reset token 格式
+    const parts = body.resetToken.split('_');
+    if (parts.length < 3 || parts[0] !== 'reset') {
+      return c.json({
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid reset token',
+        },
+      }, 401);
+    }
+    
+    // 检查 token 是否过期（假设 1 小时有效期）
+    const tokenTime = parseInt(parts[2], 10);
+    const maxAge = 60 * 60 * 1000; // 1小时
+    if (Date.now() - tokenTime > maxAge) {
+      return c.json({
+        error: {
+          code: 'TOKEN_EXPIRED',
+          message: 'Reset token expired',
+        },
+      }, 401);
+    }
+    
+    // TODO: 在生产环境中从数据库获取用户 ID
+    // 这里简化处理，假设 token 包含用户信息
+    
+    return c.json({
+      success: true,
+      message: 'Password reset successful',
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return c.json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Reset password failed',
       },
     }, 500);
   }

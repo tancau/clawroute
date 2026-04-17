@@ -44,9 +44,17 @@ export function LoginForm() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[#94a3b8] mb-2">
-              密码
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-[#94a3b8]">
+                密码
+              </label>
+              <Link 
+                href="/auth/reset-password"
+                className="text-sm text-[#00c9ff] hover:underline"
+              >
+                忘记密码？
+              </Link>
+            </div>
             <input
               id="password"
               type="password"

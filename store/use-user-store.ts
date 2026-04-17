@@ -66,7 +66,7 @@ export const useUserStore = create<UserStore>()(
 
           set({
             user: result.data!.user,
-            token: result.data!.token,
+            token: result.data!.accessToken,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -90,7 +90,7 @@ export const useUserStore = create<UserStore>()(
 
           set({
             user: result.data!.user,
-            token: result.data!.token,
+            token: result.data!.accessToken,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -198,11 +198,9 @@ export const useUserStore = create<UserStore>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-      onRehydrateStorage: () => (state, storage) => {
-        // Set isLoading to false after rehydration using set() to trigger re-render
-        if (storage) {
-          storage.setState({ isLoading: false });
-        }
+      onRehydrateStorage: () => () => {
+        // Set isLoading to false after rehydration
+        useUserStore.setState({ isLoading: false });
       },
     }
   )

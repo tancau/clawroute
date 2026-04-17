@@ -333,11 +333,11 @@ export default function HelpPage() {
             {/* Active Section */}
             <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
               <h2 className="text-2xl font-bold text-white mb-6">
-                {SECTIONS[activeSection].icon} {SECTIONS[activeSection].title}
+                {SECTIONS[activeSection]?.icon} {SECTIONS[activeSection]?.title}
               </h2>
 
               <div className="space-y-6">
-                {SECTIONS[activeSection].items.map((item, index) => (
+                {SECTIONS[activeSection]?.items.map((item, index) => (
                   <div key={index} className="border-b border-[#1e293b] pb-6 last:border-0 last:pb-0">
                     <h3 className="text-lg font-semibold text-white mb-3">{item.title}</h3>
                     <div className="text-[#94a3b8] whitespace-pre-wrap text-sm leading-relaxed">
