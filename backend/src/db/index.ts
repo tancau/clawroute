@@ -86,7 +86,59 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_usage_logs_created ON usage_logs(created_at);
   `);
 
-  // 收益记录表
+  // 收益记录表 (Phase 2 - 详细记录)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS earning_records (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      key_id TEXT NOT NULL,
+      provider TEXT NOT NULL,
+      model TEXT NOT NULL,
+      usage_tokens INTEGER NOT NULL DEFAULT 0,
+      cost_cents INTEGER NOT NULL DEFAULT 0,
+      earning_cents INTEGER NOT NULL DEFAULT 0,
+      tier TEXT NOT NULL DEFAULT 'free',
+      period TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (key_id) REFERENCES shared_keys(id) ON DELETE CASCADE
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_earning_records_user ON earning_records(user_id);
+    CREATE INDEX IF NOT EXISTS idx_earning_records_period ON earning_records(period);
+    CREATE INDEX IF NOT EXISTS idx_earning_records_key ON earning_records(key_id);
+    CREATE INDEX IF NOT EXISTS idx_earning_records_provider ON earning_records(provider);
+  `);
+
+  // 累计收益汇总表 (Phase 2)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS earning_summary (
+      user_id TEXT PRIMARY KEY,
+      total_earnings_cents INTEGER NOT NULL DEFAULT 0,
+      current_period_earnings_cents INTEGER NOT NULL DEFAULT 0,
+      pending_earnings_cents INTEGER NOT NULL DEFAULT 0,
+      last_updated INTEGER NOT NULL
+    )
+  `);
+
+  // 提现请求表 (Phase 2)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS withdraw_requests (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      amount_cents INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at INTEGER NOT NULL,
+      processed_at INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_withdraw_user ON withdraw_requests(user_id);
+    CREATE INDEX IF NOT EXISTS idx_withdraw_status ON withdraw_requests(status);
+  `);
+
+  // 收益记录表 (Phase 1 - 保留兼容)
   db.exec(`
     CREATE TABLE IF NOT EXISTS earnings (
       id TEXT PRIMARY KEY,
@@ -104,8 +156,10 @@ export function initDatabase() {
     
     CREATE INDEX IF NOT EXISTS idx_earnings_user ON earnings(user_id);
     CREATE INDEX IF NOT EXISTS idx_earnings_period ON earnings(period);
-    
-    -- 使用统计表
+  `);
+
+  // 使用统计表
+  db.exec(`
     CREATE TABLE IF NOT EXISTS usage_stats (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
@@ -122,6 +176,25 @@ export function initDatabase() {
     
     CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_stats(user_id);
     CREATE INDEX IF NOT EXISTS idx_usage_timestamp ON usage_stats(timestamp);
+  `);
+
+  // Provider 状态指标表 (Phase 2)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS provider_metrics (
+      id TEXT PRIMARY KEY,
+      provider TEXT NOT NULL,
+      total_requests INTEGER NOT NULL DEFAULT 0,
+      successful_requests INTEGER NOT NULL DEFAULT 0,
+      failed_requests INTEGER NOT NULL DEFAULT 0,
+      total_latency_ms INTEGER NOT NULL DEFAULT 0,
+      last_error TEXT,
+      last_error_at INTEGER,
+      last_success_at INTEGER,
+      updated_at INTEGER NOT NULL,
+      UNIQUE(provider)
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_provider_metrics_provider ON provider_metrics(provider);
   `);
 
   console.log('Database initialized successfully');

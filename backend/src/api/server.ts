@@ -10,6 +10,20 @@ import { initDatabase } from '../db';
 import { UserTool, getUser, updateUser, deductCredits, verifyPassword } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
+import {
+  getUserEarningsSummary,
+  getEarningsHistory,
+  getEarningsByProvider,
+  getEarningsTrend,
+  requestWithdraw,
+  calculateEarning,
+} from '../billing/earnings';
+import {
+  getProviderStatus,
+  checkAllProviders,
+  updateProviderMetrics,
+  getProviderRanking,
+} from '../providers/status';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
 
 // 初始化数据库
@@ -994,6 +1008,181 @@ app.get('/v1/analytics/top-models/:userId', async (c) => {
       },
       500
     );
+  }
+});
+
+// ==================== Phase 2: 收益分成 API ====================
+
+// 获取收益汇总
+app.get('/v1/billing/earnings/:userId/summary', async (c) => {
+  const userId = c.req.param('userId');
+
+  try {
+    const summary = getUserEarningsSummary(userId);
+    const byProvider = getEarningsByProvider(userId);
+    const trend = getEarningsTrend(userId, 6);
+
+    return c.json({
+      userId,
+      summary: {
+        ...summary,
+        totalEarningsDollars: summary.totalEarningsCents / 100,
+        currentPeriodEarningsDollars: summary.currentPeriodEarningsCents / 100,
+        pendingEarningsDollars: summary.pendingEarningsCents / 100,
+      },
+      byProvider: Object.fromEntries(
+        Object.entries(byProvider).map(([k, v]) => [k, { ...v, totalEarningsDollars: v.totalEarningCents / 100 }])
+      ),
+      trend: trend.map(t => ({ ...t, totalEarningsDollars: t.totalEarningCents / 100 })),
+    });
+  } catch (error) {
+    console.error('Earnings summary error:', error);
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to get earnings summary' },
+    }, 500);
+  }
+});
+
+// 获取收益历史
+app.get('/v1/billing/earnings/:userId/history', async (c) => {
+  const userId = c.req.param('userId');
+  const limit = parseInt(c.req.query('limit') || '12', 10);
+
+  try {
+    const history = getEarningsHistory(userId, limit);
+
+    return c.json({
+      userId,
+      history: history.map(h => ({
+        ...h,
+        totalEarningsDollars: h.totalEarningCents / 100,
+      })),
+    });
+  } catch (error) {
+    console.error('Earnings history error:', error);
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to get earnings history' },
+    }, 500);
+  }
+});
+
+// 提现申请
+app.post('/v1/billing/earnings/:userId/withdraw', async (c) => {
+  const userId = c.req.param('userId');
+
+  try {
+    const body = await c.req.json();
+
+    if (!body.amountCents || body.amountCents <= 0) {
+      return c.json({
+        error: { code: 'INVALID_INPUT', message: 'amountCents must be a positive number' },
+      }, 400);
+    }
+
+    const withdrawRequest = requestWithdraw(userId, body.amountCents);
+
+    return c.json({
+      withdraw: {
+        ...withdrawRequest,
+        amountDollars: withdrawRequest.amountCents / 100,
+      },
+    }, 201);
+  } catch (error) {
+    console.error('Withdraw request error:', error);
+    const message = error instanceof Error ? error.message : 'Withdraw request failed';
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message },
+    }, 400);
+  }
+});
+
+// ==================== Phase 2: Provider 状态 API ====================
+
+// 获取所有 Provider 状态
+app.get('/v1/providers/status', async (c) => {
+  try {
+    const statuses = checkAllProviders();
+
+    return c.json({
+      providers: statuses.map(s => ({
+        ...s,
+        successRatePercent: Math.round(s.successRate * 100 * 10) / 10,
+      })),
+    });
+  } catch (error) {
+    console.error('Provider status error:', error);
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to get provider status' },
+    }, 500);
+  }
+});
+
+// 获取单个 Provider 状态
+app.get('/v1/providers/:name/status', async (c) => {
+  const name = c.req.param('name');
+
+  try {
+    const status = getProviderStatus(name);
+
+    if (!status) {
+      return c.json({
+        error: { code: 'NOT_FOUND', message: `Provider '${name}' not found` },
+      }, 404);
+    }
+
+    return c.json({
+      provider: {
+        ...status,
+        successRatePercent: Math.round(status.successRate * 100 * 10) / 10,
+      },
+    });
+  } catch (error) {
+    console.error('Provider status error:', error);
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to get provider status' },
+    }, 500);
+  }
+});
+
+// 更新 Provider 指标 (内部调用)
+app.post('/v1/providers/:name/metrics', async (c) => {
+  const name = c.req.param('name');
+
+  try {
+    const body = await c.req.json();
+
+    if (typeof body.success !== 'boolean' || typeof body.latencyMs !== 'number') {
+      return c.json({
+        error: { code: 'INVALID_INPUT', message: 'success (boolean) and latencyMs (number) are required' },
+      }, 400);
+    }
+
+    updateProviderMetrics(name, {
+      success: body.success,
+      latencyMs: body.latencyMs,
+      error: body.error,
+    });
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Provider metrics update error:', error);
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to update provider metrics' },
+    }, 500);
+  }
+});
+
+// Provider 排行
+app.get('/v1/providers/ranking', async (c) => {
+  try {
+    const ranking = getProviderRanking();
+
+    return c.json({ ranking });
+  } catch (error) {
+    console.error('Provider ranking error:', error);
+    return c.json({
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to get provider ranking' },
+    }, 500);
   }
 });
 
