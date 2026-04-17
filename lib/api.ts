@@ -227,6 +227,23 @@ class ApiClient {
   async healthCheck() {
     return this.request<{ status: string; timestamp: string; version: string }>('/health');
   }
+
+  // ===== Analytics API =====
+  async getUsageStats(userId: string, days: number = 30) {
+    return this.request<{ userId: string; period: { days: number }; stats: any }>(
+      `/v1/analytics/usage/${userId}?days=${days}`
+    );
+  }
+
+  async getSavings(userId: string) {
+    return this.request<{
+      userId: string;
+      totalSavedCents: number;
+      totalSavedDollars: number;
+      averageSavedPercent: number;
+      daily: Array<{ date: string; savedCents: number }>;
+    }>(`/v1/analytics/savings/${userId}`);
+  }
 }
 
 export const api = new ApiClient(API_BASE);

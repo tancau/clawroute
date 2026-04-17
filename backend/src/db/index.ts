@@ -104,6 +104,24 @@ export function initDatabase() {
     
     CREATE INDEX IF NOT EXISTS idx_earnings_user ON earnings(user_id);
     CREATE INDEX IF NOT EXISTS idx_earnings_period ON earnings(period);
+    
+    -- 使用统计表
+    CREATE TABLE IF NOT EXISTS usage_stats (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      request_id TEXT,
+      provider TEXT,
+      model TEXT,
+      intent TEXT,
+      input_tokens INTEGER DEFAULT 0,
+      output_tokens INTEGER DEFAULT 0,
+      cost_cents INTEGER DEFAULT 0,
+      saved_cents INTEGER DEFAULT 0,
+      timestamp INTEGER NOT NULL
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_stats(user_id);
+    CREATE INDEX IF NOT EXISTS idx_usage_timestamp ON usage_stats(timestamp);
   `);
 
   console.log('Database initialized successfully');

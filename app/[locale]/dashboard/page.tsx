@@ -7,6 +7,8 @@ import { useUserStore } from '@/store/use-user-store';
 import { Stats } from '@/components/Dashboard/Stats';
 import { KeyManager } from '@/components/Dashboard/KeyManager';
 import { TestPanel } from '@/components/Dashboard/TestPanel';
+import { UsageChart } from '@/components/Dashboard/UsageChart';
+import { CostTracker } from '@/components/Dashboard/CostTracker';
 import { Onboarding, useOnboarding } from '@/components/Onboarding';
 
 export default function DashboardPage() {
@@ -69,6 +71,12 @@ export default function DashboardPage() {
 
         {/* Stats */}
         <Stats userId={user.id} />
+
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <UsageChart userId={user.id} days={7} />
+          <CostTracker userId={user.id} />
+        </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

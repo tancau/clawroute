@@ -10,6 +10,7 @@ import { initDatabase } from '../db';
 import { UserTool, getUser, updateUser, deductCredits, verifyPassword } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
+import { getUserStats, getAggregatedStats } from '../analytics';
 
 // 初始化数据库
 initDatabase();
@@ -872,6 +873,64 @@ app.get('/v1/users/:id/dashboard', async (c) => {
       savedDollars: usage.totalSaved / 100,
     },
   });
+});
+
+// ==================== Analytics API ====================
+
+// 获取用户使用统计
+app.get('/v1/analytics/usage/:userId', async (c) => {
+  const userId = c.req.param('userId');
+  const days = parseInt(c.req.query('days') || '30', 10);
+  
+  try {
+    const stats = getUserStats(userId, days);
+    
+    return c.json({
+      userId,
+      period: { days },
+      stats: {
+        ...stats,
+        totalCostDollars: stats.totalCostCents / 100,
+        totalSavedDollars: stats.totalSavedCents / 100,
+      },
+    });
+  } catch (error) {
+    console.error('Analytics error:', error);
+    return c.json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to get usage stats',
+      },
+    }, 500);
+  }
+});
+
+// 获取用户节省统计
+app.get('/v1/analytics/savings/:userId', async (c) => {
+  const userId = c.req.param('userId');
+  
+  try {
+    const stats = getUserStats(userId, 30);
+    const aggregated = getAggregatedStats(userId);
+    
+    return c.json({
+      userId,
+      totalSavedCents: stats.totalSavedCents,
+      totalSavedDollars: stats.totalSavedCents / 100,
+      averageSavedPercent: stats.totalCostCents > 0 
+        ? Math.round((stats.totalSavedCents / (stats.totalCostCents + stats.totalSavedCents)) * 100)
+        : 0,
+      daily: aggregated.daily,
+    });
+  } catch (error) {
+    console.error('Savings analytics error:', error);
+    return c.json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to get savings stats',
+      },
+    }, 500);
+  }
 });
 
 // 导入模型能力用于路由
