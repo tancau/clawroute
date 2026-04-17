@@ -2003,5 +2003,291 @@ app.post('/v1/teams/:teamId/routing/evaluate', async (c) => {
   }
 });
 
+// ==================== Admin Phase 3: Teams Management ====================
+
+import * as adminTeams from '../admin/teams';
+import * as adminDevApiKeys from '../admin/api-keys';
+import * as adminAudit from '../admin/audit';
+
+// Admin: List Teams
+app.get('/v1/admin/teams', async (c) => {
+  try {
+    const result = adminTeams.listTeams({
+      search: c.req.query('search') || undefined,
+      status: c.req.query('status') || undefined,
+      sortBy: (c.req.query('sortBy') as any) || undefined,
+      sortOrder: (c.req.query('sortOrder') as any) || undefined,
+      offset: parseInt(c.req.query('offset') || '0', 10),
+      limit: parseInt(c.req.query('limit') || '50', 10),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('Admin list teams error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list teams' } }, 500);
+  }
+});
+
+// Admin: Get Team Detail
+app.get('/v1/admin/teams/:teamId', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const detail = adminTeams.getTeamDetail(teamId);
+    if (!detail) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'Team not found' } }, 404);
+    }
+    return c.json({ team: detail });
+  } catch (error) {
+    console.error('Admin get team detail error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get team detail' } }, 500);
+  }
+});
+
+// Admin: Suspend Team
+app.post('/v1/admin/teams/:teamId/suspend', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const body = await c.req.json().catch(() => ({}));
+    adminTeams.suspendTeam(teamId, body.reason);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Admin suspend team error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to suspend team' } }, 500);
+  }
+});
+
+// Admin: Unsuspend Team
+app.post('/v1/admin/teams/:teamId/unsuspend', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    adminTeams.unsuspendTeam(teamId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Admin unsuspend team error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to unsuspend team' } }, 500);
+  }
+});
+
+// Admin: Delete Team
+app.delete('/v1/admin/teams/:teamId', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    adminTeams.deleteTeam(teamId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Admin delete team error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to delete team' } }, 500);
+  }
+});
+
+// Admin: Get Team Activity Log
+app.get('/v1/admin/teams/:teamId/activity', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const limit = parseInt(c.req.query('limit') || '50', 10);
+    const logs = adminTeams.getTeamActivityLog(teamId, limit);
+    return c.json({ logs });
+  } catch (error) {
+    console.error('Admin team activity error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get team activity' } }, 500);
+  }
+});
+
+// ==================== Admin Phase 3: Dev API Keys Management ====================
+
+// Admin: List Developer API Keys
+app.get('/v1/admin/dev-api-keys', async (c) => {
+  try {
+    const result = adminDevApiKeys.listDeveloperApiKeys({
+      status: c.req.query('status') || undefined,
+      userId: c.req.query('userId') || undefined,
+      teamId: c.req.query('teamId') || undefined,
+      search: c.req.query('search') || undefined,
+      sortBy: (c.req.query('sortBy') as any) || undefined,
+      sortOrder: (c.req.query('sortOrder') as any) || undefined,
+      offset: parseInt(c.req.query('offset') || '0', 10),
+      limit: parseInt(c.req.query('limit') || '50', 10),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('Admin list dev api keys error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list API keys' } }, 500);
+  }
+});
+
+// Admin: Get API Key Detail
+app.get('/v1/admin/dev-api-keys/:keyId', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    const detail = adminDevApiKeys.getApiKeyDetail(keyId);
+    if (!detail) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
+    }
+    return c.json({ apiKey: detail });
+  } catch (error) {
+    console.error('Admin get api key detail error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get API key detail' } }, 500);
+  }
+});
+
+// Admin: Revoke API Key
+app.post('/v1/admin/dev-api-keys/:keyId/revoke', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    const body = await c.req.json().catch(() => ({}));
+    adminDevApiKeys.revokeApiKey(keyId, body.reason);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Admin revoke api key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to revoke API key' } }, 500);
+  }
+});
+
+// Admin: Reactivate API Key
+app.post('/v1/admin/dev-api-keys/:keyId/reactivate', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    adminDevApiKeys.reactivateApiKey(keyId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Admin reactivate api key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to reactivate API key' } }, 500);
+  }
+});
+
+// Admin: Get API Key Usage
+app.get('/v1/admin/dev-api-keys/:keyId/usage', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    const days = parseInt(c.req.query('days') || '7', 10);
+    const usage = adminDevApiKeys.getApiKeyUsage(keyId, days);
+    return c.json(usage);
+  } catch (error) {
+    console.error('Admin api key usage error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get API key usage' } }, 500);
+  }
+});
+
+// Admin: Update API Key Settings
+app.patch('/v1/admin/dev-api-keys/:keyId', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    const body = await c.req.json();
+    adminDevApiKeys.updateApiKeySettings(keyId, {
+      name: body.name,
+      permissions: body.permissions,
+      rateLimit: body.rateLimit,
+      usageLimit: body.usageLimit,
+      expiresAt: body.expiresAt,
+    });
+    const updated = adminDevApiKeys.getApiKeyDetail(keyId);
+    return c.json({ apiKey: updated });
+  } catch (error) {
+    console.error('Admin update api key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update API key' } }, 500);
+  }
+});
+
+// Admin: Bulk Revoke API Keys
+app.post('/v1/admin/dev-api-keys/bulk-revoke', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.keyIds || !Array.isArray(body.keyIds)) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'keyIds array is required' } }, 400);
+    }
+    const count = adminDevApiKeys.bulkRevokeApiKeys(body.keyIds, body.reason);
+    return c.json({ revoked: count });
+  } catch (error) {
+    console.error('Admin bulk revoke error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to bulk revoke' } }, 500);
+  }
+});
+
+// ==================== Admin Phase 3: Audit Logs ====================
+
+// Admin: Get Audit Logs
+app.get('/v1/admin/audit', async (c) => {
+  try {
+    const result = adminAudit.getAuditLogs({
+      userId: c.req.query('userId') || undefined,
+      teamId: c.req.query('teamId') || undefined,
+      action: c.req.query('action') || undefined,
+      resource: c.req.query('resource') || undefined,
+      startTime: c.req.query('startTime') ? parseInt(c.req.query('startTime')!) : undefined,
+      endTime: c.req.query('endTime') ? parseInt(c.req.query('endTime')!) : undefined,
+      search: c.req.query('search') || undefined,
+      sortBy: (c.req.query('sortBy') as any) || undefined,
+      sortOrder: (c.req.query('sortOrder') as any) || undefined,
+      offset: parseInt(c.req.query('offset') || '0', 10),
+      limit: parseInt(c.req.query('limit') || '50', 10),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('Admin audit logs error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get audit logs' } }, 500);
+  }
+});
+
+// Admin: Get Audit Stats
+app.get('/v1/admin/audit/stats', async (c) => {
+  try {
+    const stats = adminAudit.getAuditLogStats(
+      c.req.query('startTime') ? parseInt(c.req.query('startTime')!) : undefined,
+      c.req.query('endTime') ? parseInt(c.req.query('endTime')!) : undefined
+    );
+    return c.json({ stats });
+  } catch (error) {
+    console.error('Admin audit stats error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get audit stats' } }, 500);
+  }
+});
+
+// Admin: Export Audit Logs
+app.get('/v1/admin/audit/export', async (c) => {
+  try {
+    const format = c.req.query('format') === 'csv' ? 'csv' : 'json';
+    const data = adminAudit.exportAuditLogs({
+      action: c.req.query('action') || undefined,
+      resource: c.req.query('resource') || undefined,
+      search: c.req.query('search') || undefined,
+    }, format);
+    const contentType = format === 'csv' ? 'text/csv' : 'application/json';
+    return c.text(data, 200, {
+      'Content-Type': contentType,
+      'Content-Disposition': `attachment; filename="audit-logs.${format}"`,
+    });
+  } catch (error) {
+    console.error('Admin export audit error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to export audit logs' } }, 500);
+  }
+});
+
+// Admin: Get Audit Log Detail
+app.get('/v1/admin/audit/:logId', async (c) => {
+  try {
+    const logId = c.req.param('logId');
+    const detail = adminAudit.getAuditLogDetail(logId);
+    if (!detail) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'Audit log not found' } }, 404);
+    }
+    return c.json({ log: detail });
+  } catch (error) {
+    console.error('Admin audit log detail error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get audit log detail' } }, 500);
+  }
+});
+
+// Admin: Cleanup Old Audit Logs
+app.post('/v1/admin/audit/cleanup', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}));
+    const retentionDays = body.retentionDays || 90;
+    const deleted = adminAudit.cleanupAuditLogs(retentionDays);
+    return c.json({ deleted, retentionDays });
+  } catch (error) {
+    console.error('Admin audit cleanup error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to cleanup audit logs' } }, 500);
+  }
+});
+
 // 导出应用
 export default app;
