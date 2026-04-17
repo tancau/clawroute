@@ -1,27 +1,84 @@
 {
   "app": {
-    "title": "ClawRoute",
-    "subtitle": "OpenClaw 智能路由配置生成器"
+    "title": "ClawRouter",
+    "subtitle": "AI 推理成本优化平台"
   },
   "home": {
-    "heading": "你用 OpenClaw 做什么？",
-    "subheading": "选择场景，获取最优配置",
+    "heading": "智能路由，极致省钱",
+    "subheading": "选择场景，获取最优方案",
     "savingLabel": "通常节省",
-    "heroTitle": "让 OpenClaw 用户",
-    "heroSubtitle": "用最少的配置工作，获得最大的成本节省。",
-    "heroDescription": "选择你的使用场景，一键生成优化好的路由配置，立即节省 60-80% 的 OpenClaw 费用。",
-    "startConfig": "开始配置",
-    "browseTemplates": "浏览模板市场",
-    "testimonialsTitle": "来自用户的评价",
-    "featuresTitle": "为什么选择 ClawRoute",
-    "featureSavingTitle": "显著节省",
-    "featureSavingDesc": "智能路由让你节省 60-80% 的 OpenClaw 费用",
-    "featureOOTBTitle": "开箱即用",
-    "featureOOTBDesc": "预设场景模板，无需手动配置复杂的 YAML",
-    "featureOSTitle": "完全开源",
-    "featureOSDesc": "所有代码完全开源，社区驱动持续改进",
-    "quickStartTitle": "快速开始",
-    "savingLabelShort": "节省"
+    "hero": {
+      "highlight": "让 AI 调用",
+      "title": "用最少的成本，获得最优的结果。",
+      "subtitle": "智能匹配模型能力与任务需求，自动选择最具性价比的 AI 方案，节省高达 90% 的 API 成本。"
+    },
+    "cta": {
+      "start": "免费开始",
+      "templates": "了解更多"
+    },
+    "testimonials": {
+      "title": "来自用户的评价"
+    },
+    "sceneSection": {
+      "title": "你的 AI 应用场景是什么？",
+      "subtitle": "选择场景，获取推荐配置"
+    },
+    "quickstart": {
+      "title": "快速开始"
+    },
+    "installCode": {
+      "comment": "一行代码接入 ClawRouter",
+      "step1": "替换你的 API endpoint",
+      "savings": "立即节省 60-90% 成本！"
+    },
+    "features": {
+      "title": "为什么选择 ClawRouter",
+      "savings": {
+        "title": "极致省钱",
+        "desc": "智能路由自动选择最具性价比的模型，节省高达 90% 的 API 成本"
+      },
+      "easy": {
+        "title": "零门槛接入",
+        "desc": "兼容 OpenAI / Anthropic API，一行代码即可接入"
+      },
+      "opensource": {
+        "title": "资源共享",
+        "desc": "共享闲置 API Key，获得被动收益，三方共赢"
+      }
+    },
+    "resourcePool": {
+      "title": "双重资源池",
+      "subtitle": "更多资源，更低成本",
+      "apiKeyPool": {
+        "title": "🔑 API Key 池",
+        "desc": "共享闲置 API Key，获得分成收益",
+        "status": "✅ 已上线"
+      },
+      "computePool": {
+        "title": "⚡ 分布式算力池",
+        "desc": "贡献本地 GPU，成为节点运营者",
+        "status": "🚀 Coming Soon"
+      }
+    },
+    "howItWorks": {
+      "title": "工作原理",
+      "step1": {
+        "title": "发送请求",
+        "desc": "像往常一样调用 API"
+      },
+      "step2": {
+        "title": "智能分析",
+        "desc": "分析任务类型、复杂度、预算"
+      },
+      "step3": {
+        "title": "最优匹配",
+        "desc": "选择最具性价比的模型"
+      },
+      "step4": {
+        "title": "返回结果",
+        "desc": "高质量结果 + 省钱报告"
+      }
+    }
   },
   "scenes": {
     "trading-bot": "交易 Bot",
@@ -67,7 +124,6 @@
     "remove": "删除",
     "moveUp": "上移",
     "moveDown": "下移",
-    "selectModel": "选择模型",
     "attribute": {
       "complexity": "请求复杂度",
       "hasCode": "包含代码",
@@ -85,116 +141,133 @@
       "long": "长（>10K）"
     }
   },
-  "modelSelector": {
-    "title": "模型选择",
-    "primaryLabel": "主力模型 (Primary)",
-    "selectPrimary": "选择主力模型",
-    "primaryHint": "这是默认使用的模型，优先选择成本低、速度快的",
-    "fallbackLabel": "备用模型 (Fallbacks)",
-    "addFallback": "添加备用模型",
-    "fallbackHint": "当主力模型不可用时的备选方案，按优先级排序"
-  },
   "configPreview": {
     "title": "配置预览",
     "copy": "复制",
     "download": "下载",
     "copySuccess": "复制成功",
-    "copyFailed": "复制失败，请手动复制",
-    "copiedToClipboard": "已复制到剪贴板",
-    "jsonCopied": "openclaw.json 配置已复制",
-    "copyFailedTitle": "复制失败",
-    "copyManually": "请手动复制",
-    "downloadSuccess": "下载成功",
-    "jsonDownloaded": "openclaw.json 已下载"
+    "copyFailed": "复制失败，请手动复制"
   },
   "template": {
     "title": "预设模板",
-    "apply": "应用模板",
-    "useTemplate": "使用模板",
-    "savingRate": "节省率",
-    "applied": "模板已应用",
-    "saving": "节省",
-    "by": "by"
-  },
-  "templates": {
-    "title": "模板市场",
     "description": "浏览和搜索社区贡献的路由配置模板",
     "searchPlaceholder": "搜索模板...",
     "all": "全部",
-    "noMatch": "没有找到匹配的模板",
-    "goHome": "返回首页选择场景"
+    "noResults": "没有找到匹配的模板",
+    "savingRate": "节省",
+    "useTemplate": "使用模板",
+    "apply": "应用",
+    "applied": "模板已应用",
+    "backHome": "返回首页选择场景"
+  },
+  "templateNames": {
+    "tpl-trading-bot": "交易 Bot 标准配置",
+    "tpl-customer-service": "客服助手标准配置",
+    "tpl-content-creation": "内容创作标准配置",
+    "tpl-data-analysis": "数据分析标准配置",
+    "tpl-research-assistant": "研究助手标准配置",
+    "tpl-dev-tools": "开发工具标准配置"
+  },
+  "templateDescriptions": {
+    "tpl-trading-bot": "简单信号用免费模型，复杂分析用推理模型，默认用均衡模型",
+    "tpl-customer-service": "简单问答用免费模型，复杂问题用高质量模型",
+    "tpl-content-creation": "简单内容用均衡模型，深度创作用高质量模型",
+    "tpl-data-analysis": "简单查询用低成本模型，复杂分析用推理模型",
+    "tpl-research-assistant": "推理任务用推理模型，一般查询用均衡模型",
+    "tpl-dev-tools": "简单代码用免费模型，复杂代码用专业模型"
   },
   "footer": {
     "dataUpdated": "数据更新日期",
     "openSource": "开源项目"
   },
-  "codeBlock": {
-    "clickToCopy": "点击复制",
-    "copied": "已复制",
-    "copyFailed": "复制失败"
-  },
   "language": {
     "zh": "中文",
     "en": "English"
   },
-  "apiDiscovery": {
-    "title": "API 模型发现",
-    "description": "输入你的 API 端点和密钥，自动发现可用模型并生成 OpenClaw 配置",
-    "baseUrlLabel": "API 端点",
-    "baseUrlPlaceholder": "https://api.openai.com/v1 或 https://openrouter.ai/api/v1",
-    "apiKeyLabel": "API Key（可选，部分端点不需要）",
-    "apiKeyPlaceholder": "sk-...",
-    "discover": "发现模型",
-    "discovering": "正在发现...",
-    "foundModels": "发现 {count} 个模型",
-    "modelId": "模型 ID",
-    "owner": "所有者",
-    "context": "上下文",
-    "generateConfig": "生成并复制配置",
-    "downloadConfig": "下载 openclaw.json",
-    "verifyKey": "验证 Key",
-    "verifying": "验证中...",
-    "keyValid": "✅ Key 有效！",
-    "keyInvalid": "❌ Key 无效",
-    "configCopied": "配置已复制到剪贴板！"
+  "header": {
+    "github": "GitHub",
+    "dashboard": "控制台",
+    "docs": "文档"
   },
-  "configImport": {
-    "title": "导入 & 体检",
-    "description": "粘贴 openclaw.json，自动解析 + 健康体检，找出配置问题",
-    "pastePlaceholder": "粘贴你的 openclaw.json 内容...",
-    "analyze": "解析 & 体检",
-    "invalidJson": "无效的 JSON 格式",
-    "parseError": "解析失败",
-    "parsedOk": "解析成功！{providers} 个 Provider，{models} 个模型",
-    "issuesFound": "发现 {count} 个问题",
-    "allGood": "✅ 配置健康，没有发现问题！",
-    "scoreGreat": "优秀！配置非常健康",
-    "scoreGood": "不错，有些小问题可以优化",
-    "scoreFair": "一般，建议修复警告项",
-    "scorePoor": "需要修复，存在严重问题",
-    "providers": "Provider 列表",
-    "prepareConfig": "准备配置",
-    "copyConfig": "复制配置",
-    "downloadConfig": "下载配置",
-    "copied": "已复制！",
-    "availabilityTest": "可用性测试",
-    "testAvailability": "测试可用性",
-    "pinging": "探测中...",
-    "pingAuth": "需要认证",
-    "pingRateLimit": "限速中",
-    "pingTimeout": "超时 (>8s)",
-    "pingOffline": "离线",
-    "completionTest": "模型能力测试",
-    "testModel": "测试模型",
-    "testingModel": "测试中...",
-    "completionTestDesc": "发送真实对话请求，验证模型能否正常回答问题",
-    "modelCanAnswer": "能回答",
-    "noKey": "无 Key，跳过",
-    "noKeysForTest": "没有配置 API Key，无法测试模型能力"
+  "calculator": {
+    "title": "成本计算器",
+    "monthlyCalls": "每月 API 调用次数",
+    "avgTokens": "每次调用平均 Token 数",
+    "withoutClawroute": "直接调用 API",
+    "withClawroute": "使用 ClawRouter",
+    "savings": "节省",
+    "month": "月",
+    "annualSavings": "年度节省",
+    "cta": "立即开始节省"
   },
-  "errorBoundary": {
-    "title": "出了点问题",
-    "description": "页面加载遇到错误",
-    "reload": "重新加载"
+  "importer": {
+    "title": "迁移你的应用",
+    "description": "只需修改 API endpoint，即可享受智能路由",
+    "placeholder": "例如：将 api.openai.com 改为 api.clawrouter.ai",
+    "analyze": "查看示例",
+    "analyzing": "加载中...",
+    "clear": "清除",
+    "foundIssues": "当前配置",
+    "suggestions": "优化建议",
+    "generateOptimized": "开始使用",
+    "noIssues": "简单 3 步即可接入！",
+    "issues": {
+      "missingBaseUrl": "修改你的 API base URL",
+      "gpt4NoCondition": "GPT-4 不需要手动指定，系统自动优化",
+      "noFreeTier": "免费模型会自动用于简单任务",
+      "noDefault": "默认模型由系统智能选择"
+    },
+    "suggestions": {
+      "addBaseUrl": "将 endpoint 改为 api.clawrouter.ai",
+      "routeGpt4": "复杂任务自动使用 GPT-4，简单任务用免费模型",
+      "addFreeTier": "系统自动在免费池中寻找可用模型",
+      "addDefault": "无需配置默认模型，智能路由自动处理"
+    }
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "forgotPassword": "忘记密码？",
+    "noAccount": "没有账号？",
+    "hasAccount": "已有账号？",
+    "loginSuccess": "登录成功",
+    "registerSuccess": "注册成功",
+    "loginFailed": "登录失败",
+    "registerFailed": "注册失败"
+  },
+  "dashboard": {
+    "title": "控制台",
+    "overview": "概览",
+    "keys": "API Keys",
+    "usage": "使用统计",
+    "earnings": "收益报告",
+    "settings": "设置",
+    "welcome": "欢迎回来",
+    "totalRequests": "总请求数",
+    "totalSavings": "累计节省",
+    "totalEarnings": "累计收益",
+    "activeKeys": "活跃 Key"
+  },
+  "keyManager": {
+    "title": "API Key 管理",
+    "addKey": "添加 Key",
+    "provider": "提供商",
+    "status": "状态",
+    "usage": "使用量",
+    "earnings": "收益",
+    "actions": "操作",
+    "active": "活跃",
+    "paused": "暂停",
+    "exhausted": "耗尽",
+    "invalid": "无效",
+    "pause": "暂停",
+    "resume": "恢复",
+    "delete": "删除",
+    "share": "共享到资源池",
+    "shareDesc": "共享闲置 Key 到资源池，获得 50% 分成"
   }
 }

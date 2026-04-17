@@ -19,7 +19,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ClawRoute - OpenClaw 智能路由配置生成器",
+  title: "ClawRouter - API Key 的 Airbnb",
   description: "让 OpenClaw 用户用最少的配置工作，获得最大的成本节省",
 };
 
