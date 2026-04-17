@@ -9,6 +9,8 @@ import { KeyManager } from '@/components/Dashboard/KeyManager';
 import { TestPanel } from '@/components/Dashboard/TestPanel';
 import { UsageChart } from '@/components/Dashboard/UsageChart';
 import { CostTracker } from '@/components/Dashboard/CostTracker';
+import { RecentRequests } from '@/components/Dashboard/RecentRequests';
+import { TopModels } from '@/components/Dashboard/TopModels';
 import { Onboarding, useOnboarding } from '@/components/Onboarding';
 
 export default function DashboardPage() {
@@ -76,6 +78,12 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <UsageChart userId={user.id} days={7} />
           <CostTracker userId={user.id} />
+        </div>
+
+        {/* Recent Requests & Top Models */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <RecentRequests userId={user.id} />
+          <TopModels userId={user.id} />
         </div>
 
         {/* Main Content Grid */}

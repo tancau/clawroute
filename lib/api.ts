@@ -229,7 +229,7 @@ class ApiClient {
   }
 
   // ===== Analytics API =====
-  async getUsageStats(userId: string, days: number = 30) {
+  async getAnalyticsUsage(userId: string, days: number = 30) {
     return this.request<{ userId: string; period: { days: number }; stats: any }>(
       `/v1/analytics/usage/${userId}?days=${days}`
     );
@@ -243,6 +243,36 @@ class ApiClient {
       averageSavedPercent: number;
       daily: Array<{ date: string; savedCents: number }>;
     }>(`/v1/analytics/savings/${userId}`);
+  }
+
+  async getRecentRequests(userId: string, limit: number = 10) {
+    return this.request<{
+      userId: string;
+      requests: Array<{
+        id: string;
+        model: string;
+        provider: string;
+        inputTokens: number;
+        outputTokens: number;
+        totalTokens: number;
+        costCents: number;
+        costDollars: number;
+        timestamp: number;
+      }>;
+    }>(`/v1/analytics/recent/${userId}?limit=${limit}`);
+  }
+
+  async getTopModels(userId: string, limit: number = 10) {
+    return this.request<{
+      userId: string;
+      models: Array<{
+        model: string;
+        requests: number;
+        totalTokens: number;
+        totalCostCents: number;
+        totalCostDollars: number;
+      }>;
+    }>(`/v1/analytics/top-models/${userId}?limit=${limit}`);
   }
 }
 

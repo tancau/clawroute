@@ -20,6 +20,12 @@ export function Stats({ userId }: StatsProps) {
     }
   }, [userId, fetchDashboard, fetchUsage, fetchEarnings]);
 
+  const handleRefresh = () => {
+    fetchDashboard(userId);
+    fetchUsage(userId);
+    fetchEarnings(userId);
+  };
+
   if (isLoading && !data) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -61,7 +67,18 @@ export function Stats({ userId }: StatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-white">📊 实时统计</h2>
+        <button
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className="px-3 py-1.5 bg-[#1e293b] text-[#94a3b8] rounded-lg hover:bg-[#334155] transition-colors text-sm disabled:opacity-50"
+        >
+          🔄 刷新
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, index) => (
         <div
           key={index}
@@ -76,6 +93,7 @@ export function Stats({ userId }: StatsProps) {
           <div className="text-2xl font-bold text-white">{stat.value}</div>
         </div>
       ))}
+      </div>
     </div>
   );
 }

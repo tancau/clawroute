@@ -10,7 +10,7 @@ import { initDatabase } from '../db';
 import { UserTool, getUser, updateUser, deductCredits, verifyPassword } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
-import { getUserStats, getAggregatedStats } from '../analytics';
+import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
 
 // 初始化数据库
 initDatabase();
@@ -935,6 +935,67 @@ app.get('/v1/analytics/savings/:userId', async (c) => {
 
 // 导入模型能力用于路由
 import { modelCapabilities, getProvider } from '../config/providers';
+
+// ==================== Analytics: Recent & Top Models ====================
+
+// 获取最近请求记录
+app.get('/v1/analytics/recent/:userId', async (c) => {
+  const userId = c.req.param('userId');
+  const limit = parseInt(c.req.query('limit') || '10', 10);
+
+  try {
+    const recent = getRecentRequests(userId, limit);
+
+    return c.json({
+      userId,
+      requests: recent.map((r) => ({
+        ...r,
+        costDollars: r.costCents / 100,
+        totalTokens: r.inputTokens + r.outputTokens,
+      })),
+    });
+  } catch (error) {
+    console.error('Recent requests error:', error);
+    return c.json(
+      {
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to get recent requests',
+        },
+      },
+      500
+    );
+  }
+});
+
+// 获取热门模型排行
+app.get('/v1/analytics/top-models/:userId', async (c) => {
+  const userId = c.req.param('userId');
+  const limit = parseInt(c.req.query('limit') || '10', 10);
+
+  try {
+    const topModels = getTopModels(userId, limit);
+
+    return c.json({
+      userId,
+      models: topModels.map((m) => ({
+        ...m,
+        totalCostDollars: m.totalCostCents / 100,
+      })),
+    });
+  } catch (error) {
+    console.error('Top models error:', error);
+    return c.json(
+      {
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to get top models',
+        },
+      },
+      500
+    );
+  }
+});
 
 // 导出应用
 export default app;

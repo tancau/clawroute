@@ -128,6 +128,77 @@ export function getUserStats(userId: string, days: number = 30): UserStats {
 }
 
 /**
+ * 获取最近请求记录
+ */
+export function getRecentRequests(
+  userId: string,
+  limit: number = 10
+): Array<{
+  id: string;
+  model: string;
+  provider: string;
+  inputTokens: number;
+  outputTokens: number;
+  costCents: number;
+  timestamp: number;
+}> {
+  const stmt = db.prepare(`
+    SELECT id, model, provider, input_tokens, output_tokens, cost_cents, timestamp
+    FROM usage_stats
+    WHERE user_id = ?
+    ORDER BY timestamp DESC
+    LIMIT ?
+  `);
+
+  const rows = stmt.all(userId, limit) as any[];
+
+  return rows.map((row) => ({
+    id: row.id,
+    model: row.model || 'unknown',
+    provider: row.provider || 'unknown',
+    inputTokens: row.input_tokens || 0,
+    outputTokens: row.output_tokens || 0,
+    costCents: row.cost_cents || 0,
+    timestamp: row.timestamp,
+  }));
+}
+
+/**
+ * 获取热门模型排行
+ */
+export function getTopModels(
+  userId: string,
+  limit: number = 10
+): Array<{
+  model: string;
+  requests: number;
+  totalTokens: number;
+  totalCostCents: number;
+}> {
+  const stmt = db.prepare(`
+    SELECT
+      model,
+      COUNT(*) as requests,
+      SUM(input_tokens + output_tokens) as total_tokens,
+      SUM(cost_cents) as total_cost_cents
+    FROM usage_stats
+    WHERE user_id = ?
+    GROUP BY model
+    ORDER BY requests DESC
+    LIMIT ?
+  `);
+
+  const rows = stmt.all(userId, limit) as any[];
+
+  return rows.map((row) => ({
+    model: row.model || 'unknown',
+    requests: row.requests || 0,
+    totalTokens: row.total_tokens || 0,
+    totalCostCents: row.total_cost_cents || 0,
+  }));
+}
+
+/**
  * 获取聚合统计（简化版）
  */
 export function getAggregatedStats(userId: string): {

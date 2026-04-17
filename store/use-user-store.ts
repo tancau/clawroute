@@ -18,6 +18,22 @@ interface UserStore {
   usage: UsageStats | null;
   earnings: Earnings | null;
 
+  // Recent requests & top models
+  recentRequests: Array<{
+    id: string;
+    model: string;
+    provider: string;
+    totalTokens: number;
+    costDollars: number;
+    timestamp: number;
+  }>;
+  topModels: Array<{
+    model: string;
+    requests: number;
+    totalTokens: number;
+    totalCostDollars: number;
+  }>;
+
   // Auth actions
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, name?: string) => Promise<boolean>;
@@ -34,6 +50,8 @@ interface UserStore {
   fetchDashboard: (userId: string) => Promise<void>;
   fetchUsage: (userId: string, days?: number) => Promise<void>;
   fetchEarnings: (userId: string) => Promise<void>;
+  fetchRecentRequests: (userId: string, limit?: number) => Promise<void>;
+  fetchTopModels: (userId: string, limit?: number) => Promise<void>;
 
   // Refresh all
   refreshAll: (userId: string) => Promise<void>;
@@ -52,6 +70,8 @@ export const useUserStore = create<UserStore>()(
       data: null,
       usage: null,
       earnings: null,
+      recentRequests: [],
+      topModels: [],
 
       // Auth actions
       login: async (email: string, password: string) => {
@@ -112,6 +132,8 @@ export const useUserStore = create<UserStore>()(
           data: null,
           usage: null,
           earnings: null,
+          recentRequests: [],
+          topModels: [],
           error: null,
           isLoading: false,
         });
@@ -181,6 +203,20 @@ export const useUserStore = create<UserStore>()(
         }
       },
 
+      fetchRecentRequests: async (userId: string, limit: number = 10) => {
+        const result = await api.getRecentRequests(userId, limit);
+        if (result.data) {
+          set({ recentRequests: result.data.requests });
+        }
+      },
+
+      fetchTopModels: async (userId: string, limit: number = 10) => {
+        const result = await api.getTopModels(userId, limit);
+        if (result.data) {
+          set({ topModels: result.data.models });
+        }
+      },
+
       // Refresh all
       refreshAll: async (userId: string) => {
         await Promise.all([
@@ -188,6 +224,8 @@ export const useUserStore = create<UserStore>()(
           get().fetchKeys(userId),
           get().fetchUsage(userId),
           get().fetchEarnings(userId),
+          get().fetchRecentRequests(userId),
+          get().fetchTopModels(userId),
         ]);
       },
     }),

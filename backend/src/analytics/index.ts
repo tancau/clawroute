@@ -6,6 +6,8 @@ export {
   recordUsage, 
   getUserStats, 
   getAggregatedStats,
+  getRecentRequests,
+  getTopModels,
 } from './tracker';
 
 export type {
