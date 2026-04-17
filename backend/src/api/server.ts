@@ -1188,3 +1188,219 @@ app.get('/v1/providers/ranking', async (c) => {
 
 // 导出应用
 export default app;
+
+// ============== Admin API Phase 2 ==============
+import {
+  initAdminTables,
+  isAdmin,
+  getAdminUser,
+} from '../admin/auth';
+import { getAdminStats, getRecentActivity, getUsageTrend } from '../admin/stats';
+import { listUsers, getUserDetail, updateUserCredits, suspendUser, unsuspendUser } from '../admin/users';
+import { listKeys, getKeyDetail, approveKey, rejectKey, disableKey, enableKey, bulkApproveKeys } from '../admin/keys';
+import { getSettings, updateSettings } from '../admin/settings';
+import { getProviderStats, getProviderDetail, disableProviderKeys, enableProviderKeys } from '../admin/providers';
+import { getEarningsSummary, listUserEarnings, getUserEarningsDetail, createPayout, completePayout, listPayouts } from '../admin/earnings';
+import { initPricingTables, getModelPricing, updateModelPricing, toggleModel, getCommissionRates, updateCommissionRate } from '../admin/pricing';
+
+// 初始化管理员表和定价表
+initAdminTables();
+initPricingTables();
+
+// 管理员权限中间件
+const requireAdmin = async (c: any, next: any) => {
+  const userId = c.req.header('X-User-Id') || c.get('userId');
+  
+  if (!userId || !isAdmin(userId)) {
+    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
+  }
+  
+  const adminUser = getAdminUser(userId);
+  if (!adminUser) {
+    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
+  }
+  
+  c.set('adminUser', adminUser);
+  await next();
+};
+
+// Admin API 端点已在前一个版本中定义
+// 这里只添加 Phase 2 的新端点
+
+// Provider 管理
+app.get('/v1/admin/providers', requireAdmin, async (c) => {
+  try {
+    const providers = getProviderStats();
+    return c.json(providers);
+  } catch (error) {
+    console.error('Provider stats error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get provider stats' } }, 500);
+  }
+});
+
+app.get('/v1/admin/providers/:provider', requireAdmin, async (c) => {
+  const provider = c.req.param('provider');
+  try {
+    const detail = getProviderDetail(provider);
+    return c.json(detail);
+  } catch (error) {
+    console.error('Provider detail error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get provider detail' } }, 500);
+  }
+});
+
+app.post('/v1/admin/providers/:provider/disable', requireAdmin, async (c) => {
+  const provider = c.req.param('provider');
+  try {
+    const count = disableProviderKeys(provider);
+    return c.json({ success: true, count });
+  } catch (error) {
+    console.error('Disable provider error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to disable provider' } }, 500);
+  }
+});
+
+app.post('/v1/admin/providers/:provider/enable', requireAdmin, async (c) => {
+  const provider = c.req.param('provider');
+  try {
+    const count = enableProviderKeys(provider);
+    return c.json({ success: true, count });
+  } catch (error) {
+    console.error('Enable provider error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to enable provider' } }, 500);
+  }
+});
+
+// 收益管理
+app.get('/v1/admin/earnings/summary', requireAdmin, async (c) => {
+  try {
+    const summary = getEarningsSummary();
+    return c.json(summary);
+  } catch (error) {
+    console.error('Earnings summary error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get earnings summary' } }, 500);
+  }
+});
+
+app.get('/v1/admin/earnings/users', requireAdmin, async (c) => {
+  try {
+    const result = listUserEarnings({
+      status: c.req.query('status'),
+      minAmount: c.req.query('minAmount') ? parseFloat(c.req.query('minAmount')!) : undefined,
+      search: c.req.query('search'),
+      sortBy: c.req.query('sortBy'),
+      sortOrder: c.req.query('sortOrder'),
+      offset: parseInt(c.req.query('offset') || '0'),
+      limit: parseInt(c.req.query('limit') || '50'),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('User earnings error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get user earnings' } }, 500);
+  }
+});
+
+app.get('/v1/admin/earnings/users/:userId', requireAdmin, async (c) => {
+  const userId = c.req.param('userId');
+  try {
+    const detail = getUserEarningsDetail(userId);
+    return c.json(detail);
+  } catch (error) {
+    console.error('User earnings detail error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get user earnings detail' } }, 500);
+  }
+});
+
+app.post('/v1/admin/earnings/payout', requireAdmin, async (c) => {
+  try {
+    const body = await c.req.json();
+    const payout = createPayout(body.userId, body.amount, body.method);
+    return c.json(payout);
+  } catch (error) {
+    console.error('Create payout error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to create payout' } }, 500);
+  }
+});
+
+app.get('/v1/admin/earnings/payouts', requireAdmin, async (c) => {
+  try {
+    const result = listPayouts({
+      status: c.req.query('status'),
+      userId: c.req.query('userId'),
+      offset: parseInt(c.req.query('offset') || '0'),
+      limit: parseInt(c.req.query('limit') || '50'),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('Payouts error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get payouts' } }, 500);
+  }
+});
+
+app.post('/v1/admin/earnings/payouts/:payoutId/complete', requireAdmin, async (c) => {
+  const payoutId = c.req.param('payoutId');
+  try {
+    completePayout(payoutId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Complete payout error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to complete payout' } }, 500);
+  }
+});
+
+// 定价管理
+app.get('/v1/admin/pricing/models', requireAdmin, async (c) => {
+  try {
+    const models = getModelPricing();
+    return c.json(models);
+  } catch (error) {
+    console.error('Model pricing error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get model pricing' } }, 500);
+  }
+});
+
+app.put('/v1/admin/pricing/models/:model', requireAdmin, async (c) => {
+  const model = c.req.param('model');
+  try {
+    const body = await c.req.json();
+    updateModelPricing(model, body.inputPrice, body.outputPrice);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Update pricing error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update pricing' } }, 500);
+  }
+});
+
+app.post('/v1/admin/pricing/models/:model/toggle', requireAdmin, async (c) => {
+  const model = c.req.param('model');
+  try {
+    const body = await c.req.json();
+    toggleModel(model, body.enabled);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Toggle model error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to toggle model' } }, 500);
+  }
+});
+
+app.get('/v1/admin/pricing/commissions', requireAdmin, async (c) => {
+  try {
+    const rates = getCommissionRates();
+    return c.json(rates);
+  } catch (error) {
+    console.error('Commission rates error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get commission rates' } }, 500);
+  }
+});
+
+app.put('/v1/admin/pricing/commissions/:tier', requireAdmin, async (c) => {
+  const tier = c.req.param('tier') as 'free' | 'paid' | 'enterprise';
+  try {
+    const body = await c.req.json();
+    updateCommissionRate(tier, body.rate);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Update commission error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update commission' } }, 500);
+  }
+});
