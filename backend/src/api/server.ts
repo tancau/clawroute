@@ -999,3 +999,260 @@ app.get('/v1/analytics/top-models/:userId', async (c) => {
 
 // 导出应用
 export default app;
+
+// ============== Admin API ==============
+import {
+  initAdminTables,
+  isAdmin,
+  getAdminUser,
+  hasPermission,
+} from '../admin/auth';
+import { getAdminStats, getRecentActivity, getUsageTrend } from '../admin/stats';
+import { listUsers, getUserDetail, updateUserCredits, suspendUser, unsuspendUser } from '../admin/users';
+import { listKeys, getKeyDetail, approveKey, rejectKey, disableKey, enableKey, bulkApproveKeys } from '../admin/keys';
+import { getSettings, updateSettings } from '../admin/settings';
+
+// 初始化管理员表
+initAdminTables();
+
+// 管理员权限中间件
+const requireAdmin = async (c: any, next: any) => {
+  // 从 cookie 或 header 获取用户信息
+  const userId = c.req.header('X-User-Id') || c.get('userId');
+  
+  if (!userId || !isAdmin(userId)) {
+    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
+  }
+  
+  const adminUser = getAdminUser(userId);
+  if (!adminUser) {
+    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
+  }
+  
+  c.set('adminUser', adminUser);
+  await next();
+};
+
+// 检查管理员状态
+app.get('/v1/admin/check', async (c) => {
+  const userId = c.req.header('X-User-Id') || c.get('userId');
+  const adminUser = userId ? getAdminUser(userId) : null;
+  
+  return c.json({
+    isAdmin: !!adminUser,
+    role: adminUser?.role,
+  });
+});
+
+// 获取管理统计
+app.get('/v1/admin/stats', requireAdmin, async (c) => {
+  try {
+    const stats = getAdminStats();
+    return c.json(stats);
+  } catch (error) {
+    console.error('Admin stats error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get stats' } }, 500);
+  }
+});
+
+// 获取最近活动
+app.get('/v1/admin/activity', requireAdmin, async (c) => {
+  const limit = parseInt(c.req.query('limit') || '20', 10);
+  try {
+    const activities = getRecentActivity(limit);
+    return c.json(activities);
+  } catch (error) {
+    console.error('Activity error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get activity' } }, 500);
+  }
+});
+
+// 获取使用趋势
+app.get('/v1/admin/trend', requireAdmin, async (c) => {
+  const days = parseInt(c.req.query('days') || '7', 10);
+  try {
+    const trend = getUsageTrend(days);
+    return c.json(trend);
+  } catch (error) {
+    console.error('Trend error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get trend' } }, 500);
+  }
+});
+
+// 用户管理
+app.get('/v1/admin/users', requireAdmin, async (c) => {
+  try {
+    const result = listUsers({
+      search: c.req.query('search'),
+      status: c.req.query('status'),
+      sortBy: c.req.query('sortBy') as any,
+      sortOrder: c.req.query('sortOrder') as any,
+      offset: parseInt(c.req.query('offset') || '0', 10),
+      limit: parseInt(c.req.query('limit') || '50', 10),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('List users error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list users' } }, 500);
+  }
+});
+
+app.get('/v1/admin/users/:userId', requireAdmin, async (c) => {
+  const userId = c.req.param('userId');
+  try {
+    const user = getUserDetail(userId);
+    if (!user) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'User not found' } }, 404);
+    }
+    return c.json(user);
+  } catch (error) {
+    console.error('Get user error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get user' } }, 500);
+  }
+});
+
+app.post('/v1/admin/users/:userId/suspend', requireAdmin, async (c) => {
+  const userId = c.req.param('userId');
+  try {
+    suspendUser(userId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Suspend user error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to suspend user' } }, 500);
+  }
+});
+
+app.post('/v1/admin/users/:userId/unsuspend', requireAdmin, async (c) => {
+  const userId = c.req.param('userId');
+  try {
+    unsuspendUser(userId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Unsuspend user error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to unsuspend user' } }, 500);
+  }
+});
+
+app.post('/v1/admin/users/:userId/credits', requireAdmin, async (c) => {
+  const userId = c.req.param('userId');
+  const body = await c.req.json();
+  try {
+    updateUserCredits(userId, body.amount, body.reason);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Update credits error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update credits' } }, 500);
+  }
+});
+
+// Key 管理
+app.get('/v1/admin/keys', requireAdmin, async (c) => {
+  try {
+    const result = listKeys({
+      status: c.req.query('status'),
+      provider: c.req.query('provider'),
+      search: c.req.query('search'),
+      sortBy: c.req.query('sortBy') as any,
+      sortOrder: c.req.query('sortOrder') as any,
+      offset: parseInt(c.req.query('offset') || '0', 10),
+      limit: parseInt(c.req.query('limit') || '50', 10),
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('List keys error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list keys' } }, 500);
+  }
+});
+
+app.get('/v1/admin/keys/:keyId', requireAdmin, async (c) => {
+  const keyId = c.req.param('keyId');
+  try {
+    const key = getKeyDetail(keyId);
+    if (!key) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'Key not found' } }, 404);
+    }
+    return c.json(key);
+  } catch (error) {
+    console.error('Get key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get key' } }, 500);
+  }
+});
+
+app.post('/v1/admin/keys/:keyId/approve', requireAdmin, async (c) => {
+  const keyId = c.req.param('keyId');
+  try {
+    approveKey(keyId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Approve key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to approve key' } }, 500);
+  }
+});
+
+app.post('/v1/admin/keys/:keyId/reject', requireAdmin, async (c) => {
+  const keyId = c.req.param('keyId');
+  const body = await c.req.json().catch(() => ({}));
+  try {
+    rejectKey(keyId, body.reason);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Reject key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to reject key' } }, 500);
+  }
+});
+
+app.post('/v1/admin/keys/:keyId/disable', requireAdmin, async (c) => {
+  const keyId = c.req.param('keyId');
+  const body = await c.req.json().catch(() => ({}));
+  try {
+    disableKey(keyId, body.reason);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Disable key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to disable key' } }, 500);
+  }
+});
+
+app.post('/v1/admin/keys/:keyId/enable', requireAdmin, async (c) => {
+  const keyId = c.req.param('keyId');
+  try {
+    enableKey(keyId);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Enable key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to enable key' } }, 500);
+  }
+});
+
+app.post('/v1/admin/keys/bulk-approve', requireAdmin, async (c) => {
+  const body = await c.req.json();
+  try {
+    const count = bulkApproveKeys(body.keyIds);
+    return c.json({ success: true, approved: count });
+  } catch (error) {
+    console.error('Bulk approve error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to bulk approve' } }, 500);
+  }
+});
+
+// 系统设置
+app.get('/v1/admin/settings', requireAdmin, async (c) => {
+  try {
+    const settings = getSettings();
+    return c.json(settings);
+  } catch (error) {
+    console.error('Get settings error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get settings' } }, 500);
+  }
+});
+
+app.put('/v1/admin/settings', requireAdmin, async (c) => {
+  try {
+    const body = await c.req.json();
+    updateSettings(body);
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Update settings error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update settings' } }, 500);
+  }
+});
