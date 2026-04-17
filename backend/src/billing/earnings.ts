@@ -322,12 +322,18 @@ function getCurrentPeriod(): string {
 }
 
 function getPeriodStart(period: string): number {
-  const [year, month] = period.split('-').map(Number);
+  const parts = period.split('-').map(Number);
+  const year = parts[0];
+  const month = parts[1];
+  if (year === undefined || month === undefined || isNaN(year) || isNaN(month)) return Date.now();
   return new Date(year, month - 1, 1).getTime();
 }
 
 function getPeriodEnd(period: string): number {
-  const [year, month] = period.split('-').map(Number);
+  const parts = period.split('-').map(Number);
+  const year = parts[0];
+  const month = parts[1];
+  if (year === undefined || month === undefined || isNaN(year) || isNaN(month)) return Date.now();
   return new Date(year, month, 1).getTime(); // next month 1st
 }
 

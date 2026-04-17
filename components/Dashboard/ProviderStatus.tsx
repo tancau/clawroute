@@ -88,7 +88,7 @@ export function ProviderStatus() {
       const data = await response.json();
       setProviders(data.providers || []);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('无法获取 Provider 状态');
     } finally {
       setIsLoading(false);

@@ -230,7 +230,7 @@ class ApiClient {
 
   // ===== Analytics API =====
   async getAnalyticsUsage(userId: string, days: number = 30) {
-    return this.request<{ userId: string; period: { days: number }; stats: any }>(
+    return this.request<{ userId: string; period: { days: number }; stats: Record<string, unknown> }>(
       `/v1/analytics/usage/${userId}?days=${days}`
     );
   }

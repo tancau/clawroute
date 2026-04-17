@@ -197,5 +197,98 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_provider_metrics_provider ON provider_metrics(provider);
   `);
 
+  // Phase 3: 团队表
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS teams (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      owner_id TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_teams_owner ON teams(owner_id);
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS team_members (
+      id TEXT PRIMARY KEY,
+      team_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'member',
+      joined_at INTEGER NOT NULL,
+      UNIQUE(team_id, user_id),
+      FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_team_members_team ON team_members(team_id);
+    CREATE INDEX IF NOT EXISTS idx_team_members_user ON team_members(user_id);
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS team_invitations (
+      id TEXT PRIMARY KEY,
+      team_id TEXT NOT NULL,
+      email TEXT NOT NULL,
+      role TEXT NOT NULL,
+      invited_by TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at INTEGER NOT NULL,
+      expires_at INTEGER NOT NULL,
+      FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_team_invitations_team ON team_invitations(team_id);
+    CREATE INDEX IF NOT EXISTS idx_team_invitations_email ON team_invitations(email);
+    CREATE INDEX IF NOT EXISTS idx_team_invitations_status ON team_invitations(status);
+  `);
+
+  // Phase 3: 审计日志表
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      team_id TEXT,
+      action TEXT NOT NULL,
+      resource TEXT NOT NULL,
+      resource_id TEXT,
+      details TEXT,
+      ip TEXT,
+      user_agent TEXT,
+      timestamp INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_audit_team ON audit_logs(team_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_logs(user_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);
+    CREATE INDEX IF NOT EXISTS idx_audit_resource ON audit_logs(resource);
+  `);
+
+  // Phase 3: 开发者 API Key 表
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS developer_api_keys (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      team_id TEXT,
+      name TEXT NOT NULL,
+      key_hash TEXT NOT NULL,
+      key_prefix TEXT NOT NULL,
+      permissions TEXT NOT NULL DEFAULT '[]',
+      rate_limit INTEGER NOT NULL DEFAULT 60,
+      usage_limit INTEGER NOT NULL DEFAULT 10000,
+      usage_count INTEGER NOT NULL DEFAULT 0,
+      last_used_at INTEGER NOT NULL DEFAULT 0,
+      expires_at INTEGER,
+      created_at INTEGER NOT NULL,
+      is_active INTEGER NOT NULL DEFAULT 1,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_dev_api_keys_user ON developer_api_keys(user_id);
+    CREATE INDEX IF NOT EXISTS idx_dev_api_keys_team ON developer_api_keys(team_id);
+    CREATE INDEX IF NOT EXISTS idx_dev_api_keys_prefix ON developer_api_keys(key_prefix);
+    CREATE INDEX IF NOT EXISTS idx_dev_api_keys_active ON developer_api_keys(is_active);
+  `);
+
   console.log('Database initialized successfully');
 }

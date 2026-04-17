@@ -16,7 +16,6 @@ interface KeyStatData {
   usageTrend: Array<{ date: string; calls: number }>;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 const PROVIDER_COLORS: Record<string, string> = {
   openai: 'from-green-400 to-emerald-600',
@@ -35,7 +34,7 @@ const TIER_LABELS: Record<string, { label: string; color: string }> = {
   free: { label: '免费池', color: 'bg-gray-500/20 text-gray-400' },
   paid: { label: '付费池', color: 'bg-blue-500/20 text-blue-400' },
   enterprise: { label: '企业池', color: 'bg-purple-500/20 text-purple-400' },
-};
+} as const;
 
 function formatNumber(n: number): string {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
@@ -125,7 +124,7 @@ export function KeyStats({ userId }: KeyStatsProps) {
           keys.map((key) => {
             const stats = keyStats.get(key.id);
             const gradient = PROVIDER_COLORS[key.provider] || 'from-gray-400 to-slate-600';
-            const tierInfo = TIER_LABELS[stats?.tier || 'free'] || TIER_LABELS.free;
+            const tierInfo = TIER_LABELS[stats?.tier || 'free'] ?? TIER_LABELS['free']!;
 
             return (
               <div

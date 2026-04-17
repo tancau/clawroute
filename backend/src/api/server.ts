@@ -26,6 +26,49 @@ import {
 } from '../providers/status';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
 
+// Phase 3 imports
+import {
+  createTeam,
+  getTeam,
+  getUserTeams,
+  inviteMember,
+  acceptInvitation,
+  removeMember,
+  updateRole as updateTeamRole,
+  getTeamInvitations,
+  getUserInvitations,
+  deleteTeam,
+  getMemberRole,
+  type TeamRole,
+} from '../team';
+import {
+  hasPermission,
+  getPermissions,
+  roleHasPermission,
+  checkResourceAccess,
+  requirePermission,
+  PermissionDeniedError,
+  type Permission,
+} from '../auth/permissions';
+import {
+  logAudit,
+  getAuditLogs,
+  exportAuditLogs,
+  type AuditLogFilters,
+} from '../audit';
+import {
+  createApiKey,
+  listApiKeys,
+  listTeamApiKeys,
+  getApiKey,
+  validateApiKey,
+  revokeApiKey,
+  updateApiKey,
+  deleteApiKey,
+  getApiKeyUsage,
+  type CreateApiKeyOptions,
+} from '../api-keys';
+
 // 初始化数据库
 initDatabase();
 
@@ -1184,6 +1227,395 @@ app.get('/v1/providers/ranking', async (c) => {
       error: { code: 'INTERNAL_ERROR', message: 'Failed to get provider ranking' },
     }, 500);
   }
+});
+
+// ==================== Phase 3: Team Management API ====================
+
+// 创建团队
+app.post('/v1/teams', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.ownerId || !body.name) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'ownerId and name are required' } }, 400);
+    }
+    const team = createTeam(body.ownerId, body.name);
+    logAudit({ userId: body.ownerId, teamId: team.id, action: 'team.create', resource: 'team', resourceId: team.id });
+    return c.json({ team }, 201);
+  } catch (error) {
+    console.error('Create team error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to create team' } }, 500);
+  }
+});
+
+// 获取团队信息
+app.get('/v1/teams/:teamId', async (c) => {
+  const teamId = c.req.param('teamId');
+  const team = getTeam(teamId);
+  if (!team) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'Team not found' } }, 404);
+  }
+  return c.json({ team });
+});
+
+// 获取用户所属团队列表
+app.get('/v1/users/:userId/teams', async (c) => {
+  const userId = c.req.param('userId');
+  const teams = getUserTeams(userId);
+  return c.json({ teams });
+});
+
+// 邀请成员
+app.post('/v1/teams/:teamId/invitations', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const body = await c.req.json();
+    if (!body.email || !body.invitedBy) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'email and invitedBy are required' } }, 400);
+    }
+    const team = getTeam(teamId);
+    if (!team) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'Team not found' } }, 404);
+    }
+    // Check permission
+    try {
+      requirePermission(body.invitedBy, teamId, 'team:write');
+    } catch (e) {
+      if (e instanceof PermissionDeniedError) {
+        return c.json({ error: { code: 'FORBIDDEN', message: e.message } }, 403);
+      }
+      throw e;
+    }
+    const role: TeamRole = body.role || 'member';
+    const invitation = inviteMember(teamId, body.email, role, body.invitedBy);
+    logAudit({ userId: body.invitedBy, teamId, action: 'team.invite', resource: 'team_invitation', resourceId: invitation.id, details: { email: body.email, role } });
+    return c.json({ invitation }, 201);
+  } catch (error) {
+    console.error('Invite member error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to invite member' } }, 500);
+  }
+});
+
+// 接受邀请
+app.post('/v1/invitations/:invitationId/accept', async (c) => {
+  try {
+    const invitationId = c.req.param('invitationId');
+    const body = await c.req.json();
+    if (!body.userId) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'userId is required' } }, 400);
+    }
+    const member = acceptInvitation(invitationId, body.userId);
+    if (!member) {
+      return c.json({ error: { code: 'INVALID_INVITATION', message: 'Invitation not found, expired, or already accepted' } }, 400);
+    }
+    logAudit({ userId: body.userId, teamId: member.teamId, action: 'team.accept_invitation', resource: 'team_invitation', resourceId: invitationId });
+    return c.json({ member });
+  } catch (error) {
+    console.error('Accept invitation error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to accept invitation' } }, 500);
+  }
+});
+
+// 获取团队邀请列表
+app.get('/v1/teams/:teamId/invitations', async (c) => {
+  const teamId = c.req.param('teamId');
+  const invitations = getTeamInvitations(teamId);
+  return c.json({ invitations });
+});
+
+// 获取用户收到的邀请
+app.get('/v1/users/:userId/invitations', async (c) => {
+  // In a real app, we'd look up the user's email. For now, accept email as query param.
+  const email = c.req.query('email');
+  if (!email) {
+    return c.json({ error: { code: 'INVALID_INPUT', message: 'email query parameter is required' } }, 400);
+  }
+  const invitations = getUserInvitations(email);
+  return c.json({ invitations });
+});
+
+// 移除成员
+app.delete('/v1/teams/:teamId/members/:userId', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const userId = c.req.param('userId');
+    const requesterId = c.req.query('requesterId');
+    if (!requesterId) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'requesterId is required' } }, 400);
+    }
+    try {
+      requirePermission(requesterId, teamId, 'team:write');
+    } catch (e) {
+      if (e instanceof PermissionDeniedError) {
+        return c.json({ error: { code: 'FORBIDDEN', message: e.message } }, 403);
+      }
+      throw e;
+    }
+    const removed = removeMember(teamId, userId);
+    if (!removed) {
+      return c.json({ error: { code: 'CANNOT_REMOVE', message: 'Cannot remove this member (owner or not found)' } }, 400);
+    }
+    logAudit({ userId: requesterId, teamId, action: 'team.remove_member', resource: 'team_member', resourceId: userId });
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Remove member error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to remove member' } }, 500);
+  }
+});
+
+// 更新成员角色
+app.patch('/v1/teams/:teamId/members/:userId/role', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const userId = c.req.param('userId');
+    const body = await c.req.json();
+    if (!body.role || !body.requesterId) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'role and requesterId are required' } }, 400);
+    }
+    try {
+      requirePermission(body.requesterId, teamId, 'team:admin');
+    } catch (e) {
+      if (e instanceof PermissionDeniedError) {
+        return c.json({ error: { code: 'FORBIDDEN', message: e.message } }, 403);
+      }
+      throw e;
+    }
+    const member = updateTeamRole(teamId, userId, body.role);
+    if (!member) {
+      return c.json({ error: { code: 'CANNOT_UPDATE', message: 'Cannot update this member\'s role (owner or not found)' } }, 400);
+    }
+    logAudit({ userId: body.requesterId, teamId, action: 'team.update_role', resource: 'team_member', resourceId: userId, details: { newRole: body.role } });
+    return c.json({ member });
+  } catch (error) {
+    console.error('Update role error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update role' } }, 500);
+  }
+});
+
+// 删除团队
+app.delete('/v1/teams/:teamId', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const ownerId = c.req.query('ownerId');
+    if (!ownerId) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'ownerId is required' } }, 400);
+    }
+    const deleted = deleteTeam(teamId, ownerId);
+    if (!deleted) {
+      return c.json({ error: { code: 'NOT_FOUND_OR_NOT_OWNER', message: 'Team not found or user is not the owner' } }, 404);
+    }
+    logAudit({ userId: ownerId, teamId, action: 'team.delete', resource: 'team', resourceId: teamId });
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Delete team error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to delete team' } }, 500);
+  }
+});
+
+// ==================== Phase 3: Permissions API ====================
+
+// 获取用户在团队中的权限
+app.get('/v1/teams/:teamId/members/:userId/permissions', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const userId = c.req.param('userId');
+    const { getMemberRole } = await import('../team');
+    const role = getMemberRole(teamId, userId);
+    const perms = role ? getPermissions(role) : [];
+    return c.json({ teamId, userId, role, permissions: perms });
+  } catch (error) {
+    console.error('Get permissions error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get permissions' } }, 500);
+  }
+});
+
+// 检查特定权限
+app.post('/v1/permissions/check', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.userId || !body.teamId || !body.permission) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'userId, teamId, and permission are required' } }, 400);
+    }
+    const granted = hasPermission(body.userId, body.teamId, body.permission as Permission);
+    return c.json({ granted });
+  } catch (error) {
+    console.error('Permission check error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Permission check failed' } }, 500);
+  }
+});
+
+// ==================== Phase 3: Audit Logs API ====================
+
+// 获取团队审计日志
+app.get('/v1/teams/:teamId/audit-logs', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const requesterId = c.req.query('requesterId');
+    if (!requesterId) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'requesterId is required' } }, 400);
+    }
+    try {
+      requirePermission(requesterId, teamId, 'analytics:read');
+    } catch (e) {
+      if (e instanceof PermissionDeniedError) {
+        return c.json({ error: { code: 'FORBIDDEN', message: e.message } }, 403);
+      }
+      throw e;
+    }
+    const filters: AuditLogFilters = {
+      userId: c.req.query('filterUserId') || undefined,
+      action: c.req.query('filterAction') || undefined,
+      resource: c.req.query('filterResource') || undefined,
+      limit: parseInt(c.req.query('limit') || '100', 10),
+      offset: parseInt(c.req.query('offset') || '0', 10),
+    };
+    const logs = getAuditLogs(teamId, filters);
+    return c.json({ logs });
+  } catch (error) {
+    console.error('Audit logs error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get audit logs' } }, 500);
+  }
+});
+
+// 导出审计日志
+app.get('/v1/teams/:teamId/audit-logs/export', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const requesterId = c.req.query('requesterId');
+    if (!requesterId) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'requesterId is required' } }, 400);
+    }
+    try {
+      requirePermission(requesterId, teamId, 'analytics:export');
+    } catch (e) {
+      if (e instanceof PermissionDeniedError) {
+        return c.json({ error: { code: 'FORBIDDEN', message: e.message } }, 403);
+      }
+      throw e;
+    }
+    const format = c.req.query('format') === 'csv' ? 'csv' : 'json';
+    const data = exportAuditLogs(teamId, format);
+    const contentType = format === 'csv' ? 'text/csv' : 'application/json';
+    return c.text(data, 200, { 'Content-Type': contentType, 'Content-Disposition': `attachment; filename="audit-logs-${teamId}.${format}"` });
+  } catch (error) {
+    console.error('Export audit logs error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to export audit logs' } }, 500);
+  }
+});
+
+// ==================== Phase 3: Developer API Keys ====================
+
+// 创建 API Key
+app.post('/v1/api-keys', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.userId || !body.name) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'userId and name are required' } }, 400);
+    }
+    const options: CreateApiKeyOptions = {
+      userId: body.userId,
+      teamId: body.teamId,
+      name: body.name,
+      permissions: body.permissions,
+      rateLimit: body.rateLimit,
+      usageLimit: body.usageLimit,
+      expiresAt: body.expiresAt,
+    };
+    const result = createApiKey(options);
+    logAudit({ userId: body.userId, teamId: body.teamId, action: 'api_key.create', resource: 'api_key', resourceId: result.apiKey.id });
+    return c.json({ apiKey: result.apiKey, rawKey: result.rawKey }, 201);
+  } catch (error) {
+    console.error('Create API key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to create API key' } }, 500);
+  }
+});
+
+// 列出用户的 API Keys
+app.get('/v1/users/:userId/api-keys', async (c) => {
+  const userId = c.req.param('userId');
+  const keys = listApiKeys(userId);
+  // Don't return key hash
+  const safeKeys = keys.map((k) => ({ ...k, key: undefined }));
+  return c.json({ keys: safeKeys });
+});
+
+// 列出团队的 API Keys
+app.get('/v1/teams/:teamId/api-keys', async (c) => {
+  const teamId = c.req.param('teamId');
+  const keys = listTeamApiKeys(teamId);
+  const safeKeys = keys.map((k) => ({ ...k, key: undefined }));
+  return c.json({ keys: safeKeys });
+});
+
+// 获取单个 API Key
+app.get('/v1/api-keys/:keyId', async (c) => {
+  const keyId = c.req.param('keyId');
+  const key = getApiKey(keyId);
+  if (!key) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
+  }
+  const { key: _keyHash, ...safeKey } = key;
+  return c.json({ apiKey: safeKey });
+});
+
+// 撤销 API Key
+app.post('/v1/api-keys/:keyId/revoke', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    const body = await c.req.json();
+    const revoked = revokeApiKey(keyId);
+    if (!revoked) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
+    }
+    logAudit({ userId: body.userId, teamId: body.teamId, action: 'api_key.revoke', resource: 'api_key', resourceId: keyId });
+    return c.json({ success: true });
+  } catch (error) {
+    console.error('Revoke API key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to revoke API key' } }, 500);
+  }
+});
+
+// 更新 API Key
+app.patch('/v1/api-keys/:keyId', async (c) => {
+  try {
+    const keyId = c.req.param('keyId');
+    const body = await c.req.json();
+    const updated = updateApiKey(keyId, {
+      name: body.name,
+      permissions: body.permissions,
+      rateLimit: body.rateLimit,
+      usageLimit: body.usageLimit,
+      expiresAt: body.expiresAt,
+    });
+    if (!updated) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
+    }
+    logAudit({ userId: body.userId, teamId: body.teamId, action: 'api_key.update', resource: 'api_key', resourceId: keyId });
+    const { key: _keyHash, ...safeKey } = updated;
+    return c.json({ apiKey: safeKey });
+  } catch (error) {
+    console.error('Update API key error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update API key' } }, 500);
+  }
+});
+
+// 删除 API Key
+app.delete('/v1/api-keys/:keyId', async (c) => {
+  const keyId = c.req.param('keyId');
+  const deleted = deleteApiKey(keyId);
+  if (!deleted) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
+  }
+  return c.json({ success: true });
+});
+
+// 获取 API Key 使用统计
+app.get('/v1/api-keys/:keyId/usage', async (c) => {
+  const keyId = c.req.param('keyId');
+  const usage = getApiKeyUsage(keyId);
+  if (!usage) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
+  }
+  return c.json(usage);
 });
 
 // 导出应用

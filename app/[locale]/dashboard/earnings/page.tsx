@@ -72,34 +72,44 @@ export default function EarningsPage() {
   }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
-      fetchEarningsData();
-    }
-  }, [user]);
-
-  const fetchEarningsData = async () => {
     if (!user) return;
     setIsLoading(true);
-    try {
-      const [summaryRes, historyRes] = await Promise.all([
-        fetch(`${API_BASE}/v1/billing/earnings/${user.id}/summary`),
-        fetch(`${API_BASE}/v1/billing/earnings/${user.id}/history?limit=12`),
-      ]);
+    (async () => {
+      try {
+        const [summaryRes, historyRes] = await Promise.all([
+          fetch(`${API_BASE}/v1/billing/earnings/${user.id}/summary`),
+          fetch(`${API_BASE}/v1/billing/earnings/${user.id}/history?limit=12`),
+        ]);
+        if (summaryRes.ok) setSummary(await summaryRes.json());
+        if (historyRes.ok) setHistory(await historyRes.json());
+        setError(null);
+      } catch {
+        setError('无法获取收益数据');
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [user]);
 
-      if (summaryRes.ok) {
-        const data = await summaryRes.json();
-        setSummary(data);
+  const handleRetry = () => {
+    if (!user) return;
+    setIsLoading(true);
+    setError(null);
+    (async () => {
+      try {
+        const [summaryRes, historyRes] = await Promise.all([
+          fetch(`${API_BASE}/v1/billing/earnings/${user.id}/summary`),
+          fetch(`${API_BASE}/v1/billing/earnings/${user.id}/history?limit=12`),
+        ]);
+        if (summaryRes.ok) setSummary(await summaryRes.json());
+        if (historyRes.ok) setHistory(await historyRes.json());
+        setError(null);
+      } catch {
+        setError('无法获取收益数据');
+      } finally {
+        setIsLoading(false);
       }
-      if (historyRes.ok) {
-        const data = await historyRes.json();
-        setHistory(data);
-      }
-      setError(null);
-    } catch (err) {
-      setError('无法获取收益数据');
-    } finally {
-      setIsLoading(false);
-    }
+    })();
   };
 
   if (authLoading || !isAuthenticated || !user) {
@@ -186,7 +196,7 @@ export default function EarningsPage() {
           <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-8 text-center">
             <div className="text-[#64748b] mb-4">{error}</div>
             <button
-              onClick={fetchEarningsData}
+              onClick={handleRetry}
               className="px-4 py-2 bg-[#1e293b] text-[#94a3b8] rounded-lg hover:bg-[#334155]"
             >
               重试
