@@ -1,49 +1,82 @@
 {
   "app": {
-    "title": "ClawRoute",
-    "subtitle": "OpenClaw Smart Routing Config Generator"
+    "title": "ClawRouter",
+    "subtitle": "AI Inference Cost Optimization Platform"
   },
   "home": {
-    "heading": "What do you use OpenClaw for?",
-    "subheading": "Select a scenario, get the optimal config",
+    "heading": "Smart Routing, Maximum Savings",
+    "subheading": "Select scenario, get optimal solution",
     "savingLabel": "Typically saves",
     "hero": {
-      "highlight": "Empower OpenClaw Users",
-      "title": "Maximum savings with minimum configuration.",
-      "subtitle": "Select your use case, generate optimized routing config, save 60-80% on OpenClaw costs instantly."
+      "highlight": "Empower AI Calls",
+      "title": "Best results at minimum cost.",
+      "subtitle": "Intelligently match model capabilities with task requirements. Auto-select the most cost-effective AI solution. Save up to 90% on API costs."
     },
     "cta": {
-      "start": "Get Started",
-      "templates": "Browse Templates"
+      "start": "Get Started Free",
+      "templates": "Learn More"
     },
     "testimonials": {
       "title": "What users say"
     },
     "sceneSection": {
-      "title": "What do you use OpenClaw for?",
-      "subtitle": "Select a scenario, get the optimal config"
+      "title": "What's your AI use case?",
+      "subtitle": "Select scenario, get recommended config"
     },
     "quickstart": {
       "title": "Quick Start"
     },
     "installCode": {
-      "comment": "Configure your OpenClaw routing",
-      "step1": "Select scenario → Generate models.yaml",
-      "savings": "Save 60-80% on costs!"
+      "comment": "Integrate ClawRouter in one line",
+      "step1": "Replace your API endpoint",
+      "savings": "Save 60-90% instantly!"
     },
     "features": {
-      "title": "Why ClawRoute",
+      "title": "Why ClawRouter",
       "savings": {
-        "title": "Significant Savings",
-        "desc": "Smart routing saves you 60-80% on OpenClaw costs"
+        "title": "Extreme Savings",
+        "desc": "Smart routing auto-selects the most cost-effective model. Save up to 90% on API costs"
       },
       "easy": {
-        "title": "Ready to Use",
-        "desc": "Preset templates, no complex YAML configuration needed"
+        "title": "Zero Integration",
+        "desc": "Compatible with OpenAI / Anthropic API. One line of code to integrate"
       },
       "opensource": {
-        "title": "Fully Open Source",
-        "desc": "All code is open source, community-driven improvements"
+        "title": "Resource Sharing",
+        "desc": "Share idle API Keys, earn passive income. Win-win-win"
+      }
+    },
+    "resourcePool": {
+      "title": "Dual Resource Pool",
+      "subtitle": "More resources, lower costs",
+      "apiKeyPool": {
+        "title": "🔑 API Key Pool",
+        "desc": "Share idle API Keys, earn revenue share",
+        "status": "✅ Live"
+      },
+      "computePool": {
+        "title": "⚡ Distributed Compute Pool",
+        "desc": "Contribute local GPU, become a node operator",
+        "status": "🚀 Coming Soon"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Send Request",
+        "desc": "Call API as usual"
+      },
+      "step2": {
+        "title": "Smart Analysis",
+        "desc": "Analyze task type, complexity, budget"
+      },
+      "step3": {
+        "title": "Optimal Match",
+        "desc": "Select best value model"
+      },
+      "step4": {
+        "title": "Return Result",
+        "desc": "Quality result + savings report"
       }
     }
   },
@@ -152,41 +185,89 @@
     "en": "English"
   },
   "header": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "dashboard": "Dashboard",
+    "docs": "Docs"
   },
   "calculator": {
     "title": "Cost Calculator",
     "monthlyCalls": "Monthly API Calls",
     "avgTokens": "Avg Tokens per Call",
-    "withoutClawroute": "Without ClawRoute",
-    "withClawroute": "With ClawRoute",
+    "withoutClawroute": "Direct API Calls",
+    "withClawroute": "With ClawRouter",
     "savings": "Savings",
     "month": "month",
     "annualSavings": "Annual savings",
     "cta": "Start Saving Now"
   },
   "importer": {
-    "title": "Import Your Config",
-    "description": "Paste your existing OpenClaw models.yaml and get optimization suggestions",
-    "placeholder": "Paste your models.yaml content here...",
-    "analyze": "Analyze",
-    "analyzing": "Analyzing...",
+    "title": "Migrate Your App",
+    "description": "Just change the API endpoint to enjoy smart routing",
+    "placeholder": "Example: Change api.openai.com to api.clawrouter.ai",
+    "analyze": "See Example",
+    "analyzing": "Loading...",
     "clear": "Clear",
-    "foundIssues": "Issues Found",
-    "suggestions": "Optimization Suggestions",
-    "generateOptimized": "Generate Optimized Config",
-    "noIssues": "Your config looks good! No issues found.",
+    "foundIssues": "Current Config",
+    "suggestions": "Optimization Tips",
+    "generateOptimized": "Get Started",
+    "noIssues": "Integrate in 3 simple steps!",
     "issues": {
-      "missingBaseUrl": "Missing baseUrl configuration for providers",
-      "gpt4NoCondition": "GPT-4 is used without routing conditions (expensive)",
-      "noFreeTier": "No free tier models configured",
-      "noDefault": "Missing default fallback model"
+      "missingBaseUrl": "Change your API base URL",
+      "gpt4NoCondition": "No need to specify GPT-4 manually, system auto-optimizes",
+      "noFreeTier": "Free models auto-used for simple tasks",
+      "noDefault": "Default model intelligently selected by system"
     },
     "suggestions": {
-      "addBaseUrl": "Add baseUrl for each provider to ensure proper routing",
-      "routeGpt4": "Route GPT-4 to complex tasks only, use cheaper models for simple requests",
-      "addFreeTier": "Add free models like Qwen3-Coder-Free for simple tasks",
-      "addDefault": "Add a default model as fallback for unmatched requests"
+      "addBaseUrl": "Change endpoint to api.clawrouter.ai",
+      "routeGpt4": "Complex tasks auto-use GPT-4, simple tasks use free models",
+      "addFreeTier": "System auto-finds available models in free pool",
+      "addDefault": "No default model config needed, smart routing handles it"
     }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "No account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful",
+    "loginFailed": "Login failed",
+    "registerFailed": "Registration failed"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "keys": "API Keys",
+    "usage": "Usage Stats",
+    "earnings": "Earnings Report",
+    "settings": "Settings",
+    "welcome": "Welcome back",
+    "totalRequests": "Total Requests",
+    "totalSavings": "Total Savings",
+    "totalEarnings": "Total Earnings",
+    "activeKeys": "Active Keys"
+  },
+  "keyManager": {
+    "title": "API Key Management",
+    "addKey": "Add Key",
+    "provider": "Provider",
+    "status": "Status",
+    "usage": "Usage",
+    "earnings": "Earnings",
+    "actions": "Actions",
+    "active": "Active",
+    "paused": "Paused",
+    "exhausted": "Exhausted",
+    "invalid": "Invalid",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "share": "Share to Pool",
+    "shareDesc": "Share idle keys to resource pool, earn 50% revenue share"
   }
 }

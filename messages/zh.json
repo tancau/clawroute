@@ -1,49 +1,82 @@
 {
   "app": {
-    "title": "ClawRoute",
-    "subtitle": "OpenClaw 智能路由配置生成器"
+    "title": "ClawRouter",
+    "subtitle": "AI 推理成本优化平台"
   },
   "home": {
-    "heading": "你用 OpenClaw 做什么？",
-    "subheading": "选择场景，获取最优配置",
+    "heading": "智能路由，极致省钱",
+    "subheading": "选择场景，获取最优方案",
     "savingLabel": "通常节省",
     "hero": {
-      "highlight": "让 OpenClaw 用户",
-      "title": "用最少的配置工作，获得最大的成本节省。",
-      "subtitle": "选择你的使用场景，一键生成优化好的路由配置，立即节省 60-80% 的 OpenClaw 费用。"
+      "highlight": "让 AI 调用",
+      "title": "用最少的成本，获得最优的结果。",
+      "subtitle": "智能匹配模型能力与任务需求，自动选择最具性价比的 AI 方案，节省高达 90% 的 API 成本。"
     },
     "cta": {
-      "start": "开始配置",
-      "templates": "浏览模板市场"
+      "start": "免费开始",
+      "templates": "了解更多"
     },
     "testimonials": {
       "title": "来自用户的评价"
     },
     "sceneSection": {
-      "title": "你用 OpenClaw 做什么？",
-      "subtitle": "选择场景，获取最优配置"
+      "title": "你的 AI 应用场景是什么？",
+      "subtitle": "选择场景，获取推荐配置"
     },
     "quickstart": {
       "title": "快速开始"
     },
     "installCode": {
-      "comment": "配置你的 OpenClaw 路由",
-      "step1": "选择场景 → 一键生成 models.yaml",
-      "savings": "节省 60-80% 成本！"
+      "comment": "一行代码接入 ClawRouter",
+      "step1": "替换你的 API endpoint",
+      "savings": "立即节省 60-90% 成本！"
     },
     "features": {
-      "title": "为什么选择 ClawRoute",
+      "title": "为什么选择 ClawRouter",
       "savings": {
-        "title": "显著节省",
-        "desc": "智能路由让你节省 60-80% 的 OpenClaw 费用"
+        "title": "极致省钱",
+        "desc": "智能路由自动选择最具性价比的模型，节省高达 90% 的 API 成本"
       },
       "easy": {
-        "title": "开箱即用",
-        "desc": "预设场景模板，无需手动配置复杂的 YAML"
+        "title": "零门槛接入",
+        "desc": "兼容 OpenAI / Anthropic API，一行代码即可接入"
       },
       "opensource": {
-        "title": "完全开源",
-        "desc": "所有代码完全开源，社区驱动持续改进"
+        "title": "资源共享",
+        "desc": "共享闲置 API Key，获得被动收益，三方共赢"
+      }
+    },
+    "resourcePool": {
+      "title": "双重资源池",
+      "subtitle": "更多资源，更低成本",
+      "apiKeyPool": {
+        "title": "🔑 API Key 池",
+        "desc": "共享闲置 API Key，获得分成收益",
+        "status": "✅ 已上线"
+      },
+      "computePool": {
+        "title": "⚡ 分布式算力池",
+        "desc": "贡献本地 GPU，成为节点运营者",
+        "status": "🚀 Coming Soon"
+      }
+    },
+    "howItWorks": {
+      "title": "工作原理",
+      "step1": {
+        "title": "发送请求",
+        "desc": "像往常一样调用 API"
+      },
+      "step2": {
+        "title": "智能分析",
+        "desc": "分析任务类型、复杂度、预算"
+      },
+      "step3": {
+        "title": "最优匹配",
+        "desc": "选择最具性价比的模型"
+      },
+      "step4": {
+        "title": "返回结果",
+        "desc": "高质量结果 + 省钱报告"
       }
     }
   },
@@ -152,41 +185,89 @@
     "en": "English"
   },
   "header": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "dashboard": "控制台",
+    "docs": "文档"
   },
   "calculator": {
     "title": "成本计算器",
     "monthlyCalls": "每月 API 调用次数",
     "avgTokens": "每次调用平均 Token 数",
-    "withoutClawroute": "不用 ClawRoute",
-    "withClawroute": "使用 ClawRoute",
+    "withoutClawroute": "直接调用 API",
+    "withClawroute": "使用 ClawRouter",
     "savings": "节省",
     "month": "月",
     "annualSavings": "年度节省",
     "cta": "立即开始节省"
   },
   "importer": {
-    "title": "导入你的配置",
-    "description": "粘贴你现有的 OpenClaw models.yaml，获取优化建议",
-    "placeholder": "在这里粘贴你的 models.yaml 内容...",
-    "analyze": "分析",
-    "analyzing": "分析中...",
+    "title": "迁移你的应用",
+    "description": "只需修改 API endpoint，即可享受智能路由",
+    "placeholder": "例如：将 api.openai.com 改为 api.clawrouter.ai",
+    "analyze": "查看示例",
+    "analyzing": "加载中...",
     "clear": "清除",
-    "foundIssues": "发现的问题",
+    "foundIssues": "当前配置",
     "suggestions": "优化建议",
-    "generateOptimized": "生成优化配置",
-    "noIssues": "你的配置看起来不错！没有发现问题。",
+    "generateOptimized": "开始使用",
+    "noIssues": "简单 3 步即可接入！",
     "issues": {
-      "missingBaseUrl": "提供商的 baseUrl 配置缺失",
-      "gpt4NoCondition": "GPT-4 没有路由条件（成本较高）",
-      "noFreeTier": "没有配置免费层模型",
-      "noDefault": "缺少默认回退模型"
+      "missingBaseUrl": "修改你的 API base URL",
+      "gpt4NoCondition": "GPT-4 不需要手动指定，系统自动优化",
+      "noFreeTier": "免费模型会自动用于简单任务",
+      "noDefault": "默认模型由系统智能选择"
     },
     "suggestions": {
-      "addBaseUrl": "为每个提供商添加 baseUrl 确保正确路由",
-      "routeGpt4": "只在复杂任务中使用 GPT-4，简单请求用更便宜的模型",
-      "addFreeTier": "为简单任务添加免费模型如 Qwen3-Coder-Free",
-      "addDefault": "添加默认模型作为未匹配请求的回退"
+      "addBaseUrl": "将 endpoint 改为 api.clawrouter.ai",
+      "routeGpt4": "复杂任务自动使用 GPT-4，简单任务用免费模型",
+      "addFreeTier": "系统自动在免费池中寻找可用模型",
+      "addDefault": "无需配置默认模型，智能路由自动处理"
     }
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "forgotPassword": "忘记密码？",
+    "noAccount": "没有账号？",
+    "hasAccount": "已有账号？",
+    "loginSuccess": "登录成功",
+    "registerSuccess": "注册成功",
+    "loginFailed": "登录失败",
+    "registerFailed": "注册失败"
+  },
+  "dashboard": {
+    "title": "控制台",
+    "overview": "概览",
+    "keys": "API Keys",
+    "usage": "使用统计",
+    "earnings": "收益报告",
+    "settings": "设置",
+    "welcome": "欢迎回来",
+    "totalRequests": "总请求数",
+    "totalSavings": "累计节省",
+    "totalEarnings": "累计收益",
+    "activeKeys": "活跃 Key"
+  },
+  "keyManager": {
+    "title": "API Key 管理",
+    "addKey": "添加 Key",
+    "provider": "提供商",
+    "status": "状态",
+    "usage": "使用量",
+    "earnings": "收益",
+    "actions": "操作",
+    "active": "活跃",
+    "paused": "暂停",
+    "exhausted": "耗尽",
+    "invalid": "无效",
+    "pause": "暂停",
+    "resume": "恢复",
+    "delete": "删除",
+    "share": "共享到资源池",
+    "shareDesc": "共享闲置 Key 到资源池，获得 50% 分成"
   }
 }

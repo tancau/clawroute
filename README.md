@@ -1,6 +1,7 @@
-# 🦞 ClawRoute
+# 🦞 ClawRouter
 
-> Smart model routing config generator for OpenClaw users — Save 60-80% on API costs.
+> AI 推理成本优化平台 — "API Key 的 Airbnb"
+> 用户共享闲置 API Key，智能路由选择最优模型，平均节省 80-95% 成本
 
 English | [简体中文](./README.zh.md)
 
@@ -21,16 +22,15 @@ Watch how ClawRoute helps you save 60-80% on OpenClaw costs in under 30 seconds:
 
 ---
 
-## 🎯 What is ClawRoute?
+## 🎯 What is ClawRouter?
 
-OpenClaw sends all requests to the same model by default — like driving a Ferrari to buy groceries.
+ClawRouter 是一个 **AI 推理成本优化平台**，核心理念：
 
-ClawRoute is a **visual routing config generator** that helps you:
-1. Select your use case
-2. Drag-and-drop to adjust routing rules
-3. Export OpenClaw-compatible YAML config with one click
+1. **资源共享** — 用户贡献闲置 API Key，获得收益分成
+2. **智能路由** — 根据请求复杂度自动选择最优模型
+3. **成本优化** — 平均节省 80-95% 推理成本
 
-**Simply put**: Tell ClawRoute what you use OpenClaw for, and it generates the optimal model routing configuration.
+**一句话**：你的 API Key 睡觉时也在赚钱。
 
 ---
 
@@ -66,27 +66,47 @@ Visual editing of routing rules, no YAML writing required:
 
 ## 🚀 Quick Start
 
-### Live Demo (No Installation)
-👉 [https://clawroute.vercel.app](https://clawroute.vercel.app)
-
-### Run Locally
+### 方式一：Docker 部署（推荐）
 
 ```bash
 # Clone the repo
 git clone https://github.com/tancau/clawroute.git
 cd clawroute
 
-# Install dependencies
-pnpm install
+# 配置环境变量
+cp .env.example .env
+# 编辑 .env 设置 JWT_SECRET 和 ENCRYPTION_KEY
 
-# Start dev server
-pnpm dev
-
-# Run tests
-pnpm test
+# 启动服务
+docker-compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to use.
+访问:
+- 前端: http://localhost:3001
+- 后端 API: http://localhost:3000
+
+### 方式二：开发模式
+
+```bash
+# 安装依赖
+pnpm install
+cd backend && npm install && cd ..
+
+# 启动开发服务
+./scripts/start.sh
+
+# 或手动启动
+cd backend && npm run dev &  # 后端
+npm run dev                   # 前端
+```
+
+### 运行测试
+
+```bash
+./scripts/test.sh
+```
+
+详细 API 文档见 [docs/API.md](./docs/API.md)
 
 ---
 
@@ -109,18 +129,22 @@ Open [http://localhost:3000](http://localhost:3000) to use.
 
 ```
 clawroute/
-├── app/
+├── app/                    # Next.js 前端
 │   └── [locale]/           # i18n routes (zh/en)
-│       ├── page.tsx        # Home (scene selector)
-│       ├── configure/      # Config page (rule editor + preview)
-│       └── templates/      # Template market
-├── components/             # React components
-├── lib/                    # Core business logic
-├── data/                   # Static data
-├── messages/               # i18n translation files
-│   ├── zh.json
-│   └── en.json
-└── store/                  # Zustand global state
+├── backend/                # NestJS 后端 API
+│   ├── src/                # 源代码
+│   ├── dist/               # 编译输出
+│   └── Dockerfile          # 后端容器配置
+├── components/             # React 组件
+├── lib/                    # 核心业务逻辑
+├── data/                   # 静态数据
+├── docs/                   # 文档
+│   └── API.md              # API 文档
+├── scripts/                # 脚本
+│   ├── start.sh            # 开发启动脚本
+│   └── test.sh             # 测试脚本
+├── docker-compose.yml      # Docker 编排
+└── .env.example            # 环境变量示例
 ```
 
 ---
