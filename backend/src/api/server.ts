@@ -7,6 +7,7 @@ import { ClassifyTool } from '../tools/classify';
 import { RouteTool } from '../tools/route';
 import { ProxyTool } from '../tools/proxy';
 import { initDatabase } from '../db';
+import { db as globalDb } from '../db';
 import { UserTool, getUser, updateUser, deductCredits, verifyPassword } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
@@ -68,6 +69,46 @@ import {
   getApiKeyUsage,
   type CreateApiKeyOptions,
 } from '../api-keys';
+
+// Phase 4 imports
+import {
+  listSSOProviders,
+  getSSOProvider,
+  createSSOConnection,
+  getSSOConnection,
+  deleteSSOConnection,
+  updateSSOConnection,
+  initiateSSO,
+  handleSSOCallback,
+  verifySSOAccess,
+} from '../sso';
+import {
+  getBrandConfig,
+  updateBrandConfig,
+  validateCustomDomain,
+  registerCustomDomain,
+  verifyCustomDomain,
+  getCustomDomain,
+  getTeamCustomDomains,
+  deleteCustomDomain,
+  enableSSL,
+} from '../branding';
+import {
+  createExportJob,
+  getExportJob,
+  getExportJobs,
+  processExportJob,
+  getDownloadUrl,
+  deleteExportJob,
+} from '../export';
+import {
+  createCustomRule,
+  listCustomRules,
+  getCustomRule,
+  updateCustomRule,
+  deleteCustomRule,
+  applyCustomRules,
+} from '../routing/custom';
 
 // 初始化数据库
 initDatabase();
@@ -1616,6 +1657,350 @@ app.get('/v1/api-keys/:keyId/usage', async (c) => {
     return c.json({ error: { code: 'NOT_FOUND', message: 'API key not found' } }, 404);
   }
   return c.json(usage);
+});
+
+// ==================== Phase 4: SSO API ====================
+
+// 列出 SSO Providers
+app.get('/v1/sso/providers', async (c) => {
+  const providers = listSSOProviders();
+  return c.json({ providers });
+});
+
+// 获取 SSO Provider
+app.get('/v1/sso/providers/:id', async (c) => {
+  const id = c.req.param('id');
+  const provider = getSSOProvider(id);
+  if (!provider) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'SSO provider not found' } }, 404);
+  }
+  return c.json({ provider });
+});
+
+// 创建 SSO 连接
+app.post('/v1/sso/connections', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.teamId || !body.providerId || !body.domain) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'teamId, providerId, and domain are required' } }, 400);
+    }
+    const conn = createSSOConnection(body.teamId, body.providerId, body.domain, body.config || {});
+    return c.json({ connection: conn }, 201);
+  } catch (error) {
+    console.error('SSO connection error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to create SSO connection' } }, 500);
+  }
+});
+
+// 获取团队 SSO 连接
+app.get('/v1/teams/:teamId/sso/connection', async (c) => {
+  const teamId = c.req.param('teamId');
+  const conn = getSSOConnection(teamId);
+  if (!conn) {
+    return c.json({ connection: null });
+  }
+  return c.json({ connection: conn });
+});
+
+// 更新 SSO 连接
+app.patch('/v1/sso/connections/:teamId', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const body = await c.req.json();
+    const conn = updateSSOConnection(teamId, { domain: body.domain, config: body.config });
+    if (!conn) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'SSO connection not found' } }, 404);
+    }
+    return c.json({ connection: conn });
+  } catch (error) {
+    console.error('SSO update error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to update SSO connection' } }, 500);
+  }
+});
+
+// 删除 SSO 连接
+app.delete('/v1/sso/connections/:teamId', async (c) => {
+  const teamId = c.req.param('teamId');
+  const deleted = deleteSSOConnection(teamId);
+  return c.json({ success: deleted });
+});
+
+// 发起 SSO 登录
+app.post('/v1/sso/connections/:connectionId/initiate', async (c) => {
+  try {
+    const connectionId = c.req.param('connectionId');
+    const body = await c.req.json();
+    const redirectUri = body.redirectUri;
+    if (!redirectUri) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'redirectUri is required' } }, 400);
+    }
+    const result = initiateSSO(connectionId, redirectUri);
+    return c.json(result);
+  } catch (error) {
+    console.error('SSO initiate error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to initiate SSO' } }, 500);
+  }
+});
+
+// 处理 SSO 回调
+app.post('/v1/sso/callback', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.connectionId || !body.code || !body.state) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'connectionId, code, and state are required' } }, 400);
+    }
+    const conn = getSSOConnection(
+      globalDb.prepare('SELECT team_id FROM sso_connections WHERE id = ?').get(body.connectionId) as any
+    );
+    const providerType = conn ? getSSOProvider(conn.providerId)?.type || 'oidc' : 'oidc';
+    const result = await handleSSOCallback(providerType, {
+      connectionId: body.connectionId,
+      code: body.code,
+      state: body.state,
+      redirectUri: body.redirectUri,
+    });
+    return c.json(result);
+  } catch (error) {
+    console.error('SSO callback error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'SSO callback failed' } }, 500);
+  }
+});
+
+// ==================== Phase 4: Branding API ====================
+
+// 获取品牌配置
+app.get('/v1/teams/:teamId/branding', async (c) => {
+  const teamId = c.req.param('teamId');
+  const config = getBrandConfig(teamId);
+  return c.json({ config });
+});
+
+// 更新品牌配置
+app.patch('/v1/teams/:teamId/branding', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const body = await c.req.json();
+    const config = updateBrandConfig(teamId, body);
+    return c.json({ config });
+  } catch (error) {
+    console.error('Branding update error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to update branding' } }, 500);
+  }
+});
+
+// 验证自定义域名
+app.post('/v1/branding/domains/validate', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.domain) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'domain is required' } }, 400);
+    }
+    const result = validateCustomDomain(body.domain);
+    return c.json(result);
+  } catch (error) {
+    console.error('Domain validation error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Domain validation failed' } }, 500);
+  }
+});
+
+// 注册自定义域名
+app.post('/v1/teams/:teamId/branding/domains', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const body = await c.req.json();
+    if (!body.domain) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'domain is required' } }, 400);
+    }
+    const domain = registerCustomDomain(teamId, body.domain);
+    return c.json({ domain }, 201);
+  } catch (error) {
+    console.error('Domain registration error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to register domain' } }, 500);
+  }
+});
+
+// 验证自定义域名（DNS 验证）
+app.post('/v1/branding/domains/:domain/verify', async (c) => {
+  try {
+    const domain = c.req.param('domain');
+    const body = await c.req.json();
+    if (!body.token) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'token is required' } }, 400);
+    }
+    const verified = verifyCustomDomain(domain, body.token);
+    return c.json({ verified });
+  } catch (error) {
+    console.error('Domain verification error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Domain verification failed' } }, 500);
+  }
+});
+
+// 获取团队自定义域名
+app.get('/v1/teams/:teamId/branding/domains', async (c) => {
+  const teamId = c.req.param('teamId');
+  const domains = getTeamCustomDomains(teamId);
+  return c.json({ domains });
+});
+
+// 删除自定义域名
+app.delete('/v1/branding/domains/:domain', async (c) => {
+  const domain = c.req.param('domain');
+  const deleted = deleteCustomDomain(domain);
+  return c.json({ success: deleted });
+});
+
+// 启用 SSL
+app.post('/v1/branding/domains/:domain/ssl', async (c) => {
+  const domain = c.req.param('domain');
+  const enabled = enableSSL(domain);
+  return c.json({ sslEnabled: enabled });
+});
+
+// ==================== Phase 4: Export API ====================
+
+// 创建导出任务
+app.post('/v1/exports', async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.teamId || !body.userId || !body.type || !body.format) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'teamId, userId, type, and format are required' } }, 400);
+    }
+    const job = createExportJob(body.teamId, body.userId, body.type, body.format, body.filters || {});
+    return c.json({ job }, 201);
+  } catch (error) {
+    console.error('Export creation error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to create export' } }, 500);
+  }
+});
+
+// 获取导出任务
+app.get('/v1/exports/:jobId', async (c) => {
+  const jobId = c.req.param('jobId');
+  const job = getExportJob(jobId);
+  if (!job) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'Export job not found' } }, 404);
+  }
+  return c.json({ job });
+});
+
+// 获取团队导出任务列表
+app.get('/v1/teams/:teamId/exports', async (c) => {
+  const teamId = c.req.param('teamId');
+  const limit = parseInt(c.req.query('limit') || '50', 10);
+  const jobs = getExportJobs(teamId, limit);
+  return c.json({ jobs });
+});
+
+// 处理导出任务
+app.post('/v1/exports/:jobId/process', async (c) => {
+  try {
+    const jobId = c.req.param('jobId');
+    const job = processExportJob(jobId);
+    return c.json({ job });
+  } catch (error) {
+    console.error('Export processing error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to process export' } }, 500);
+  }
+});
+
+// 获取下载链接
+app.get('/v1/exports/:jobId/download', async (c) => {
+  const jobId = c.req.param('jobId');
+  const result = getDownloadUrl(jobId);
+  if (!result) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'Export job or download not found' } }, 404);
+  }
+  if (result.expired) {
+    return c.json({ error: { code: 'EXPIRED', message: 'Download link has expired' } }, 410);
+  }
+  return c.json({ url: result.url, expiresAt: result.expired });
+});
+
+// 删除导出任务
+app.delete('/v1/exports/:jobId', async (c) => {
+  const jobId = c.req.param('jobId');
+  const deleted = deleteExportJob(jobId);
+  return c.json({ success: deleted });
+});
+
+// ==================== Phase 4: Custom Routing API ====================
+
+
+// 创建路由规则
+app.post('/v1/teams/:teamId/routing-rules', async (c) => {
+  try {
+    const teamId = c.req.param('teamId');
+    const body = await c.req.json();
+    if (!body.name || !body.action?.preferredModels) {
+      return c.json({ error: { code: 'INVALID_INPUT', message: 'name and action.preferredModels are required' } }, 400);
+    }
+    const rule = createCustomRule(teamId, {
+      name: body.name,
+      condition: body.condition || {},
+      action: body.action,
+      priority: body.priority || 0,
+      enabled: body.enabled !== false,
+    });
+    return c.json({ rule }, 201);
+  } catch (error) {
+    console.error('Routing rule creation error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to create routing rule' } }, 500);
+  }
+});
+
+// 获取团队路由规则列表
+app.get('/v1/teams/:teamId/routing-rules', async (c) => {
+  const teamId = c.req.param('teamId');
+  const rules = listCustomRules(teamId);
+  return c.json({ rules });
+});
+
+// 获取单个路由规则
+app.get('/v1/routing-rules/:ruleId', async (c) => {
+  const ruleId = c.req.param('ruleId');
+  const rule = getCustomRule(ruleId);
+  if (!rule) {
+    return c.json({ error: { code: 'NOT_FOUND', message: 'Routing rule not found' } }, 404);
+  }
+  return c.json({ rule });
+});
+
+// 更新路由规则
+app.patch('/v1/routing-rules/:ruleId', async (c) => {
+  try {
+    const ruleId = c.req.param('ruleId');
+    const body = await c.req.json();
+    const rule = updateCustomRule(ruleId, body);
+    if (!rule) {
+      return c.json({ error: { code: 'NOT_FOUND', message: 'Routing rule not found' } }, 404);
+    }
+    return c.json({ rule });
+  } catch (error) {
+    console.error('Routing rule update error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to update routing rule' } }, 500);
+  }
+});
+
+// 删除路由规则
+app.delete('/v1/routing-rules/:ruleId', async (c) => {
+  const ruleId = c.req.param('ruleId');
+  const deleted = deleteCustomRule(ruleId);
+  return c.json({ success: deleted });
+});
+
+// ==================== Custom Routing Evaluation ====================
+
+// 应用自定义路由规则
+app.post('/v1/teams/:teamId/routing/evaluate', async (c) => {
+  const teamId = c.req.param('teamId');
+  try {
+    const body = await c.req.json();
+    const decision = applyCustomRules(teamId, body);
+    return c.json({ decision });
+  } catch (error) {
+    console.error('Routing evaluation error:', error);
+    return c.json({ error: { code: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Failed to evaluate routing rules' } }, 500);
+  }
 });
 
 // 导出应用

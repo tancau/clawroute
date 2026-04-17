@@ -8,9 +8,22 @@ describe('Developer API Keys', () => {
   
   beforeAll(() => {
     initDatabase();
-    db.exec("DELETE FROM developer_api_keys");
-    userId = 'user-123';
+    
+    // Create test user first (needed for foreign key constraint)
+    const testEmail = 'api-test@example.com';
+    const testUserId = 'user-api-test';
+    
+    db.prepare(`
+      INSERT OR IGNORE INTO users (id, email, password_hash, credits, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(testUserId, testEmail, 'hashed_password', 1000, Date.now());
+    
+    userId = testUserId;
     teamId = 'team-456';
+    
+    // Create test team
+    db.prepare('INSERT OR IGNORE INTO teams (id, name, owner_id, created_at) VALUES (?, ?, ?, ?)').run(teamId, 'Test Team', userId, Date.now());
+    db.exec("DELETE FROM developer_api_keys");
   });
 
   beforeEach(() => {

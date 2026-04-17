@@ -135,5 +135,74 @@ export {
   type CreateApiKeyOptions,
 } from './api-keys';
 
+// SSO 登录系统
+export {
+  initSSOTables,
+  listSSOProviders,
+  getSSOProvider,
+  createSSOConnection,
+  getSSOConnection,
+  getSSOConnectionByDomain,
+  deleteSSOConnection,
+  updateSSOConnection,
+  initiateSSO,
+  handleSSOCallback,
+  verifySSOAccess,
+  type SSOProvider,
+  type SSOConnection,
+  type SSOSession,
+  type SSOInitiateResult,
+  type SSOCallbackResult,
+} from './sso';
+
+// 品牌定制
+export {
+  initBrandingTables,
+  getBrandConfig,
+  updateBrandConfig,
+  deleteBrandConfig,
+  validateCustomDomain,
+  registerCustomDomain,
+  verifyCustomDomain,
+  getCustomDomain,
+  getTeamCustomDomains,
+  deleteCustomDomain,
+  enableSSL,
+  resolveBrandFromHost,
+  type BrandConfig,
+  type CustomDomain,
+} from './branding';
+
+// 数据导出
+export {
+  initExportTables,
+  createExportJob,
+  getExportJob,
+  getExportJobs,
+  getUserExportJobs,
+  processExportJob,
+  getDownloadUrl,
+  deleteExportJob,
+  cleanupExpiredJobs,
+  type ExportJob,
+  type ExportType,
+  type ExportFormat,
+} from './export';
+
+// 定制化路由
+export {
+  initCustomRoutingTables,
+  createCustomRule,
+  listCustomRules,
+  getCustomRule,
+  updateCustomRule,
+  deleteCustomRule,
+  evaluateRule,
+  applyCustomRules,
+  type CustomRoutingRule,
+  type RoutingRequest,
+  type RoutingDecision,
+} from './routing/custom';
+
 // 版本信息
-export const VERSION = '0.3.0';
+export const VERSION = '0.4.0';

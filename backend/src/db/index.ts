@@ -290,5 +290,107 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_dev_api_keys_active ON developer_api_keys(is_active);
   `);
 
+  // Phase 4: SSO
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sso_providers (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      config TEXT,
+      enabled INTEGER DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS sso_connections (
+      id TEXT PRIMARY KEY,
+      team_id TEXT NOT NULL,
+      provider_id TEXT NOT NULL,
+      domain TEXT NOT NULL,
+      config TEXT,
+      created_at INTEGER NOT NULL,
+      UNIQUE(team_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS sso_sessions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      connection_id TEXT NOT NULL,
+      sso_user_id TEXT,
+      attributes TEXT,
+      expires_at INTEGER NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_sso_connections_team ON sso_connections(team_id);
+    CREATE INDEX IF NOT EXISTS idx_sso_connections_domain ON sso_connections(domain);
+    CREATE INDEX IF NOT EXISTS idx_sso_sessions_user ON sso_sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_sso_sessions_expires ON sso_sessions(expires_at);
+  `);
+
+  // Phase 4: Branding
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS brand_configs (
+      team_id TEXT PRIMARY KEY,
+      logo_url TEXT,
+      primary_color TEXT DEFAULT '#00c9ff',
+      secondary_color TEXT DEFAULT '#92fe9d',
+      custom_domain TEXT,
+      custom_css TEXT,
+      email_templates TEXT,
+      features TEXT,
+      updated_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS custom_domains (
+      domain TEXT PRIMARY KEY,
+      team_id TEXT NOT NULL,
+      verification_token TEXT,
+      verified INTEGER DEFAULT 0,
+      ssl_enabled INTEGER DEFAULT 0,
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_custom_domains_team ON custom_domains(team_id);
+    CREATE INDEX IF NOT EXISTS idx_custom_domains_verified ON custom_domains(verified);
+  `);
+
+  // Phase 4: Export
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS export_jobs (
+      id TEXT PRIMARY KEY,
+      team_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      type TEXT NOT NULL,
+      format TEXT NOT NULL,
+      filters TEXT,
+      status TEXT DEFAULT 'pending',
+      download_url TEXT,
+      expires_at INTEGER,
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_export_jobs_team ON export_jobs(team_id);
+    CREATE INDEX IF NOT EXISTS idx_export_jobs_user ON export_jobs(user_id);
+    CREATE INDEX IF NOT EXISTS idx_export_jobs_status ON export_jobs(status);
+    CREATE INDEX IF NOT EXISTS idx_export_jobs_expires ON export_jobs(expires_at);
+  `);
+
+  // Phase 4: Custom Routing Rules
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS custom_routing_rules (
+      id TEXT PRIMARY KEY,
+      team_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      condition TEXT,
+      action TEXT,
+      priority INTEGER DEFAULT 0,
+      enabled INTEGER DEFAULT 1,
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_custom_routing_team ON custom_routing_rules(team_id);
+    CREATE INDEX IF NOT EXISTS idx_custom_routing_enabled ON custom_routing_rules(enabled);
+    CREATE INDEX IF NOT EXISTS idx_custom_routing_priority ON custom_routing_rules(priority DESC);
+  `);
+
   console.log('Database initialized successfully');
 }
