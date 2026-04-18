@@ -88,7 +88,8 @@ class ApiClient {
 
   private async request<T>(
     path: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    useRelativeUrl = false
   ): Promise<{ data?: T; error?: { code: string; message: string } }> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -99,8 +100,12 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
+    // useRelativeUrl: true means use Next.js API Routes (same-origin proxy)
+    // useRelativeUrl: false means call backend directly
+    const url = useRelativeUrl ? path : `${this.baseUrl}${path}`;
+
     try {
-      const response = await fetch(`${this.baseUrl}${path}`, {
+      const response = await fetch(url, {
         ...options,
         headers,
       });
@@ -113,10 +118,15 @@ class ApiClient {
 
       return { data };
     } catch (err) {
+      const message = err instanceof Error ? err.message : 'Network error';
+      const isNetworkError = message.includes('Failed to fetch') || message.includes('ECONNREFUSED') || message.includes('NetworkError');
+
       return {
         error: {
-          code: 'NETWORK_ERROR',
-          message: err instanceof Error ? err.message : 'Network error',
+          code: isNetworkError ? 'BACKEND_UNAVAILABLE' : 'NETWORK_ERROR',
+          message: isNetworkError
+            ? 'Backend service is not available. Please try again later.'
+            : message,
         },
       };
     }
@@ -124,17 +134,19 @@ class ApiClient {
 
   // ===== Auth API =====
   async register(email: string, password: string, name?: string) {
-    return this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/v1/users/register', {
+    // Use Next.js API Route proxy to avoid CORS/network issues on Vercel
+    return this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, name }),
-    });
+    }, true);
   }
 
   async login(email: string, password: string) {
-    const result = await this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/v1/users/login', {
+    // Use Next.js API Route proxy to avoid CORS/network issues on Vercel
+    const result = await this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-    });
+    }, true);
     if (result.data?.accessToken) {
       this.setToken(result.data.accessToken);
     }
