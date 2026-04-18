@@ -142,14 +142,73 @@ async function applyRules(
 }
 
 /**
- * AI 分类器（占位实现）
+ * AI 分类器 - 集成 Ollama 本地推理
+ * 使用 Qwen2.5-0.5B 或其他小模型做意图分类
+ * Ollama 不可用时优雅降级到规则引擎
  */
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_MODEL = process.env.OLLAMA_CLASSIFY_MODEL || 'qwen2.5:0.5b';
+const CLASSIFY_CACHE = new Map<string, { result: ClassifyOutput; expiresAt: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const INTENT_LIST = [
+  'coding', 'reasoning', 'analysis', 'creative', 'translation',
+  'long_context', 'casual_chat', 'trading', 'knowledge',
+];
+
 async function classifyWithAI(
   message: string,
   history?: string[],
   context?: ToolContext
 ): Promise<ClassifyOutput | null> {
-  // TODO: 集成 Qwen/Gemma 小模型
-  // 目前返回 null，让规则引擎处理
-  return null;
+  // Check cache
+  const cacheKey = message.slice(0, 200);
+  const cached = CLASSIFY_CACHE.get(cacheKey);
+  if (cached && Date.now() < cached.expiresAt) {
+    return cached.result;
+  }
+
+  try {
+    const prompt = `You are an intent classifier. Classify the following message into exactly one of these intents: ${INTENT_LIST.join(', ')}
+
+Message: ${message.slice(0, 500)}
+
+Respond with ONLY the intent name, nothing else.`;
+
+    const response = await fetch(`${OLLAMA_URL}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        prompt,
+        stream: false,
+        options: { temperature: 0.1, num_predict: 20 },
+      }),
+      signal: AbortSignal.timeout(5000), // 5s timeout
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json() as { response: string };
+    const intentText = data.response?.trim().toLowerCase();
+
+    // Validate the response is a known intent
+    const matchedIntent = INTENT_LIST.find(i => intentText?.includes(i));
+    if (!matchedIntent) return null;
+
+    const result: ClassifyOutput = {
+      intent: matchedIntent as any,
+      confidence: 0.85, // AI classification confidence
+      method: 'ai',
+      reasoning: `AI classified as ${matchedIntent} using ${OLLAMA_MODEL}`,
+    };
+
+    // Cache the result
+    CLASSIFY_CACHE.set(cacheKey, { result, expiresAt: Date.now() + CACHE_TTL });
+
+    return result;
+  } catch {
+    // Ollama not available — graceful degradation
+    return null;
+  }
 }

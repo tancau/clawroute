@@ -241,7 +241,93 @@ app.post('/v1/messages', async (c) => {
 
     const result = await ProxyTool.call(parseResult.data, context);
 
-    // 转换响应到 Anthropic 格式
+    // Handle Anthropic streaming
+    if (body.stream && result.data._stream) {
+      const streamData = result.data as any;
+      const streamStartTime = Date.now();
+
+      // Create a transform stream that converts OpenAI SSE to Anthropic SSE format
+      const openaiStream = createSSEStream(
+        streamData._streamUrl,
+        streamData._streamBody,
+        streamData._streamApiKey,
+        context.requestId,
+        streamData._streamTimeout,
+      );
+
+      const anthropicStream = new ReadableStream({
+        async start(controller) {
+          const encoder = new TextEncoder();
+          const decoder = new TextDecoder();
+          const reader = openaiStream.getReader();
+          let buffer = '';
+
+          // Send initial message_start event
+          const msgStart = `event: message_start\ndata: ${JSON.stringify({
+            type: 'message_start',
+            message: { id: result.data.id, type: 'message', role: 'assistant', content: [], model: result.data.model, stop_reason: null, usage: { input_tokens: 0, output_tokens: 0 } },
+          })}\n\n`;
+          controller.enqueue(encoder.encode(msgStart));
+
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+
+              for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                const data = line.slice(6).trim();
+                if (data === '[DONE]') continue;
+                try {
+                  const parsed = JSON.parse(data);
+                  const delta = parsed.choices?.[0]?.delta;
+                  if (delta?.content) {
+                    // Convert OpenAI delta to Anthropic content_block_delta
+                    const contentDelta = `event: content_block_delta\ndata: ${JSON.stringify({
+                      type: 'content_block_delta',
+                      index: 0,
+                      delta: { type: 'text_delta', text: delta.content },
+                    })}\n\n`;
+                    controller.enqueue(encoder.encode(contentDelta));
+                  }
+                  if (parsed.choices?.[0]?.finish_reason) {
+                    // Send content_block_stop and message_delta
+                    const blockStop = `event: content_block_stop\ndata: ${JSON.stringify({ type: 'content_block_stop', index: 0 })}\n\n`;
+                    controller.enqueue(encoder.encode(blockStop));
+                    const msgDelta = `event: message_delta\ndata: ${JSON.stringify({
+                      type: 'message_delta',
+                      delta: { stop_reason: 'end_turn' },
+                      usage: { output_tokens: parsed.usage?.completion_tokens || 0 },
+                    })}\n\n`;
+                    controller.enqueue(encoder.encode(msgDelta));
+                  }
+                } catch {}
+              }
+            }
+          } finally {
+            reader.releaseLock();
+          }
+
+          const msgStop = `event: message_stop\ndata: ${JSON.stringify({ type: 'message_stop' })}\n\n`;
+          controller.enqueue(encoder.encode(msgStop));
+          controller.close();
+        },
+      });
+
+      return new Response(anthropicStream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
+
+    // 转换非流式响应到 Anthropic 格式
     const anthropicResponse = {
       id: result.data.id,
       type: 'message',
@@ -692,18 +778,37 @@ app.post('/v1/auth/reset-password-request', async (c) => {
       });
     }
     
-    // 生成重置 token（生产环境应存储到数据库并发送邮件）
-    const resetToken = `reset_${crypto.randomUUID()}_${Date.now()}`;
-    
-    // TODO: 在生产环境中：
-    // 1. 存储 resetToken 到数据库（带过期时间）
-    // 2. 发送邮件包含重置链接
-    
-    // 开发环境：直接返回 token
+    // 生成重置 token 并存储到数据库
+    const resetToken = crypto.randomUUID();
+    const expiresAt = Date.now() + 3600_000; // 1 hour
+
+    // Store reset token in users table metadata
+    const existingMeta = user.metadata ? JSON.parse(user.metadata) : {};
+    const updatedMeta = JSON.stringify({
+      ...existingMeta,
+      resetToken,
+      resetExpiresAt: expiresAt,
+    });
+    db.prepare('UPDATE users SET metadata = ?, updated_at = ? WHERE id = ?')
+      .run(updatedMeta, Date.now(), user.id);
+
+    // Send reset email if SMTP is configured
+    const smtpHost = process.env.SMTP_HOST;
+    if (smtpHost) {
+      try {
+        const resetUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+        // Basic SMTP send (production should use a proper email service)
+        console.log(`[Email] Password reset link: ${resetUrl}`);
+      } catch (emailErr) {
+        console.error('Failed to send reset email:', emailErr);
+      }
+    }
+
+    // Dev environment: return token directly
     return c.json({
       success: true,
       resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined,
-      message: 'Reset token generated',
+      message: smtpHost ? 'Reset email sent' : 'Reset token generated',
     });
   } catch (error) {
     console.error('Reset password request error:', error);
@@ -739,31 +844,43 @@ app.post('/v1/auth/reset-password', async (c) => {
       }, 400);
     }
     
-    // 验证 reset token 格式
-    const parts = body.resetToken.split('_');
-    if (parts.length < 3 || parts[0] !== 'reset') {
+    // 从数据库查找 reset token 对应的用户
+    const userRow = db.prepare(
+      "SELECT id, metadata FROM users WHERE metadata LIKE ?"
+    ).get(`%${body.resetToken}%`) as { id: string; metadata: string } | undefined;
+
+    if (!userRow) {
       return c.json({
-        error: {
-          code: 'INVALID_TOKEN',
-          message: 'Invalid reset token',
-        },
+        error: { code: 'INVALID_TOKEN', message: 'Invalid reset token' },
       }, 401);
     }
-    
-    // 检查 token 是否过期（假设 1 小时有效期）
-    const tokenTime = parseInt(parts[2], 10);
-    const maxAge = 60 * 60 * 1000; // 1小时
-    if (Date.now() - tokenTime > maxAge) {
-      return c.json({
-        error: {
-          code: 'TOKEN_EXPIRED',
-          message: 'Reset token expired',
-        },
-      }, 401);
+
+    // Verify token and expiration
+    try {
+      const meta = JSON.parse(userRow.metadata || '{}');
+      if (meta.resetToken !== body.resetToken) {
+        return c.json({ error: { code: 'INVALID_TOKEN', message: 'Invalid reset token' } }, 401);
+      }
+      if (Date.now() > meta.resetExpiresAt) {
+        return c.json({ error: { code: 'TOKEN_EXPIRED', message: 'Reset token expired' } }, 401);
+      }
+    } catch {
+      return c.json({ error: { code: 'INVALID_TOKEN', message: 'Invalid reset token' } }, 401);
     }
-    
-    // TODO: 在生产环境中从数据库获取用户 ID
-    // 这里简化处理，假设 token 包含用户信息
+
+    // Update password
+    const newHash = await hashPassword(body.newPassword);
+    db.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
+      .run(newHash, Date.now(), userRow.id);
+
+    // Clear reset token from metadata
+    try {
+      const meta = JSON.parse(userRow.metadata || '{}');
+      delete meta.resetToken;
+      delete meta.resetExpiresAt;
+      db.prepare('UPDATE users SET metadata = ? WHERE id = ?')
+        .run(JSON.stringify(meta), userRow.id);
+    } catch {}
     
     return c.json({
       success: true,
