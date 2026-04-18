@@ -28,28 +28,11 @@ export interface UserStats {
 }
 
 /**
- * 记录使用数据
+ * 记录使用数据 (now writes to usage_logs, usage_stats table is deprecated)
  */
 export function recordUsage(record: UsageRecord): void {
-  const stmt = db.prepare(`
-    INSERT INTO usage_stats 
-    (id, user_id, request_id, provider, model, intent, input_tokens, output_tokens, cost_cents, saved_cents, timestamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  stmt.run(
-    record.id,
-    record.userId,
-    record.requestId,
-    record.provider,
-    record.model,
-    record.intent,
-    record.inputTokens,
-    record.outputTokens,
-    record.costCents,
-    record.savedCents,
-    record.timestamp
-  );
+  // usage_logs is managed by BillingTool.call(), this function is now a no-op
+  // Kept for API compatibility
 }
 
 /**
@@ -65,8 +48,8 @@ export function getUserStats(userId: string, days: number = 30): UserStats {
       SUM(input_tokens + output_tokens) as total_tokens,
       SUM(cost_cents) as total_cost_cents,
       SUM(saved_cents) as total_saved_cents
-    FROM usage_stats
-    WHERE user_id = ? AND timestamp >= ?
+    FROM usage_logs
+    WHERE user_id = ? AND created_at >= ?
   `);
 
   const total = totalStmt.get(userId, since) as any;
@@ -78,8 +61,8 @@ export function getUserStats(userId: string, days: number = 30): UserStats {
       COUNT(*) as requests,
       SUM(input_tokens + output_tokens) as tokens,
       SUM(cost_cents) as cost_cents
-    FROM usage_stats
-    WHERE user_id = ? AND timestamp >= ?
+    FROM usage_logs
+    WHERE user_id = ? AND created_at >= ?
     GROUP BY provider
   `);
 
@@ -101,8 +84,8 @@ export function getUserStats(userId: string, days: number = 30): UserStats {
       COUNT(*) as requests,
       SUM(input_tokens + output_tokens) as tokens,
       SUM(cost_cents) as cost_cents
-    FROM usage_stats
-    WHERE user_id = ? AND timestamp >= ?
+    FROM usage_logs
+    WHERE user_id = ? AND created_at >= ?
     GROUP BY intent
   `);
 
@@ -144,9 +127,9 @@ export function getRecentRequests(
 }> {
   const stmt = db.prepare(`
     SELECT id, model, provider, input_tokens, output_tokens, cost_cents, timestamp
-    FROM usage_stats
+    FROM usage_logs
     WHERE user_id = ?
-    ORDER BY timestamp DESC
+    ORDER BY created_at DESC
     LIMIT ?
   `);
 
@@ -181,7 +164,7 @@ export function getTopModels(
       COUNT(*) as requests,
       SUM(input_tokens + output_tokens) as total_tokens,
       SUM(cost_cents) as total_cost_cents
-    FROM usage_stats
+    FROM usage_logs
     WHERE user_id = ?
     GROUP BY model
     ORDER BY requests DESC
@@ -208,12 +191,12 @@ export function getAggregatedStats(userId: string): {
 
   const stmt = db.prepare(`
     SELECT 
-      date(timestamp / 1000, 'unixepoch') as date,
+      date(created_at / 1000, 'unixepoch') as date,
       COUNT(*) as requests,
       SUM(cost_cents) as cost_cents,
       SUM(saved_cents) as saved_cents
-    FROM usage_stats
-    WHERE user_id = ? AND timestamp >= ?
+    FROM usage_logs
+    WHERE user_id = ? AND created_at >= ?
     GROUP BY date
     ORDER BY date DESC
   `);

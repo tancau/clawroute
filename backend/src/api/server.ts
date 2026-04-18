@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
+import { logger as honoLogger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { toolRegistry } from '../tools/registry';
 import { ClassifyTool } from '../tools/classify';
@@ -11,6 +11,7 @@ import { UserTool, getUser, updateUser, deductCredits, verifyPassword } from '..
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
+import { logger } from '../monitoring/logger';
 
 // ==================== JWT Utilities ====================
 
@@ -45,7 +46,7 @@ initDatabase();
 const app = new Hono();
 
 // 注册中间件
-app.use('*', logger());
+app.use('*', honoLogger());
 app.use('*', cors());
 app.use('*', secureHeaders());
 
@@ -141,7 +142,7 @@ app.post('/v1/classify', async (c) => {
       latency_ms: result.metadata?.latencyMs,
     });
   } catch (error) {
-    console.error('Classification error:', error);
+    logger.error('Classification error:', error);
     return c.json(
       {
         error: {
@@ -190,7 +191,7 @@ app.post('/v1/route', async (c) => {
       latency_ms: result.metadata?.latencyMs,
     });
   } catch (error) {
-    console.error('Routing error:', error);
+    logger.error('Routing error:', error);
     return c.json(
       {
         error: {
@@ -348,7 +349,7 @@ app.post('/v1/messages', async (c) => {
 
     return c.json(anthropicResponse);
   } catch (error) {
-    console.error('Anthropic API error:', error);
+    logger.error('Anthropic API error:', error);
     return c.json(
       {
         type: 'error',
@@ -468,7 +469,7 @@ app.post('/v1/chat/completions', async (c) => {
             creditsUsed: 1, // Minimum charge
           }, context);
         } catch (err) {
-          console.error('Stream billing error:', err);
+          logger.error('Stream billing error:', err);
         }
       };
 
@@ -505,7 +506,7 @@ app.post('/v1/chat/completions', async (c) => {
 
     return c.json(response);
   } catch (error) {
-    console.error('Chat completion error:', error);
+    logger.error('Chat completion error:', error);
     return c.json(
       {
         error: {
@@ -533,7 +534,7 @@ app.notFound((c) => {
 
 // 错误处理
 app.onError((err, c) => {
-  console.error('Server error:', err);
+  logger.error('Server error:', err);
   return c.json(
     {
       error: {
@@ -623,7 +624,7 @@ app.post('/v1/users/register', async (c) => {
     
     return c.json({ user }, 201);
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error('Registration error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -688,7 +689,7 @@ app.post('/v1/users/login', async (c) => {
       expiresIn: 3600, // 1小时
     });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -745,7 +746,7 @@ app.post('/v1/auth/refresh', async (c) => {
       expiresIn: 3600,
     });
   } catch (error) {
-    console.error('Token refresh error:', error);
+    logger.error('Token refresh error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -798,9 +799,9 @@ app.post('/v1/auth/reset-password-request', async (c) => {
       try {
         const resetUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
         // Basic SMTP send (production should use a proper email service)
-        console.log(`[Email] Password reset link: ${resetUrl}`);
+        logger.info(`[Email] Password reset link: ${resetUrl}`);
       } catch (emailErr) {
-        console.error('Failed to send reset email:', emailErr);
+        logger.error('Failed to send reset email:', emailErr);
       }
     }
 
@@ -811,7 +812,7 @@ app.post('/v1/auth/reset-password-request', async (c) => {
       message: smtpHost ? 'Reset email sent' : 'Reset token generated',
     });
   } catch (error) {
-    console.error('Reset password request error:', error);
+    logger.error('Reset password request error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -887,7 +888,7 @@ app.post('/v1/auth/reset-password', async (c) => {
       message: 'Password reset successful',
     });
   } catch (error) {
-    console.error('Reset password error:', error);
+    logger.error('Reset password error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -954,7 +955,7 @@ app.post('/v1/keys', async (c) => {
     
     return c.json({ key: result.data }, 201);
   } catch (error) {
-    console.error('Key submission error:', error);
+    logger.error('Key submission error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -1010,7 +1011,7 @@ app.patch('/v1/keys/:id', async (c) => {
     
     return c.json({ key });
   } catch (error) {
-    console.error('Key update error:', error);
+    logger.error('Key update error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -1176,7 +1177,7 @@ app.get('/api/models/catalog', async (c) => {
       source: 'db',
     });
   } catch (error) {
-    console.error('Model catalog error:', error);
+    logger.error('Model catalog error:', error);
     return c.json({
       models: [],
       total: 0,
@@ -1207,7 +1208,7 @@ app.post('/api/admin/sync/prices', requireAdmin, async (c) => {
       result,
     });
   } catch (error) {
-    console.error('Price sync error:', error);
+    logger.error('Price sync error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Sync failed' } }, 500);
   }
 });
@@ -1221,7 +1222,7 @@ app.post('/api/admin/sync/models', requireAdmin, async (c) => {
       result,
     });
   } catch (error) {
-    console.error('Model sync error:', error);
+    logger.error('Model sync error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Sync failed' } }, 500);
   }
 });
@@ -1236,7 +1237,7 @@ app.post('/api/admin/sync/import', requireAdmin, async (c) => {
       updated: result.updated,
     });
   } catch (error) {
-    console.error('Import error:', error);
+    logger.error('Import error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Import failed' } }, 500);
   }
 });
@@ -1290,7 +1291,7 @@ app.post('/api/providers/discover', async (c) => {
 
     return c.json(result);
   } catch (error) {
-    console.error('Provider discovery error:', error);
+    logger.error('Provider discovery error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Discovery failed' } }, 500);
   }
 });
@@ -1310,7 +1311,7 @@ app.post('/api/providers/models/pricing', async (c) => {
     updateModelPricing(modelId, provider, inputCost1m, outputCost1m);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Update pricing error:', error);
+    logger.error('Update pricing error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update pricing' } }, 500);
   }
 });
@@ -1335,7 +1336,7 @@ app.get('/v1/analytics/usage/:userId', async (c) => {
       },
     });
   } catch (error) {
-    console.error('Analytics error:', error);
+    logger.error('Analytics error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -1363,7 +1364,7 @@ app.get('/v1/analytics/savings/:userId', async (c) => {
       daily: aggregated.daily,
     });
   } catch (error) {
-    console.error('Savings analytics error:', error);
+    logger.error('Savings analytics error:', error);
     return c.json({
       error: {
         code: 'INTERNAL_ERROR',
@@ -1395,7 +1396,7 @@ app.get('/v1/analytics/recent/:userId', async (c) => {
       })),
     });
   } catch (error) {
-    console.error('Recent requests error:', error);
+    logger.error('Recent requests error:', error);
     return c.json(
       {
         error: {
@@ -1424,7 +1425,7 @@ app.get('/v1/analytics/top-models/:userId', async (c) => {
       })),
     });
   } catch (error) {
-    console.error('Top models error:', error);
+    logger.error('Top models error:', error);
     return c.json(
       {
         error: {
@@ -1490,7 +1491,7 @@ app.get('/v1/admin/stats', requireAdmin, async (c) => {
     const stats = getAdminStats();
     return c.json(stats);
   } catch (error) {
-    console.error('Admin stats error:', error);
+    logger.error('Admin stats error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get stats' } }, 500);
   }
 });
@@ -1502,7 +1503,7 @@ app.get('/v1/admin/activity', requireAdmin, async (c) => {
     const activities = getRecentActivity(limit);
     return c.json(activities);
   } catch (error) {
-    console.error('Activity error:', error);
+    logger.error('Activity error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get activity' } }, 500);
   }
 });
@@ -1514,7 +1515,7 @@ app.get('/v1/admin/trend', requireAdmin, async (c) => {
     const trend = getUsageTrend(days);
     return c.json(trend);
   } catch (error) {
-    console.error('Trend error:', error);
+    logger.error('Trend error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get trend' } }, 500);
   }
 });
@@ -1532,7 +1533,7 @@ app.get('/v1/admin/users', requireAdmin, async (c) => {
     });
     return c.json(result);
   } catch (error) {
-    console.error('List users error:', error);
+    logger.error('List users error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list users' } }, 500);
   }
 });
@@ -1546,7 +1547,7 @@ app.get('/v1/admin/users/:userId', requireAdmin, async (c) => {
     }
     return c.json(user);
   } catch (error) {
-    console.error('Get user error:', error);
+    logger.error('Get user error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get user' } }, 500);
   }
 });
@@ -1557,7 +1558,7 @@ app.post('/v1/admin/users/:userId/suspend', requireAdmin, async (c) => {
     suspendUser(userId);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Suspend user error:', error);
+    logger.error('Suspend user error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to suspend user' } }, 500);
   }
 });
@@ -1568,7 +1569,7 @@ app.post('/v1/admin/users/:userId/unsuspend', requireAdmin, async (c) => {
     unsuspendUser(userId);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Unsuspend user error:', error);
+    logger.error('Unsuspend user error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to unsuspend user' } }, 500);
   }
 });
@@ -1580,7 +1581,7 @@ app.post('/v1/admin/users/:userId/credits', requireAdmin, async (c) => {
     updateUserCredits(userId, body.amount, body.reason);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Update credits error:', error);
+    logger.error('Update credits error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update credits' } }, 500);
   }
 });
@@ -1599,7 +1600,7 @@ app.get('/v1/admin/keys', requireAdmin, async (c) => {
     });
     return c.json(result);
   } catch (error) {
-    console.error('List keys error:', error);
+    logger.error('List keys error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list keys' } }, 500);
   }
 });
@@ -1613,7 +1614,7 @@ app.get('/v1/admin/keys/:keyId', requireAdmin, async (c) => {
     }
     return c.json(key);
   } catch (error) {
-    console.error('Get key error:', error);
+    logger.error('Get key error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get key' } }, 500);
   }
 });
@@ -1624,7 +1625,7 @@ app.post('/v1/admin/keys/:keyId/approve', requireAdmin, async (c) => {
     approveKey(keyId);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Approve key error:', error);
+    logger.error('Approve key error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to approve key' } }, 500);
   }
 });
@@ -1636,7 +1637,7 @@ app.post('/v1/admin/keys/:keyId/reject', requireAdmin, async (c) => {
     rejectKey(keyId, body.reason);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Reject key error:', error);
+    logger.error('Reject key error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to reject key' } }, 500);
   }
 });
@@ -1648,7 +1649,7 @@ app.post('/v1/admin/keys/:keyId/disable', requireAdmin, async (c) => {
     disableKey(keyId, body.reason);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Disable key error:', error);
+    logger.error('Disable key error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to disable key' } }, 500);
   }
 });
@@ -1659,7 +1660,7 @@ app.post('/v1/admin/keys/:keyId/enable', requireAdmin, async (c) => {
     enableKey(keyId);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Enable key error:', error);
+    logger.error('Enable key error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to enable key' } }, 500);
   }
 });
@@ -1670,7 +1671,7 @@ app.post('/v1/admin/keys/bulk-approve', requireAdmin, async (c) => {
     const count = bulkApproveKeys(body.keyIds);
     return c.json({ success: true, approved: count });
   } catch (error) {
-    console.error('Bulk approve error:', error);
+    logger.error('Bulk approve error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to bulk approve' } }, 500);
   }
 });
@@ -1681,7 +1682,7 @@ app.get('/v1/admin/settings', requireAdmin, async (c) => {
     const settings = getSettings();
     return c.json(settings);
   } catch (error) {
-    console.error('Get settings error:', error);
+    logger.error('Get settings error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get settings' } }, 500);
   }
 });
@@ -1692,7 +1693,7 @@ app.put('/v1/admin/settings', requireAdmin, async (c) => {
     updateSettings(body);
     return c.json({ success: true });
   } catch (error) {
-    console.error('Update settings error:', error);
+    logger.error('Update settings error:', error);
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update settings' } }, 500);
   }
 });

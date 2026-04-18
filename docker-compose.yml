@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  clawroute:
+    build: .
+    container_name: clawroute
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
+      - OLLAMA_URL=http://ollama:11434
+    volumes:
+      - clawroute-data:/app/data
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    # Uncomment for GPU support:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+volumes:
+  clawroute-data:
+  ollama-data:
