@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { getAllModels, getModelById, getModelsByScene, sortModels } from '@/lib/models-db';
+import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
+
+const sceneModelMapping = sceneModelMappingRaw as Record<string, { candidateModelIds: string[] }>;
 
 describe('models-db', () => {
   it('getAllModels returns all models', () => {
@@ -8,7 +11,7 @@ describe('models-db', () => {
   });
 
   it('getModelById finds existing model', () => {
-    const model = getModelById('qwen3-coder');
+    const model = getModelById('qwen/qwen3-coder');
     expect(model).toBeDefined();
     expect(model?.name).toBe('Qwen3 Coder');
   });
@@ -19,12 +22,12 @@ describe('models-db', () => {
   });
 
   it('getModelsByScene returns models for valid scene', () => {
-    const models = getModelsByScene('trading-bot');
+    const models = getModelsByScene('trading-bot', sceneModelMapping);
     expect(models.length).toBeGreaterThanOrEqual(2);
   });
 
   it('getModelsByScene returns empty for invalid scene', () => {
-    const models = getModelsByScene('invalid');
+    const models = getModelsByScene('invalid', sceneModelMapping);
     expect(models).toEqual([]);
   });
 

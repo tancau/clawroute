@@ -1,27 +1,39 @@
 {
   "app": {
     "title": "ClawRoute",
-    "subtitle": "OpenClaw 智能路由配置生成器"
+    "subtitle": "智能路由 API 代理"
+  },
+  "nav": {
+    "home": "首页",
+    "configure": "代理配置",
+    "templates": "方案市场",
+    "dashboard": "仪表盘",
+    "docs": "文档"
   },
   "home": {
-    "heading": "你用 OpenClaw 做什么？",
-    "subheading": "选择场景，获取最优配置",
+    "heading": "选择你的代理方案",
+    "subheading": "智能路由，自动省钱",
     "savingLabel": "通常节省",
-    "heroTitle": "让 OpenClaw 用户",
-    "heroSubtitle": "用最少的配置工作，获得最大的成本节省。",
-    "heroDescription": "选择你的使用场景，一键生成优化好的路由配置，立即节省 60-80% 的 OpenClaw 费用。",
-    "startConfig": "开始配置",
-    "browseTemplates": "浏览模板市场",
-    "testimonialsTitle": "来自用户的评价",
-    "featuresTitle": "为什么选择 ClawRoute",
-    "featureSavingTitle": "显著节省",
-    "featureSavingDesc": "智能路由让你节省 60-80% 的 OpenClaw 费用",
-    "featureOOTBTitle": "开箱即用",
-    "featureOOTBDesc": "预设场景模板，无需手动配置复杂的 YAML",
-    "featureOSTitle": "完全开源",
-    "featureOSDesc": "所有代码完全开源，社区驱动持续改进",
+    "heroHighlight": "智能路由",
+    "heroTitle": "让 AI 推理更聪明",
+    "heroSubtitle": "一个请求，自动路由到最优模型。省钱 80%，延迟更低，质量不变。",
+    "heroDescription": "ClawRoute 是智能路由 API 代理：替换你的 OpenAI base_url，用 model: \"auto\" 发请求，自动分类意图、选择最优模型、转发请求。",
+    "startProxy": "启动代理",
+    "browseTemplates": "浏览方案",
+    "testimonialsTitle": "用户评价",
+    "featuresTitle": "核心能力",
+    "featureRoutingTitle": "智能路由代理",
+    "featureRoutingDesc": "三层意图分类 + 多维模型评分，自动选择最优模型。OpenAI 兼容 API，零迁移成本接入。",
+    "featureStreamingTitle": "流式代理 & 自动重试",
+    "featureStreamingDesc": "SSE 流式透传，实时返回生成结果。429/5xx 自动重试 + Failover 备用模型切换，保障可用性。",
+    "featureBillingTitle": "精确计费 & Key 池",
+    "featureBillingDesc": "按 token × 模型单价精确计费，告别固定扣费。共享 Key 池负载均衡，最少调用优先。",
     "quickStartTitle": "快速开始",
-    "savingLabelShort": "节省"
+    "savingLabelShort": "节省",
+    "codeComment": "# 替换 OpenAI SDK 的 base_url 即可接入",
+    "codeLine1": "from openai import OpenAI",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
     "trading-bot": "交易 Bot",
@@ -40,7 +52,7 @@
     "dev-tools": "代码生成、调试、重构，需要代码理解和生成能力"
   },
   "configure": {
-    "title": "配置路由",
+    "title": "代理配置",
     "switchScene": "切换场景",
     "noScene": "请先选择一个使用场景",
     "goHome": "返回首页",
@@ -117,16 +129,19 @@
     "by": "by"
   },
   "templates": {
-    "title": "模板市场",
-    "description": "浏览和搜索社区贡献的路由配置模板",
-    "searchPlaceholder": "搜索模板...",
+    "title": "方案市场",
+    "description": "浏览和搜索路由代理方案和配置模板",
+    "searchPlaceholder": "搜索方案...",
     "all": "全部",
-    "noMatch": "没有找到匹配的模板",
+    "noMatch": "没有找到匹配的方案",
     "goHome": "返回首页选择场景"
   },
   "footer": {
     "dataUpdated": "数据更新日期",
-    "openSource": "开源项目"
+    "openSource": "开源项目",
+    "apiStatus": "API 状态",
+    "network": "推理网络",
+    "docs": "文档"
   },
   "codeBlock": {
     "clickToCopy": "点击复制",
@@ -139,10 +154,10 @@
   },
   "apiDiscovery": {
     "title": "API 模型发现",
-    "description": "输入你的 API 端点和密钥，自动发现可用模型并生成 OpenClaw 配置",
+    "description": "输入 API 端点和密钥，自动发现可用模型并生成代理配置",
     "baseUrlLabel": "API 端点",
     "baseUrlPlaceholder": "https://api.openai.com/v1 或 https://openrouter.ai/api/v1",
-    "apiKeyLabel": "API Key（可选，部分端点不需要）",
+    "apiKeyLabel": "API Key（可选）",
     "apiKeyPlaceholder": "sk-...",
     "discover": "发现模型",
     "discovering": "正在发现...",
@@ -154,20 +169,20 @@
     "downloadConfig": "下载 openclaw.json",
     "verifyKey": "验证 Key",
     "verifying": "验证中...",
-    "keyValid": "✅ Key 有效！",
-    "keyInvalid": "❌ Key 无效",
-    "configCopied": "配置已复制到剪贴板！"
+    "keyValid": "Key 有效",
+    "keyInvalid": "Key 无效",
+    "configCopied": "配置已复制到剪贴板"
   },
   "configImport": {
     "title": "导入 & 体检",
-    "description": "粘贴 openclaw.json，自动解析 + 健康体检，找出配置问题",
+    "description": "粘贴 openclaw.json，自动解析 + 健康体检",
     "pastePlaceholder": "粘贴你的 openclaw.json 内容...",
     "analyze": "解析 & 体检",
     "invalidJson": "无效的 JSON 格式",
     "parseError": "解析失败",
     "parsedOk": "解析成功！{providers} 个 Provider，{models} 个模型",
     "issuesFound": "发现 {count} 个问题",
-    "allGood": "✅ 配置健康，没有发现问题！",
+    "allGood": "配置健康，没有发现问题",
     "scoreGreat": "优秀！配置非常健康",
     "scoreGood": "不错，有些小问题可以优化",
     "scoreFair": "一般，建议修复警告项",
@@ -176,7 +191,7 @@
     "prepareConfig": "准备配置",
     "copyConfig": "复制配置",
     "downloadConfig": "下载配置",
-    "copied": "已复制！",
+    "copied": "已复制",
     "availabilityTest": "可用性测试",
     "testAvailability": "测试可用性",
     "pinging": "探测中...",
@@ -191,6 +206,40 @@
     "modelCanAnswer": "能回答",
     "noKey": "无 Key，跳过",
     "noKeysForTest": "没有配置 API Key，无法测试模型能力"
+  },
+  "dashboard": {
+    "title": "仪表盘",
+    "welcome": "欢迎回来",
+    "savingsReport": "代理报告",
+    "preferences": "偏好设置",
+    "logout": "退出登录",
+    "credits": "剩余积分",
+    "monthlyRequests": "本月请求",
+    "monthlySavings": "本月节省",
+    "monthlyEarnings": "本月收益",
+    "usageOverview": "使用概览",
+    "proxyStatus": "代理状态",
+    "proxyRunning": "运行中",
+    "proxyStopped": "已停止",
+    "networkNodes": "推理节点",
+    "networkOffline": "未接入"
+  },
+  "auth": {
+    "welcomeBack": "欢迎回来",
+    "loginTo": "登录到 ClawRoute",
+    "email": "邮箱",
+    "password": "密码",
+    "forgotPassword": "忘记密码？",
+    "login": "登录",
+    "noAccount": "还没有账户？",
+    "registerNow": "立即注册",
+    "createAccount": "创建账户",
+    "registerTo": "注册到 ClawRoute",
+    "name": "姓名",
+    "confirmPassword": "确认密码",
+    "register": "注册",
+    "hasAccount": "已有账户？",
+    "loginNow": "立即登录"
   },
   "errorBoundary": {
     "title": "出了点问题",

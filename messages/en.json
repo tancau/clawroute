@@ -1,27 +1,39 @@
 {
   "app": {
     "title": "ClawRoute",
-    "subtitle": "OpenClaw Smart Routing Config Generator"
+    "subtitle": "Smart Routing API Proxy"
+  },
+  "nav": {
+    "home": "Home",
+    "configure": "Proxy Config",
+    "templates": "Marketplace",
+    "dashboard": "Dashboard",
+    "docs": "Docs"
   },
   "home": {
-    "heading": "What do you use OpenClaw for?",
-    "subheading": "Select a scenario, get the optimal config",
+    "heading": "Choose Your Proxy Plan",
+    "subheading": "Smart routing, automatic savings",
     "savingLabel": "Typically saves",
-    "heroTitle": "For OpenClaw Users",
-    "heroSubtitle": "Minimal config effort, maximum cost savings.",
-    "heroDescription": "Select your use case, generate optimized routing config with one click, and save 60-80% on OpenClaw costs instantly.",
-    "startConfig": "Start Configuring",
-    "browseTemplates": "Browse Templates",
+    "heroHighlight": "Smart Routing",
+    "heroTitle": "Make AI Inference Smarter",
+    "heroSubtitle": "One request, auto-routed to the optimal model. Save 80%, lower latency, same quality.",
+    "heroDescription": "ClawRoute is a smart routing API proxy: swap your OpenAI base_url, send requests with model: \"auto\", and we auto-classify intent, select the best model, and forward the request.",
+    "startProxy": "Start Proxy",
+    "browseTemplates": "Browse Plans",
     "testimonialsTitle": "What Users Say",
-    "featuresTitle": "Why Choose ClawRoute",
-    "featureSavingTitle": "Significant Savings",
-    "featureSavingDesc": "Smart routing saves you 60-80% on OpenClaw costs",
-    "featureOOTBTitle": "Ready to Use",
-    "featureOOTBDesc": "Preset scenario templates, no need to manually configure complex YAML",
-    "featureOSTitle": "Fully Open Source",
-    "featureOSDesc": "All code is fully open source, community-driven continuous improvement",
+    "featuresTitle": "Core Capabilities",
+    "featureRoutingTitle": "Smart Routing Proxy",
+    "featureRoutingDesc": "3-layer intent classification + multi-dimensional model scoring, auto-selects the optimal model. OpenAI-compatible API, zero migration cost.",
+    "featureStreamingTitle": "Streaming & Auto-Retry",
+    "featureStreamingDesc": "SSE streaming passthrough for real-time results. Auto-retry on 429/5xx + failover to backup models, ensuring high availability.",
+    "featureBillingTitle": "Precise Billing & Key Pool",
+    "featureBillingDesc": "Per-token × model price billing, no more flat-rate charges. Shared key pool with least-calls-first load balancing.",
     "quickStartTitle": "Quick Start",
-    "savingLabelShort": "Saves"
+    "savingLabelShort": "Saves",
+    "codeComment": "# Just swap your OpenAI SDK base_url",
+    "codeLine1": "from openai import OpenAI",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
     "trading-bot": "Trading Bot",
@@ -40,7 +52,7 @@
     "dev-tools": "Code generation, debugging, refactoring, requires code understanding and generation"
   },
   "configure": {
-    "title": "Configure Routing",
+    "title": "Proxy Configuration",
     "switchScene": "Switch Scene",
     "noScene": "Please select a scenario first",
     "goHome": "Go Home",
@@ -117,16 +129,19 @@
     "by": "by"
   },
   "templates": {
-    "title": "Template Marketplace",
-    "description": "Browse and search community-contributed routing config templates",
-    "searchPlaceholder": "Search templates...",
+    "title": "Plan Marketplace",
+    "description": "Browse and search routing proxy plans and config templates",
+    "searchPlaceholder": "Search plans...",
     "all": "All",
-    "noMatch": "No matching templates found",
+    "noMatch": "No matching plans found",
     "goHome": "Go Home to Select Scenario"
   },
   "footer": {
     "dataUpdated": "Data updated",
-    "openSource": "Open Source"
+    "openSource": "Open Source",
+    "apiStatus": "API Status",
+    "network": "Inference Network",
+    "docs": "Docs"
   },
   "codeBlock": {
     "clickToCopy": "Click to copy",
@@ -139,10 +154,10 @@
   },
   "apiDiscovery": {
     "title": "API Model Discovery",
-    "description": "Enter your API endpoint and key to auto-discover available models and generate OpenClaw config",
+    "description": "Enter API endpoint and key to auto-discover available models and generate proxy config",
     "baseUrlLabel": "API Endpoint",
     "baseUrlPlaceholder": "https://api.openai.com/v1 or https://openrouter.ai/api/v1",
-    "apiKeyLabel": "API Key (optional, some endpoints don't need one)",
+    "apiKeyLabel": "API Key (optional)",
     "apiKeyPlaceholder": "sk-...",
     "discover": "Discover Models",
     "discovering": "Discovering...",
@@ -154,9 +169,9 @@
     "downloadConfig": "Download openclaw.json",
     "verifyKey": "Verify Key",
     "verifying": "Verifying...",
-    "keyValid": "✅ Key is valid!",
-    "keyInvalid": "❌ Key is invalid",
-    "configCopied": "Config copied to clipboard!"
+    "keyValid": "Key is valid",
+    "keyInvalid": "Key is invalid",
+    "configCopied": "Config copied to clipboard"
   },
   "configImport": {
     "title": "Import & Health Check",
@@ -167,7 +182,7 @@
     "parseError": "Parse failed",
     "parsedOk": "Parsed! {providers} providers, {models} models",
     "issuesFound": "{count} issues found",
-    "allGood": "✅ Config is healthy, no issues!",
+    "allGood": "Config is healthy, no issues",
     "scoreGreat": "Excellent! Config is very healthy",
     "scoreGood": "Good, minor things to optimize",
     "scoreFair": "Fair, consider fixing warnings",
@@ -176,7 +191,7 @@
     "prepareConfig": "Prepare Config",
     "copyConfig": "Copy Config",
     "downloadConfig": "Download Config",
-    "copied": "Copied!",
+    "copied": "Copied",
     "availabilityTest": "Availability Test",
     "testAvailability": "Test Availability",
     "pinging": "Pinging...",
@@ -191,6 +206,40 @@
     "modelCanAnswer": "Can answer",
     "noKey": "No key, skipped",
     "noKeysForTest": "No API keys configured, cannot test model capabilities"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "savingsReport": "Proxy Report",
+    "preferences": "Preferences",
+    "logout": "Logout",
+    "credits": "Credits",
+    "monthlyRequests": "Monthly Requests",
+    "monthlySavings": "Monthly Savings",
+    "monthlyEarnings": "Monthly Earnings",
+    "usageOverview": "Usage Overview",
+    "proxyStatus": "Proxy Status",
+    "proxyRunning": "Running",
+    "proxyStopped": "Stopped",
+    "networkNodes": "Inference Nodes",
+    "networkOffline": "Offline"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "loginTo": "Login to ClawRoute",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "login": "Login",
+    "noAccount": "No account yet?",
+    "registerNow": "Register now",
+    "createAccount": "Create Account",
+    "registerTo": "Register to ClawRoute",
+    "name": "Name",
+    "confirmPassword": "Confirm Password",
+    "register": "Register",
+    "hasAccount": "Already have an account?",
+    "loginNow": "Login now"
   },
   "errorBoundary": {
     "title": "Something went wrong",
