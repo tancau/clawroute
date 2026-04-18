@@ -126,7 +126,7 @@ export function getRecentRequests(
   timestamp: number;
 }> {
   const stmt = db.prepare(`
-    SELECT id, model, provider, input_tokens, output_tokens, cost_cents, timestamp
+    SELECT id, model, provider, input_tokens, output_tokens, cost_cents, created_at
     FROM usage_logs
     WHERE user_id = ?
     ORDER BY created_at DESC
@@ -142,7 +142,7 @@ export function getRecentRequests(
     inputTokens: row.input_tokens || 0,
     outputTokens: row.output_tokens || 0,
     costCents: row.cost_cents || 0,
-    timestamp: row.timestamp,
+    timestamp: row.created_at,
   }));
 }
 

@@ -43,7 +43,7 @@ export function getAdminStats(): AdminStats {
   const activeUsers = (db.prepare(`
     SELECT COUNT(DISTINCT user_id) as count 
     FROM usage_logs 
-    WHERE timestamp > ?
+    WHERE created_at > ?
   `).get(weekAgo) as any)?.count || 0;
   const newToday = (db.prepare(`
     SELECT COUNT(*) as count 
@@ -69,17 +69,17 @@ export function getAdminStats(): AdminStats {
   const todayRequests = (db.prepare(`
     SELECT COUNT(*) as count 
     FROM usage_logs 
-    WHERE timestamp > ?
+    WHERE created_at > ?
   `).get(todayStart) as any)?.count || 0;
   
   const totalCost = (db.prepare(`
-    SELECT SUM(cost) as total 
+    SELECT SUM(cost_cents) as total 
     FROM usage_logs
   `).get() as any)?.total || 0;
   const todayCost = (db.prepare(`
-    SELECT SUM(cost) as total 
+    SELECT SUM(cost_cents) as total 
     FROM usage_logs 
-    WHERE timestamp > ?
+    WHERE created_at > ?
   `).get(todayStart) as any)?.total || 0;
 
   return {
@@ -158,9 +158,9 @@ export function getUsageTrend(days: number = 7): { date: string; requests: numbe
     const dayEnd = new Date(date.setHours(23, 59, 59, 999)).getTime();
 
     const result = db.prepare(`
-      SELECT COUNT(*) as requests, SUM(cost) as cost
+      SELECT COUNT(*) as requests, SUM(cost_cents) as cost
       FROM usage_logs
-      WHERE timestamp >= ? AND timestamp <= ?
+      WHERE created_at >= ? AND created_at <= ?
     `).get(dayStart, dayEnd) as any;
 
     trend.push({
@@ -179,7 +179,7 @@ export function getTopModels(limit: number = 10): { model: string; count: number
     SELECT 
       model as model,
       COUNT(*) as count,
-      SUM(cost) as cost
+      SUM(cost_cents) as cost
     FROM usage_logs
     WHERE model IS NOT NULL
     GROUP BY model
@@ -194,8 +194,8 @@ export function getProviderStats(): { provider: string; requests: number; cost: 
     SELECT 
       provider,
       COUNT(*) as requests,
-      SUM(cost) as cost,
-      SUM(CASE WHEN error IS NOT NULL THEN 1 ELSE 0 END) as errors
+      SUM(cost_cents) as cost,
+      0 as errors
     FROM usage_logs
     GROUP BY provider
     ORDER BY requests DESC

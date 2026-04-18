@@ -29,7 +29,7 @@ async function getModelsList(): Promise<Model[]> {
       if (data.models && data.models.length > 0) {
         dynamicModels = data.models;
         lastFetchTime = Date.now();
-        return dynamicModels;
+        return data.models;
       }
     }
   } catch {

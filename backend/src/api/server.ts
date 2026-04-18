@@ -12,6 +12,7 @@ import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
 import { logger } from '../monitoring/logger';
+import { createHmac } from 'node:crypto';
 
 // ==================== JWT Utilities ====================
 
@@ -19,7 +20,7 @@ import { logger } from '../monitoring/logger';
 function signJWT(payload: Record<string, any>, secret: string): string {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const signature = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
   return `${header}.${body}.${signature}`;
 }
 
@@ -28,7 +29,7 @@ function verifyJWT(token: string, secret: string): Record<string, any> | null {
   const parts = token.split('.');
   if (parts.length !== 3) return null;
   const [header, body, signature] = parts;
-  const expected = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const expected = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
   if (signature !== expected) return null;
   try {
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
@@ -243,7 +244,7 @@ app.post('/v1/messages', async (c) => {
     const result = await ProxyTool.call(parseResult.data, context);
 
     // Handle Anthropic streaming
-    if (body.stream && result.data._stream) {
+    if (body.stream && (result.data as any)._stream) {
       const streamData = result.data as any;
       const streamStartTime = Date.now();
 
@@ -446,7 +447,7 @@ app.post('/v1/chat/completions', async (c) => {
     }, context);
 
     // 6. Handle streaming response
-    if (body.stream && proxyResult.data._stream) {
+    if (body.stream && (proxyResult.data as any)._stream) {
       const streamData = proxyResult.data as any;
       const streamModel = streamData.model || body.model;
       const streamProvider = streamData.provider || proxyResult.data.provider;
@@ -778,7 +779,7 @@ app.post('/v1/auth/reset-password-request', async (c) => {
     const expiresAt = Date.now() + 3600_000; // 1 hour
 
     // Store reset token in users table metadata
-    const existingMeta = user.metadata ? JSON.parse(user.metadata) : {};
+    const existingMeta = user.metadata ? JSON.parse(user.metadata as unknown as string) : {};
     const updatedMeta = JSON.stringify({
       ...existingMeta,
       resetToken,
@@ -1191,6 +1192,40 @@ app.get('/api/models/catalog/stats', async (c) => {
   }
 });
 
+// ==================== Admin Imports & Middleware ====================
+
+import {
+  initAdminTables,
+  isAdmin,
+  getAdminUser,
+  hasPermission,
+} from '../admin/auth';
+import { getAdminStats, getRecentActivity, getUsageTrend } from '../admin/stats';
+import { listUsers, getUserDetail, updateUserCredits, suspendUser, unsuspendUser } from '../admin/users';
+import { listKeys, getKeyDetail, approveKey, rejectKey, disableKey, enableKey, bulkApproveKeys } from '../admin/keys';
+import { getSettings, updateSettings } from '../admin/settings';
+
+// 初始化管理员表
+initAdminTables();
+
+// 管理员权限中间件
+const requireAdmin = async (c: any, next: any) => {
+  // 从 cookie 或 header 获取用户信息
+  const userId = c.req.header('X-User-Id') || c.get('userId') as string;
+  
+  if (!userId || !isAdmin(userId)) {
+    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
+  }
+  
+  const adminUser = getAdminUser(userId as string);
+  if (!adminUser) {
+    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
+  }
+  
+  c.set('adminUser', adminUser);
+  await next();
+};
+
 // ==================== Sync Management API ====================
 
 // 触发价格同步
@@ -1435,42 +1470,11 @@ app.get('/v1/analytics/top-models/:userId', async (c) => {
 // 导出应用
 export default app;
 
-// ============== Admin API ==============
-import {
-  initAdminTables,
-  isAdmin,
-  getAdminUser,
-  hasPermission,
-} from '../admin/auth';
-import { getAdminStats, getRecentActivity, getUsageTrend } from '../admin/stats';
-import { listUsers, getUserDetail, updateUserCredits, suspendUser, unsuspendUser } from '../admin/users';
-import { listKeys, getKeyDetail, approveKey, rejectKey, disableKey, enableKey, bulkApproveKeys } from '../admin/keys';
-import { getSettings, updateSettings } from '../admin/settings';
-
-// 初始化管理员表
-initAdminTables();
-
-// 管理员权限中间件
-const requireAdmin = async (c: any, next: any) => {
-  // 从 cookie 或 header 获取用户信息
-  const userId = c.req.header('X-User-Id') || c.get('userId');
-  
-  if (!userId || !isAdmin(userId)) {
-    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
-  }
-  
-  const adminUser = getAdminUser(userId);
-  if (!adminUser) {
-    return c.json({ error: { code: 'UNAUTHORIZED', message: 'Admin access required' } }, 403);
-  }
-  
-  c.set('adminUser', adminUser);
-  await next();
-};
+// ============== Admin API Routes ==============
 
 // 检查管理员状态
 app.get('/v1/admin/check', async (c) => {
-  const userId = c.req.header('X-User-Id') || c.get('userId');
+  const userId = c.req.header('X-User-Id') || (c as any).get('userId') as string;
   const adminUser = userId ? getAdminUser(userId) : null;
   
   return c.json({

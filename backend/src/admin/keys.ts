@@ -91,8 +91,8 @@ export function listKeys(options: KeyListOptions = {}): { keys: AdminKeyView[]; 
       sk.is_active,
       sk.created_at,
       COUNT(ul.id) as request_count,
-      COALESCE(SUM(ul.cost), 0) as total_cost,
-      COALESCE(SUM(e.amount), 0) as total_earnings
+      COALESCE(SUM(ul.cost_cents), 0) as total_cost,
+      COALESCE(SUM(e.commission_cents), 0) as total_earnings
     FROM shared_keys sk
     LEFT JOIN users u ON sk.user_id = u.id
     LEFT JOIN usage_logs ul ON sk.id = ul.key_id
@@ -134,8 +134,8 @@ export function getKeyDetail(keyId: string): AdminKeyView | null {
       sk.is_active,
       sk.created_at,
       COUNT(ul.id) as request_count,
-      COALESCE(SUM(ul.cost), 0) as total_cost,
-      COALESCE(SUM(e.amount), 0) as total_earnings
+      COALESCE(SUM(ul.cost_cents), 0) as total_cost,
+      COALESCE(SUM(e.commission_cents), 0) as total_earnings
     FROM shared_keys sk
     LEFT JOIN users u ON sk.user_id = u.id
     LEFT JOIN usage_logs ul ON sk.id = ul.key_id
@@ -308,9 +308,9 @@ export function getKeyUsageStats(keyId: string, days: number = 7): any[] {
     const dayEnd = new Date(date.setHours(23, 59, 59, 999)).getTime();
 
     const result = db.prepare(`
-      SELECT COUNT(*) as requests, SUM(cost) as cost
+      SELECT COUNT(*) as requests, SUM(cost_cents) as cost
       FROM usage_logs
-      WHERE key_id = ? AND timestamp >= ? AND timestamp <= ?
+      WHERE key_id = ? AND created_at >= ? AND created_at <= ?
     `).get(keyId, dayStart, dayEnd) as any;
 
     stats.push({

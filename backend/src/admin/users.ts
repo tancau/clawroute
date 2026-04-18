@@ -78,10 +78,10 @@ export function listUsers(options: UserListOptions = {}): { users: AdminUserView
       u.credits,
       u.created_at,
       u.status,
-      MAX(ul.timestamp) as last_active,
+      MAX(ul.created_at) as last_active,
       COUNT(DISTINCT sk.id) as key_count,
       COUNT(ul.id) as request_count,
-      COALESCE(SUM(ul.cost), 0) as total_cost
+      COALESCE(SUM(ul.cost_cents), 0) as total_cost
     FROM users u
     LEFT JOIN shared_keys sk ON u.id = sk.user_id
     LEFT JOIN usage_logs ul ON u.id = ul.user_id
@@ -117,10 +117,10 @@ export function getUserDetail(userId: string): AdminUserView | null {
       u.credits,
       u.created_at,
       u.status,
-      MAX(ul.timestamp) as last_active,
+      MAX(ul.created_at) as last_active,
       COUNT(DISTINCT sk.id) as key_count,
       COUNT(ul.id) as request_count,
-      COALESCE(SUM(ul.cost), 0) as total_cost
+      COALESCE(SUM(ul.cost_cents), 0) as total_cost
     FROM users u
     LEFT JOIN shared_keys sk ON u.id = sk.user_id
     LEFT JOIN usage_logs ul ON u.id = ul.user_id
@@ -196,7 +196,7 @@ export function unsuspendUser(userId: string): void {
   db.prepare("UPDATE users SET status = 'active' WHERE id = ?").run(userId);
 
   // 重新启用用户的 Key
-  db.prepare('UPDATE shared_keys SET is_active = 1 WHERE user_id = ? AND status = ?').run(userId, 'active');
+  db.prepare('UPDATE shared_keys SET is_active = 1, status = \'active\' WHERE user_id = ? AND status = \'active\'').run(userId);
 
   // 记录操作日志
   db.prepare(`
@@ -227,7 +227,7 @@ export function getUserKeys(userId: string): any[] {
   return db.prepare(`
     SELECT 
       id, provider, key_preview, is_active, status, 
-      request_count, total_cost, created_at
+      total_calls as request_count, created_at
     FROM shared_keys
     WHERE user_id = ?
     ORDER BY created_at DESC

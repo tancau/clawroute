@@ -9,6 +9,7 @@
  */
 
 import { upsertModels, type ModelCatalogEntry } from '../db/model-catalog';
+import { db } from '../db';
 import { inferIntents, inferQualityScore, inferLatency } from './merge';
 
 /** 已知但未完全适配的平台 */
@@ -226,7 +227,6 @@ export function updateModelPricing(
   inputCost1m: number,
   outputCost1m: number
 ): void {
-  const { db } = require('../db');
   const now = Date.now();
 
   db.prepare(`

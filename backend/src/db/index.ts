@@ -28,12 +28,14 @@ export function initDatabase() {
       password_hash TEXT NOT NULL,
       tier TEXT NOT NULL DEFAULT 'free',
       credits INTEGER NOT NULL DEFAULT 100,
+      status TEXT NOT NULL DEFAULT 'active',
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL,
       metadata TEXT
     );
     
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+    CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
   `);
 
   // 共享 API Key 表
@@ -45,6 +47,7 @@ export function initDatabase() {
       key_encrypted TEXT NOT NULL,
       key_preview TEXT NOT NULL,
       tier TEXT NOT NULL DEFAULT 'free',
+      status TEXT NOT NULL DEFAULT 'active',
       is_active INTEGER NOT NULL DEFAULT 1,
       total_calls INTEGER NOT NULL DEFAULT 0,
       last_used_at INTEGER,
@@ -57,6 +60,7 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_shared_keys_user ON shared_keys(user_id);
     CREATE INDEX IF NOT EXISTS idx_shared_keys_provider ON shared_keys(provider);
     CREATE INDEX IF NOT EXISTS idx_shared_keys_active ON shared_keys(is_active);
+    CREATE INDEX IF NOT EXISTS idx_shared_keys_status ON shared_keys(status);
   `);
 
   // 使用日志表
@@ -194,6 +198,21 @@ export function initDatabase() {
 
     CREATE INDEX IF NOT EXISTS idx_sync_source ON sync_log(source);
     CREATE INDEX IF NOT EXISTS idx_sync_status ON sync_log(status);
+  `);
+
+  // 审计日志表
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      action TEXT NOT NULL,
+      details TEXT,
+      timestamp INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_logs(user_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
   `);
 
   console.log('Database initialized successfully');
