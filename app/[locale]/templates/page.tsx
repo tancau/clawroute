@@ -3,49 +3,21 @@
 import { useTranslations } from 'next-intl';
 import { useState, useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import type { Template } from '@/lib/types';
-
-function TemplateCard({ template, onApply }: { template: Template; onApply: (id: string) => void }) {
-  const tScenes = useTranslations('scenes');
-  const tTemplate = useTranslations('template');
-
-  return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-base font-semibold">{template.name}</h3>
-          <Badge variant="secondary" className="text-xs shrink-0">
-            {tTemplate('saving')} {template.estimatedSavingRate}%
-          </Badge>
-        </div>
-        <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">
-              {tScenes(template.sceneId) ?? template.sceneId}
-            </Badge>
-            <span className="text-xs text-muted-foreground">{tTemplate('by')} {template.author}</span>
-          </div>
-          <Button variant="default" size="sm" onClick={() => onApply(template.id)}>
-            {tTemplate('useTemplate')}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { useRouter } from 'next/navigation';
+import { TemplateDetailCard } from '@/components/templates/TemplateDetailCard';
+import { TemplateFilters } from '@/components/templates/TemplateFilters';
+import { TemplateEmptyState } from '@/components/templates/TemplateEmptyState';
+import { Section } from '@/components/layout/Section';
 
 export default function TemplatesPage() {
   const t = useTranslations('templates');
-  const tScenes = useTranslations('scenes');
   const templates = useAppStore((s) => s.templates);
   const selectScene = useAppStore((s) => s.selectScene);
   const applyTemplate = useAppStore((s) => s.applyTemplate);
+  const setConfigStep = useAppStore((s) => s.setConfigStep);
+  const router = useRouter();
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedScene, setSelectedScene] = useState<string>('all');
 
@@ -72,64 +44,54 @@ export default function TemplatesPage() {
     if (tpl) {
       selectScene(tpl.sceneId);
       applyTemplate(templateId);
+      setConfigStep(3);
+      router.push('/configure');
     }
   };
 
+  const handleClearFilters = () => {
+    setSearchKeyword('');
+    setSelectedScene('all');
+  };
+
   return (
-    <div className="min-h-screen p-4 md:p-6 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">{t('title')}</h1>
-        <p className="text-muted-foreground">{t('description')}</p>
-      </div>
-
-      {/* Search and filter */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <Input
-          placeholder={t('searchPlaceholder')}
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-          className="sm:max-w-xs"
-        />
-        <div className="flex gap-2 flex-wrap">
-          <Button
-            variant={selectedScene === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSelectedScene('all')}
-          >
-            {t('all')}
-          </Button>
-          {sceneIds.map((id) => (
-            <Button
-              key={id}
-              variant={selectedScene === id ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedScene(id)}
-            >
-              {tScenes(id)}
-            </Button>
-          ))}
+    <div className="min-h-screen">
+      <Section title={t('title')} description={t('description')}>
+        {/* Search and filter */}
+        <div className="mb-6">
+          <TemplateFilters
+            searchKeyword={searchKeyword}
+            onSearchChange={setSearchKeyword}
+            selectedScene={selectedScene}
+            onSceneChange={setSelectedScene}
+            sceneIds={sceneIds}
+            allLabel={t('all')}
+          />
         </div>
-      </div>
 
-      {/* Template grid */}
-      {filteredTemplates.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          {t('noMatch')}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredTemplates.map((tpl) => (
-            <TemplateCard key={tpl.id} template={tpl} onApply={handleApply} />
-          ))}
-        </div>
-      )}
+        {/* Template grid */}
+        {filteredTemplates.length === 0 ? (
+          <TemplateEmptyState
+            title={t('noMatch')}
+            description="Try adjusting your search or filters"
+            onClearFilters={handleClearFilters}
+            clearLabel="Clear filters"
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredTemplates.map((tpl) => (
+              <TemplateDetailCard key={tpl.id} template={tpl} onApply={handleApply} />
+            ))}
+          </div>
+        )}
 
-      {/* Navigate to configure */}
-      <div className="mt-8 text-center">
-        <Link href="/">
-          <Button variant="outline">{t('goHome')}</Button>
-        </Link>
-      </div>
+        {/* Navigate to home */}
+        <div className="mt-8 text-center">
+          <Link href="/">
+            <Button variant="outline">{t('goHome')}</Button>
+          </Link>
+        </div>
+      </Section>
     </div>
   );
 }

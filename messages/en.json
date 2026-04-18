@@ -56,7 +56,11 @@
     "switchScene": "Switch Scene",
     "noScene": "Please select a scenario first",
     "goHome": "Go Home",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "next": "Next",
+    "advancedTools": "Advanced Tools",
+    "apiDiscovery": "API Discovery",
+    "configImport": "Config Import"
   },
   "modelCompare": {
     "title": "Model Comparison",

@@ -56,7 +56,11 @@
     "switchScene": "切换场景",
     "noScene": "请先选择一个使用场景",
     "goHome": "返回首页",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "next": "下一步",
+    "advancedTools": "高级工具",
+    "apiDiscovery": "API 发现",
+    "configImport": "配置导入"
   },
   "modelCompare": {
     "title": "模型比较",

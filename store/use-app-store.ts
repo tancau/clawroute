@@ -42,6 +42,16 @@ interface AppStore {
   setLocale: (locale: Locale) => void;
   copySuccess: boolean;
   setCopySuccess: (success: boolean) => void;
+
+  // Config flow slice
+  configStep: number;
+  setConfigStep: (step: number) => void;
+  completedSteps: number[];
+  markStepCompleted: (step: number) => void;
+  compareViewMode: 'card' | 'table';
+  setCompareViewMode: (mode: 'card' | 'table') => void;
+  advancedPanelOpen: boolean;
+  setAdvancedPanelOpen: (open: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -133,4 +143,19 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setLocale: (locale) => set({ locale }),
   copySuccess: false,
   setCopySuccess: (success) => set({ copySuccess: success }),
+
+  // Config flow slice
+  configStep: 1,
+  setConfigStep: (step) => set({ configStep: step }),
+  completedSteps: [],
+  markStepCompleted: (step) => {
+    const { completedSteps } = get();
+    if (!completedSteps.includes(step)) {
+      set({ completedSteps: [...completedSteps, step] });
+    }
+  },
+  compareViewMode: 'card' as const,
+  setCompareViewMode: (mode) => set({ compareViewMode: mode }),
+  advancedPanelOpen: false,
+  setAdvancedPanelOpen: (open) => set({ advancedPanelOpen: open }),
 }));
