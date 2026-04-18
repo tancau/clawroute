@@ -4,6 +4,7 @@ import { getProvider, type ProviderConfig } from '../../config/providers';
 import { getAvailableKey, recordKeyUsage } from '../../keys';
 import { BillingTool, calculateCost, calculateSavings } from '../../billing';
 import { deductCredits } from '../../users';
+import { logger } from '../../monitoring/logger';
 import { db } from '../../db';
 
 /**
@@ -192,7 +193,7 @@ async function recordUsage(
 
     deductCredits(input.metadata.userId, creditsToDeduct);
   } catch (err) {
-    console.error('Failed to log usage:', err);
+    logger.error('Failed to log usage:', err);
   }
 }
 
@@ -444,7 +445,7 @@ export function createSSEStream(
             try {
               await billingCallback(lastUsageData);
             } catch (err) {
-              console.error('Failed to record streaming usage:', err);
+              logger.error('Failed to record streaming usage:', err);
             }
           } else if (billingCallback && !lastUsageData) {
             // Provider didn't return usage — estimate from chunks

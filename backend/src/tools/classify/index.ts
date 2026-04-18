@@ -199,7 +199,7 @@ Respond with ONLY the intent name, nothing else.`;
     const result: ClassifyOutput = {
       intent: matchedIntent as any,
       confidence: 0.85, // AI classification confidence
-      method: 'ai',
+      source: 'ai',
       reasoning: `AI classified as ${matchedIntent} using ${OLLAMA_MODEL}`,
     };
 

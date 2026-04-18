@@ -6,8 +6,8 @@ import { toolRegistry } from '../tools/registry';
 import { ClassifyTool } from '../tools/classify';
 import { RouteTool } from '../tools/route';
 import { ProxyTool, createSSEStream } from '../tools/proxy';
-import { initDatabase } from '../db';
-import { UserTool, getUser, updateUser, deductCredits, verifyPassword } from '../users';
+import { initDatabase, db } from '../db';
+import { UserTool, getUser, updateUser, deductCredits, verifyPassword, hashPassword } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
@@ -713,32 +713,26 @@ app.post('/v1/auth/refresh', async (c) => {
       }, 400);
     }
     
-    // 验证 refresh token 格式
-    const parts = body.refreshToken.split('_');
-    if (parts.length < 3 || parts[0] !== 'rt') {
+    // Verify refresh token using JWT
+    const jwtSecret = process.env.JWT_SECRET || 'clawrouter-dev-secret';
+    const payload = verifyJWT(body.refreshToken, jwtSecret);
+    if (!payload || payload.type !== 'refresh') {
       return c.json({
-        error: {
-          code: 'INVALID_TOKEN',
-          message: 'Invalid refresh token',
-        },
+        error: { code: 'INVALID_TOKEN', message: 'Invalid refresh token' },
       }, 401);
     }
-    
-    // 检查 token 是否过期（假设 7 天有效期）
-    const tokenTime = parseInt(parts[2], 10);
-    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7天
-    if (Date.now() - tokenTime > maxAge) {
-      return c.json({
-        error: {
-          code: 'TOKEN_EXPIRED',
-          message: 'Refresh token expired',
-        },
-      }, 401);
-    }
-    
-    // 生成新的 access token
-    const newAccessToken = `at_${crypto.randomUUID()}`;
-    const newRefreshToken = `rt_${crypto.randomUUID()}_${Date.now()}`;
+
+    // Generate new access token and refresh token
+    const now = Math.floor(Date.now() / 1000);
+    const user = getUser(payload.userId);
+    const newAccessToken = signJWT(
+      { userId: payload.userId, tier: user?.tier || 'free', iat: now, exp: now + 3600 },
+      jwtSecret
+    );
+    const newRefreshToken = signJWT(
+      { userId: payload.userId, type: 'refresh', iat: now, exp: now + 7 * 86400 },
+      jwtSecret
+    );
     
     return c.json({
       accessToken: newAccessToken,
