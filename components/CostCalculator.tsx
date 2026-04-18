@@ -17,21 +17,24 @@ export function CostCalculator({
   const [monthlyCalls, setMonthlyCalls] = useState(defaultMonthlyCalls);
   const [avgTokens, setAvgTokens] = useState(defaultAvgTokensPerCall);
   
-  // Assume average cost of $0.01 per 1K tokens with expensive models
-  const naiveCostPer1K = 0.01;
-  // With smart routing, average drops to $0.003 per 1K tokens
+  // Dynamic cost calculation based on actual model prices
+  // Baseline: GPT-4o ($5/1M input + $15/1M output, blended ~$10/1M)
+  // Smart route: DeepSeek-V3 ($0.28/1M input + $0.42/1M output, blended ~$0.35/1M)
+  // These are representative prices; actual routing varies by intent
+  const baselineCostPer1M = 10.0;   // GPT-4o blended $/1M tokens
+  const smartCostPer1M = 0.35;      // DeepSeek-V3 blended $/1M tokens
   
   const calculations = useMemo(() => {
     const totalTokens = monthlyCalls * avgTokens;
     
-    // Naive approach: all expensive models
-    const naiveMonthly = (totalTokens / 1000) * naiveCostPer1K;
+    // Naive approach: all requests go to expensive models (GPT-4o baseline)
+    const naiveMonthly = (totalTokens / 1_000_000) * baselineCostPer1M;
     
-    // Smart routing: 70% savings
-    const smartMonthly = naiveMonthly * 0.3;
+    // Smart routing: route to cost-optimized models based on intent
+    const smartMonthly = (totalTokens / 1_000_000) * smartCostPer1M;
     
     const savings = naiveMonthly - smartMonthly;
-    const savingsPercent = Math.round((savings / naiveMonthly) * 100);
+    const savingsPercent = naiveMonthly > 0 ? Math.round((savings / naiveMonthly) * 100) : 0;
     
     return {
       totalTokens,

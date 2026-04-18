@@ -12,6 +12,32 @@ import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
 
+// ==================== JWT Utilities ====================
+
+/** Simple JWT sign using HMAC-SHA256 (no external dependency) */
+function signJWT(payload: Record<string, any>, secret: string): string {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  return `${header}.${body}.${signature}`;
+}
+
+/** Verify and decode JWT */
+function verifyJWT(token: string, secret: string): Record<string, any> | null {
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const [header, body, signature] = parts;
+  const expected = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  if (signature !== expected) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
 // 初始化数据库
 initDatabase();
 
@@ -22,6 +48,46 @@ const app = new Hono();
 app.use('*', logger());
 app.use('*', cors());
 app.use('*', secureHeaders());
+
+// ==================== Rate Limiting ====================
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+/** Simple in-memory rate limiter middleware */
+const rateLimiter = async (c: any, next: any) => {
+  const clientId = c.req.header('X-User-Id') || c.req.header('X-Forwarded-For') || 'anonymous';
+  const now = Date.now();
+  const windowMs = 60_000; // 1 minute window
+
+  let entry = rateLimitMap.get(clientId);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + windowMs };
+    rateLimitMap.get(clientId); // touch
+    rateLimitMap.set(clientId, entry);
+  }
+
+  entry.count++;
+
+  // Default: 100 req/min; can be tuned per tier
+  const maxRequests = 100;
+
+  if (entry.count > maxRequests) {
+    return c.json({
+      error: {
+        code: 'RATE_LIMITED',
+        message: 'Too many requests. Please try again later.',
+        retry_after: Math.ceil((entry.resetAt - now) / 1000),
+      },
+    }, 429, {
+      'Retry-After': String(Math.ceil((entry.resetAt - now) / 1000)),
+    });
+  }
+
+  await next();
+};
+
+app.use('/v1/*', rateLimiter);
+app.use('/api/*', rateLimiter);
 
 // 健康检查
 app.get('/health', (c) => {
@@ -295,12 +361,38 @@ app.post('/v1/chat/completions', async (c) => {
     // 6. Handle streaming response
     if (body.stream && proxyResult.data._stream) {
       const streamData = proxyResult.data as any;
+      const streamModel = streamData.model || body.model;
+      const streamProvider = streamData.provider || proxyResult.data.provider;
+      const streamMeta = streamData._meta || {};
+      const streamStartTime = Date.now();
+
+      // Billing callback: record usage after stream completes
+      const billingCallback = async (usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => {
+        if (!usage.total_tokens) return; // Skip if no usage data
+        try {
+          await BillingTool.call({
+            userId: (context as any).userId || 'anonymous',
+            keyId: streamMeta.keyId || undefined,
+            requestId: context.requestId,
+            provider: streamProvider,
+            model: streamModel,
+            inputTokens: usage.prompt_tokens,
+            outputTokens: usage.completion_tokens,
+            latencyMs: Date.now() - streamStartTime,
+            creditsUsed: 1, // Minimum charge
+          }, context);
+        } catch (err) {
+          console.error('Stream billing error:', err);
+        }
+      };
+
       const sseStream = createSSEStream(
         streamData._streamUrl,
         streamData._streamBody,
         streamData._streamApiKey,
         context.requestId,
         streamData._streamTimeout,
+        billingCallback,
       );
 
       return new Response(sseStream, {
@@ -491,9 +583,17 @@ app.post('/v1/users/login', async (c) => {
     // 不返回密码哈希
     const { passwordHash, ...userSafe } = user;
     
-    // 生成 access token 和 refresh token
-    const accessToken = `at_${crypto.randomUUID()}`;
-    const refreshToken = `rt_${crypto.randomUUID()}_${Date.now()}`;
+    // 生成 JWT access token 和 refresh token
+    const jwtSecret = process.env.JWT_SECRET || 'clawrouter-dev-secret';
+    const now = Math.floor(Date.now() / 1000);
+    const accessToken = signJWT(
+      { userId: user.id, tier: user.tier, iat: now, exp: now + 3600 },
+      jwtSecret
+    );
+    const refreshToken = signJWT(
+      { userId: user.id, type: 'refresh', iat: now, exp: now + 7 * 86400 },
+      jwtSecret
+    );
     
     return c.json({
       user: userSafe,

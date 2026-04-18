@@ -114,6 +114,12 @@ const MAX_RETRIES = 3;
 /** Retryable HTTP status codes */
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
 
+/** Base delay for exponential backoff (ms) */
+const BASE_RETRY_DELAY = 500;
+
+/** Max retry delay (ms) */
+const MAX_RETRY_DELAY = 10_000;
+
 /**
  * Resolve API key for a provider (shared pool first, then env var)
  */
@@ -274,6 +280,12 @@ async function executeWithRetry(
     const attempt = attempts[i]!;
     const attemptRequestBody = { ...requestBody, model: attempt.model };
 
+    // Exponential backoff before retry (skip on first attempt)
+    if (i > 0) {
+      const delay = Math.min(BASE_RETRY_DELAY * Math.pow(2, i - 1), MAX_RETRY_DELAY);
+      await new Promise(r => setTimeout(r, delay));
+    }
+
     try {
       const response = await executeSingleRequest(
         attempt.url,
@@ -291,8 +303,15 @@ async function executeWithRetry(
           keyManager.markKeyInvalid(attempt.provider, attempt.apiKey);
         }
 
-        // Retryable status: continue to next attempt
+        // Retryable status: respect Retry-After, then continue
         if (RETRYABLE_STATUS.has(response.status)) {
+          const retryAfter = response.headers.get('Retry-After');
+          if (retryAfter) {
+            const waitMs = parseInt(retryAfter, 10) * 1000;
+            if (waitMs > 0 && waitMs < 60_000) {
+              await new Promise(r => setTimeout(r, waitMs));
+            }
+          }
           lastError = new Error(`Provider error (retryable): ${response.status} - ${errorText}`);
           continue;
         }
@@ -324,7 +343,7 @@ async function executeWithRetry(
 
 /**
  * Stream SSE response from provider to client
- * Returns a ReadableStream that can be piped to the client response
+ * Supports billing (parses usage from final chunk) and failover
  */
 export function createSSEStream(
   url: string,
@@ -332,55 +351,136 @@ export function createSSEStream(
   apiKey: string,
   requestId: string,
   timeout: number,
+  billingCallback?: (usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => Promise<void>,
+  failoverAttempts?: Array<{ url: string; apiKey: string; model: string; timeout: number }>,
 ): ReadableStream<Uint8Array> {
   return new ReadableStream({
     async start(controller) {
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-            'X-Request-ID': requestId,
-          },
-          body: JSON.stringify(requestBody),
-          signal: AbortSignal.timeout(timeout),
-        });
+      const encoder = new TextEncoder();
+      const allAttempts: Array<{ url: string; apiKey: string; model: string; timeout: number }> = [
+        { url, apiKey, model: (requestBody.model as string) || '', timeout },
+        ...(failoverAttempts || []),
+      ];
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          const errorChunk = `data: ${JSON.stringify({ error: { message: `Provider error: ${response.status} - ${errorText}`, type: 'provider_error' } })}\n\n`;
-          controller.enqueue(new TextEncoder().encode(errorChunk));
-          controller.close();
-          return;
-        }
-
-        if (!response.body) {
-          controller.close();
-          return;
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
+      for (let attemptIdx = 0; attemptIdx < Math.min(allAttempts.length, 2); attemptIdx++) {
+        const attempt = allAttempts[attemptIdx]!;
+        const attemptBody = { ...requestBody, model: attempt.model || requestBody.model };
 
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            // Pass through SSE chunks as-is
-            controller.enqueue(value);
-          }
-        } finally {
-          reader.releaseLock();
-        }
+          const response = await fetch(attempt.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${attempt.apiKey}`,
+              'X-Request-ID': requestId,
+            },
+            body: JSON.stringify(attemptBody),
+            signal: AbortSignal.timeout(attempt.timeout),
+          });
 
-        controller.close();
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg, type: 'stream_error' } })}\n\n`;
-        controller.enqueue(new TextEncoder().encode(errorChunk));
-        controller.close();
+          if (!response.ok) {
+            const errorText = await response.text();
+
+            // If retryable and we have more attempts, try next
+            if (RETRYABLE_STATUS.has(response.status) && attemptIdx < allAttempts.length - 1) {
+              const failoverChunk = `data: ${JSON.stringify({
+                type: 'provider_failover',
+                provider_error: response.status,
+                next_attempt: attemptIdx + 1,
+              })}\n\n`;
+              controller.enqueue(encoder.encode(failoverChunk));
+              continue;
+            }
+
+            const errorChunk = `data: ${JSON.stringify({ error: { message: `Provider error: ${response.status} - ${errorText}`, type: 'provider_error' } })}\n\n`;
+            controller.enqueue(encoder.encode(errorChunk));
+            controller.close();
+            return;
+          }
+
+          if (!response.body) {
+            controller.close();
+            return;
+          }
+
+          // Stream passthrough with usage tracking
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let lastUsageData: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | null = null;
+          let buffer = '';
+
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              controller.enqueue(value);
+
+              // Parse SSE chunks to find usage data
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  const data = line.slice(6).trim();
+                  if (data === '[DONE]') continue;
+                  try {
+                    const parsed = JSON.parse(data);
+                    // OpenAI streaming format: usage in final chunk
+                    if (parsed.usage) {
+                      lastUsageData = parsed.usage;
+                    }
+                  } catch {}
+                }
+              }
+            }
+          } finally {
+            reader.releaseLock();
+          }
+
+          // Record billing after stream completes
+          if (billingCallback && lastUsageData) {
+            try {
+              await billingCallback(lastUsageData);
+            } catch (err) {
+              console.error('Failed to record streaming usage:', err);
+            }
+          } else if (billingCallback && !lastUsageData) {
+            // Provider didn't return usage — estimate from chunks
+            // This is a rough estimate; actual usage may differ
+            try {
+              await billingCallback({
+                prompt_tokens: 0,
+                completion_tokens: 0,
+                total_tokens: 0,
+              });
+            } catch {}
+          }
+
+          controller.close();
+          return; // Success, don't try more attempts
+        } catch (error) {
+          // If we have more attempts, try next
+          if (attemptIdx < allAttempts.length - 1) {
+            const failoverChunk = `data: ${JSON.stringify({
+              type: 'provider_failover',
+              error: error instanceof Error ? error.message : 'Unknown',
+              next_attempt: attemptIdx + 1,
+            })}\n\n`;
+            controller.enqueue(encoder.encode(failoverChunk));
+            continue;
+          }
+
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg, type: 'stream_error' } })}\n\n`;
+          controller.enqueue(encoder.encode(errorChunk));
+          controller.close();
+          return;
+        }
       }
+
+      controller.close();
     },
   });
 }

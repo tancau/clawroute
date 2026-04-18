@@ -8,17 +8,30 @@ const ITERATIONS = 100000;
 
 /**
  * 从环境变量或生成加密密钥
+ * 生产环境必须设置 ENCRYPTION_KEY，否则拒绝启动
  */
 function getEncryptionKey(): Buffer {
   const envKey = process.env.ENCRYPTION_KEY;
   
   if (envKey) {
-    // 从 hex 字符串转换
-    return Buffer.from(envKey, 'hex');
+    const key = Buffer.from(envKey, 'hex');
+    if (key.length !== 32) {
+      throw new Error('ENCRYPTION_KEY must be 32 bytes (64 hex characters). Got: ' + key.length + ' bytes');
+    }
+    return key;
   }
   
-  // 开发环境：使用固定密钥（生产环境必须设置 ENCRYPTION_KEY）
-  console.warn('WARNING: Using development encryption key. Set ENCRYPTION_KEY in production!');
+  // 生产环境：必须设置 ENCRYPTION_KEY
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'FATAL: ENCRYPTION_KEY is not set. ' +
+      'Generate one with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))" ' +
+      'Then set it in your environment before starting the server.'
+    );
+  }
+  
+  // 开发环境：使用固定密钥
+  console.warn('\x1b[33m%s\x1b[0m', 'WARNING: Using development encryption key. Set ENCRYPTION_KEY in production!');
   const devKey = crypto.createHash('sha256').update('clawrouter-dev-key').digest();
   return devKey;
 }
@@ -110,6 +123,16 @@ export function validateKeyFormat(key: string, provider: string): boolean {
     anthropic: /^sk-ant-[a-zA-Z0-9-]{20,}$/,
     gemini: /^AI[a-zA-Z0-9-_]{20,}$/,
     deepseek: /^sk-[a-zA-Z0-9]{20,}$/,
+    qwen: /^sk-[a-zA-Z0-9]{20,}$/,
+    grok: /^xai-[a-zA-Z0-9]{20,}$/,
+    mistral: /^[a-zA-Z0-9]{32}$/,
+    llama: /^.{10,}$/,  // Local/self-hosted, no standard format
+    openrouter: /^sk-or-[a-zA-Z0-9-]{20,}$/,
+    litellm: /^sk-[a-zA-Z0-9]{20,}$/,
+    'infini-ai': /^sk-[a-zA-Z0-9]{20,}$/,
+    together: /^[a-zA-Z0-9]{40,}$/,
+    fireworks: /^fw-[a-zA-Z0-9]{20,}$/,
+    groq: /^gsk_[a-zA-Z0-9]{20,}$/,
     custom: /^.{10,}$/,
   };
   
