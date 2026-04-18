@@ -4,21 +4,23 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, PiggyBank, Settings, LogOut } from 'lucide-react';
 import { useUserStore } from '@/store/use-user-store';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface DashboardShellProps {
   children: React.ReactNode;
 }
 
-const navItems = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/savings', label: 'Savings', icon: PiggyBank },
-  { href: '/dashboard/preferences', label: 'Preferences', icon: Settings },
-];
-
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const user = useUserStore((s) => s.user);
+  const t = useTranslations('dashboard');
+
+  const navItems = [
+    { href: '/dashboard', label: t('overview'), icon: LayoutDashboard },
+    { href: '/dashboard/savings', label: t('savings'), icon: PiggyBank },
+    { href: '/dashboard/preferences', label: t('preferences'), icon: Settings },
+  ];
 
   const isActive = (href: string) => {
     if (href === '/dashboard') return pathname === '/dashboard';
@@ -59,7 +61,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-7 hover:text-semantic-error hover:bg-semantic-error/10 transition-colors duration-fast w-full"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {t('logout')}
           </button>
         </div>
       </aside>

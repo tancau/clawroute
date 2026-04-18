@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface SavingsData {
   totalRequests: number;
@@ -55,16 +56,16 @@ const mockData: SavingsData = {
 export default function SavingsPage() {
   const [data] = useState<SavingsData>(mockData);
   const [isLoading, setIsLoading] = useState(true);
+  const t = useTranslations('dashboard');
 
   useEffect(() => {
-    // Simulate API call
     setTimeout(() => setIsLoading(false), 500);
   }, []);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white">加载中...</div>
+        <div className="text-neutral-10">{t('loading')}</div>
       </div>
     );
   }
@@ -75,51 +76,51 @@ export default function SavingsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">💰 省钱报告</h1>
-            <p className="text-[#94a3b8] mt-1">本月成本优化详情</p>
+            <h1 className="text-3xl font-bold text-neutral-10">{t('savings')}</h1>
+            <p className="text-neutral-7 mt-1">{t('savingsDetail')}</p>
           </div>
           <Link
             href="/dashboard"
-            className="px-4 py-2 bg-[#1e293b] text-[#94a3b8] rounded-lg hover:bg-[#334155] transition-colors"
+            className="px-4 py-2 bg-surface-raised text-neutral-7 rounded-lg hover:bg-surface-overlay transition-colors"
           >
-            返回控制台
+            {t('backToDashboard')}
           </Link>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-            <div className="text-[#94a3b8] text-sm mb-2">总请求数</div>
-            <div className="text-2xl font-bold text-white">{data.totalRequests.toLocaleString()}</div>
+          <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+            <div className="text-neutral-7 text-sm mb-2">{t('totalRequestsCount')}</div>
+            <div className="text-2xl font-bold text-neutral-10">{data.totalRequests.toLocaleString()}</div>
           </div>
-          <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-            <div className="text-[#94a3b8] text-sm mb-2">原始成本</div>
-            <div className="text-2xl font-bold text-red-400">${data.originalCost.toFixed(2)}</div>
-            <div className="text-xs text-[#64748b] mt-1">全部使用 GPT-4</div>
+          <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+            <div className="text-neutral-7 text-sm mb-2">{t('originalCost')}</div>
+            <div className="text-2xl font-bold text-semantic-error">${data.originalCost.toFixed(2)}</div>
+            <div className="text-xs text-neutral-6 mt-1">{t('allGpt4')}</div>
           </div>
-          <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-            <div className="text-[#94a3b8] text-sm mb-2">实际成本</div>
-            <div className="text-2xl font-bold text-white">${data.actualCost.toFixed(2)}</div>
+          <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+            <div className="text-neutral-7 text-sm mb-2">{t('actualCost')}</div>
+            <div className="text-2xl font-bold text-neutral-10">${data.actualCost.toFixed(2)}</div>
           </div>
           <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/50 rounded-xl p-6">
-            <div className="text-green-400 text-sm mb-2">节省金额</div>
-            <div className="text-2xl font-bold text-green-400">${data.savedAmount.toFixed(2)}</div>
-            <div className="text-sm text-green-300 mt-1">节省 {data.savedPercent}%</div>
+            <div className="text-semantic-success text-sm mb-2">{t('savedAmount')}</div>
+            <div className="text-2xl font-bold text-semantic-success">${data.savedAmount.toFixed(2)}</div>
+            <div className="text-sm text-green-300 mt-1">{t('saved', { percent: data.savedPercent })}</div>
           </div>
         </div>
 
         {/* Comparison with last month */}
         {data.lastMonth && (
-          <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">📈 与上月对比</h2>
+          <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+            <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('vsLastMonthCompare')}</h2>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <div className="text-[#94a3b8] text-sm">上月节省</div>
-                <div className="text-xl font-bold text-white">${data.lastMonth.savedAmount.toFixed(2)}</div>
+                <div className="text-neutral-7 text-sm">{t('lastMonthSavings')}</div>
+                <div className="text-xl font-bold text-neutral-10">${data.lastMonth.savedAmount.toFixed(2)}</div>
               </div>
               <div>
-                <div className="text-[#94a3b8] text-sm">本月增长</div>
-                <div className="text-xl font-bold text-green-400">
+                <div className="text-neutral-7 text-sm">{t('monthGrowth')}</div>
+                <div className="text-xl font-bold text-semantic-success">
                   +${(data.savedAmount - data.lastMonth.savedAmount).toFixed(2)}
                 </div>
                 <div className="text-sm text-green-300">
@@ -131,17 +132,17 @@ export default function SavingsPage() {
         )}
 
         {/* By Intent Table */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">📊 按意图分类</h2>
+        <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+          <h2 className="text-xl font-bold text-neutral-10 mb-6">{t('byIntent')}</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#1e293b]">
-                  <th className="text-left text-[#94a3b8] text-sm font-medium py-3">意图</th>
-                  <th className="text-right text-[#94a3b8] text-sm font-medium py-3">请求数</th>
-                  <th className="text-right text-[#94a3b8] text-sm font-medium py-3">原成本</th>
-                  <th className="text-right text-[#94a3b8] text-sm font-medium py-3">实际成本</th>
-                  <th className="text-right text-[#94a3b8] text-sm font-medium py-3">节省</th>
+                <tr className="border-b border-border-subtle">
+                  <th className="text-left text-neutral-7 text-sm font-medium py-3">{t('intent')}</th>
+                  <th className="text-right text-neutral-7 text-sm font-medium py-3">{t('requests')}</th>
+                  <th className="text-right text-neutral-7 text-sm font-medium py-3">{t('originalCostShort')}</th>
+                  <th className="text-right text-neutral-7 text-sm font-medium py-3">{t('actualCostShort')}</th>
+                  <th className="text-right text-neutral-7 text-sm font-medium py-3">{t('savedShort')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -149,12 +150,12 @@ export default function SavingsPage() {
                   const saved = item.originalCost - item.actualCost;
                   const percent = ((saved / item.originalCost) * 100).toFixed(0);
                   return (
-                    <tr key={index} className="border-b border-[#1e293b]/50 hover:bg-[#1e293b]/30">
-                      <td className="py-4 text-white capitalize">{item.intent}</td>
-                      <td className="py-4 text-right text-white">{item.requests.toLocaleString()}</td>
-                      <td className="py-4 text-right text-red-400">${item.originalCost.toFixed(2)}</td>
-                      <td className="py-4 text-right text-white">${item.actualCost.toFixed(2)}</td>
-                      <td className="py-4 text-right text-green-400">${saved.toFixed(2)} ({percent}%)</td>
+                    <tr key={index} className="border-b border-border-subtle/50 hover:bg-surface-overlay/30">
+                      <td className="py-4 text-neutral-10 capitalize">{item.intent}</td>
+                      <td className="py-4 text-right text-neutral-10">{item.requests.toLocaleString()}</td>
+                      <td className="py-4 text-right text-semantic-error">${item.originalCost.toFixed(2)}</td>
+                      <td className="py-4 text-right text-neutral-10">${item.actualCost.toFixed(2)}</td>
+                      <td className="py-4 text-right text-semantic-success">${saved.toFixed(2)} ({percent}%)</td>
                     </tr>
                   );
                 })}
@@ -164,18 +165,18 @@ export default function SavingsPage() {
         </div>
 
         {/* By Model Distribution */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">🤖 模型使用分布</h2>
+        <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+          <h2 className="text-xl font-bold text-neutral-10 mb-6">{t('modelDistribution')}</h2>
           <div className="space-y-4">
             {data.byModel.map((item, index) => (
               <div key={index}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="text-white">{item.model}</span>
-                  <span className="text-[#94a3b8]">{item.requests.toLocaleString()} ({item.percent}%)</span>
+                  <span className="text-neutral-10">{item.model}</span>
+                  <span className="text-neutral-7">{item.requests.toLocaleString()} ({item.percent}%)</span>
                 </div>
-                <div className="h-4 bg-[#1e293b] rounded-full overflow-hidden">
+                <div className="h-4 bg-surface-overlay rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] rounded-full"
+                    className="h-full bg-gradient-to-r from-brand-primary to-brand-accent rounded-full"
                     style={{ width: `${item.percent}%` }}
                   />
                 </div>

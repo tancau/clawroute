@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 type OptimizationGoal = 'cost' | 'quality' | 'speed' | 'balanced';
 
@@ -53,9 +54,9 @@ export default function PreferencesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const t = useTranslations('dashboard');
 
   useEffect(() => {
-    // Load preferences from localStorage
     const stored = localStorage.getItem('clawrouter_preferences');
     if (stored) {
       try {
@@ -69,13 +70,8 @@ export default function PreferencesPage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    
-    // Save to localStorage
     localStorage.setItem('clawrouter_preferences', JSON.stringify(preferences));
-    
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
-    
     setIsSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -93,7 +89,7 @@ export default function PreferencesPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white">加载中...</div>
+        <div className="text-neutral-10">{t('loading')}</div>
       </div>
     );
   }
@@ -104,62 +100,62 @@ export default function PreferencesPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">⚙️ 偏好设置</h1>
-            <p className="text-[#94a3b8] mt-1">自定义你的智能路由策略</p>
+            <h1 className="text-3xl font-bold text-neutral-10">{t('preferences')}</h1>
+            <p className="text-neutral-7 mt-1">{t('modelPreferenceDesc')}</p>
           </div>
           <Link
             href="/dashboard"
-            className="px-4 py-2 bg-[#1e293b] text-[#94a3b8] rounded-lg hover:bg-[#334155] transition-colors"
+            className="px-4 py-2 bg-surface-raised text-neutral-7 rounded-lg hover:bg-surface-overlay transition-colors"
           >
-            返回控制台
+            {t('backToDashboard')}
           </Link>
         </div>
 
         {/* Optimization Goal */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-4">🎯 优化目标</h2>
-          <p className="text-[#94a3b8] text-sm mb-4">选择系统优化的主要方向</p>
-          
+        <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+          <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('optimizationGoal')}</h2>
+          <p className="text-neutral-7 text-sm mb-4">{t('optimizationGoalDesc')}</p>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { value: 'cost', label: '成本优先', desc: '最大化省钱', icon: '💰' },
-              { value: 'quality', label: '质量优先', desc: '使用高质量模型', icon: '⭐' },
-              { value: 'speed', label: '速度优先', desc: '最低延迟', icon: '⚡' },
-              { value: 'balanced', label: '平衡模式', desc: '综合考虑', icon: '⚖️' },
+              { value: 'cost', label: t('costFirst'), desc: t('costFirstDesc'), icon: '💰' },
+              { value: 'quality', label: t('qualityFirst'), desc: t('qualityFirstDesc'), icon: '⭐' },
+              { value: 'speed', label: t('speedFirst'), desc: t('speedFirstDesc'), icon: '⚡' },
+              { value: 'balanced', label: t('balanced'), desc: t('balancedDesc'), icon: '⚖️' },
             ].map((item) => (
               <button
                 key={item.value}
                 onClick={() => setPreferences((prev) => ({ ...prev, optimizationGoal: item.value as OptimizationGoal }))}
                 className={`p-4 rounded-xl border-2 text-left transition-all ${
                   preferences.optimizationGoal === item.value
-                    ? 'border-[#00c9ff] bg-[#00c9ff]/10'
-                    : 'border-[#1e293b] hover:border-[#334155]'
+                    ? 'border-brand-primary bg-brand-primary/10'
+                    : 'border-border-subtle hover:border-neutral-6'
                 }`}
               >
                 <div className="text-2xl mb-2">{item.icon}</div>
-                <div className="text-white font-medium">{item.label}</div>
-                <div className="text-xs text-[#94a3b8] mt-1">{item.desc}</div>
+                <div className="text-neutral-10 font-medium">{item.label}</div>
+                <div className="text-xs text-neutral-7 mt-1">{item.desc}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Model Preferences */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-4">🤖 模型偏好</h2>
-          <p className="text-[#94a3b8] text-sm mb-4">为不同任务类型设置模型偏好</p>
+        <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+          <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('modelPreference')}</h2>
+          <p className="text-neutral-7 text-sm mb-4">{t('modelPreferenceDesc')}</p>
 
           <div className="space-y-4">
             {[
-              { key: 'coding', label: '编码任务', icon: '💻' },
-              { key: 'reasoning', label: '复杂推理', icon: '🧠' },
-              { key: 'translation', label: '翻译任务', icon: '🌐' },
-              { key: 'creative', label: '创意写作', icon: '✨' },
+              { key: 'coding', label: t('codingTask'), icon: '💻' },
+              { key: 'reasoning', label: t('complexReasoning'), icon: '🧠' },
+              { key: 'translation', label: t('translationTask'), icon: '🌐' },
+              { key: 'creative', label: t('creativeWriting'), icon: '✨' },
             ].map((item) => (
-              <div key={item.key} className="flex items-center justify-between p-4 bg-[#1e293b] rounded-lg">
+              <div key={item.key} className="flex items-center justify-between p-4 bg-surface-overlay rounded-lg">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{item.icon}</span>
-                  <span className="text-white">{item.label}</span>
+                  <span className="text-neutral-10">{item.label}</span>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -171,11 +167,11 @@ export default function PreferencesPage() {
                     }
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       preferences.modelPreferences[item.key as keyof typeof preferences.modelPreferences] === 'free'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-[#334155] text-[#94a3b8]'
+                        ? 'bg-semantic-success text-white'
+                        : 'bg-surface-raised text-neutral-7'
                     }`}
                   >
-                    优先免费
+                    {t('preferFree')}
                   </button>
                   <button
                     onClick={() =>
@@ -187,10 +183,10 @@ export default function PreferencesPage() {
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       preferences.modelPreferences[item.key as keyof typeof preferences.modelPreferences] === 'paid'
                         ? 'bg-purple-500 text-white'
-                        : 'bg-[#334155] text-[#94a3b8]'
+                        : 'bg-surface-raised text-neutral-7'
                     }`}
                   >
-                    允许付费
+                    {t('allowPaid')}
                   </button>
                 </div>
               </div>
@@ -199,13 +195,13 @@ export default function PreferencesPage() {
         </div>
 
         {/* Budget Control */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-4">💵 预算控制</h2>
-          <p className="text-[#94a3b8] text-sm mb-4">设置成本上限，防止超支</p>
+        <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+          <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('budgetControl')}</h2>
+          <p className="text-neutral-7 text-sm mb-4">{t('budgetControlDesc')}</p>
 
           <div className="space-y-6">
             <div>
-              <label className="block text-white text-sm mb-2">单次请求上限 ($)</label>
+              <label className="block text-neutral-10 text-sm mb-2">{t('perRequestLimit')}</label>
               <input
                 type="number"
                 step="0.001"
@@ -216,13 +212,13 @@ export default function PreferencesPage() {
                     budget: { ...prev.budget, maxPerRequest: parseFloat(e.target.value) || 0 },
                   }))
                 }
-                className="w-full px-4 py-3 bg-[#1e293b] border border-[#334155] rounded-lg text-white focus:outline-none focus:border-[#00c9ff]"
+                className="w-full px-4 py-3 bg-surface-overlay border border-border-subtle rounded-lg text-neutral-10 focus:outline-none focus:border-brand-primary"
               />
-              <div className="text-xs text-[#64748b] mt-1">超过此金额的请求将被降级</div>
+              <div className="text-xs text-neutral-6 mt-1">{t('perRequestLimitHint')}</div>
             </div>
 
             <div>
-              <label className="block text-white text-sm mb-2">每日预算 ($)</label>
+              <label className="block text-neutral-10 text-sm mb-2">{t('dailyBudget')}</label>
               <input
                 type="number"
                 step="0.1"
@@ -233,15 +229,15 @@ export default function PreferencesPage() {
                     budget: { ...prev.budget, dailyLimit: parseFloat(e.target.value) || 0 },
                   }))
                 }
-                className="w-full px-4 py-3 bg-[#1e293b] border border-[#334155] rounded-lg text-white focus:outline-none focus:border-[#00c9ff]"
+                className="w-full px-4 py-3 bg-surface-overlay border border-border-subtle rounded-lg text-neutral-10 focus:outline-none focus:border-brand-primary"
               />
-              <div className="text-xs text-[#64748b] mt-1">每日总成本上限</div>
+              <div className="text-xs text-neutral-6 mt-1">{t('dailyBudgetHint')}</div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-[#1e293b] rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface-overlay rounded-lg">
               <div>
-                <div className="text-white">超预算自动降级</div>
-                <div className="text-sm text-[#94a3b8]">当超过预算时，自动切换到免费模型</div>
+                <div className="text-neutral-10">{t('autoDowngrade')}</div>
+                <div className="text-sm text-neutral-7">{t('autoDowngradeHint')}</div>
               </div>
               <button
                 onClick={() =>
@@ -251,7 +247,7 @@ export default function PreferencesPage() {
                   }))
                 }
                 className={`w-12 h-6 rounded-full transition-colors ${
-                  preferences.budget.autoDowngrade ? 'bg-green-500' : 'bg-[#334155]'
+                  preferences.budget.autoDowngrade ? 'bg-semantic-success' : 'bg-neutral-6'
                 }`}
               >
                 <div
@@ -265,9 +261,9 @@ export default function PreferencesPage() {
         </div>
 
         {/* Excluded Models */}
-        <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-4">🚫 排除模型</h2>
-          <p className="text-[#94a3b8] text-sm mb-4">选择不想使用的模型</p>
+        <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+          <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('excludeModels')}</h2>
+          <p className="text-neutral-7 text-sm mb-4">{t('excludeModelsDesc')}</p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {AVAILABLE_MODELS.map((model) => (
@@ -276,18 +272,18 @@ export default function PreferencesPage() {
                 onClick={() => toggleExcludedModel(model.id)}
                 className={`p-3 rounded-lg border text-left transition-all ${
                   preferences.excludedModels.includes(model.id)
-                    ? 'border-red-500/50 bg-red-500/10'
-                    : 'border-[#1e293b] hover:border-[#334155]'
+                    ? 'border-semantic-error/50 bg-semantic-error/10'
+                    : 'border-border-subtle hover:border-neutral-6'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-white text-sm">{model.name}</span>
+                  <span className="text-neutral-10 text-sm">{model.name}</span>
                   {preferences.excludedModels.includes(model.id) && (
-                    <span className="text-red-400 text-xs">已排除</span>
+                    <span className="text-semantic-error text-xs">{t('excluded')}</span>
                   )}
                 </div>
-                <div className="text-xs text-[#64748b] mt-1">
-                  {model.cost === 'free' ? '🆓 免费' : '💰 付费'}
+                <div className="text-xs text-neutral-6 mt-1">
+                  {model.cost === 'free' ? t('free') : t('paid')}
                 </div>
               </button>
             ))}
@@ -299,15 +295,15 @@ export default function PreferencesPage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] text-[#0f172a] font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-accent text-neutral-1 font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {isSaving ? '保存中...' : saved ? '已保存 ✅' : '保存设置'}
+            {isSaving ? t('saving') : saved ? t('saved2') : t('saveSettings')}
           </button>
           <Link
             href="/dashboard"
-            className="px-6 py-3 bg-[#1e293b] text-[#94a3b8] rounded-lg hover:bg-[#334155] transition-colors"
+            className="px-6 py-3 bg-surface-raised text-neutral-7 rounded-lg hover:bg-surface-overlay transition-colors"
           >
-            取消
+            {t('cancel')}
           </Link>
         </div>
       </div>

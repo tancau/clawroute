@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 interface CostTrackerProps {
   userId: string;
@@ -21,6 +22,7 @@ export function CostTracker({ userId }: CostTrackerProps) {
   const [data, setData] = useState<SavingsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const t = useTranslations('dashboard');
 
   useEffect(() => {
     fetchSavings();
@@ -41,7 +43,7 @@ export function CostTracker({ userId }: CostTrackerProps) {
         setError(result.error.message);
       }
     } catch {
-      setError('Failed to load savings data');
+      setError(t('failedToLoadSavings'));
     } finally {
       setIsLoading(false);
     }
@@ -49,56 +51,54 @@ export function CostTracker({ userId }: CostTrackerProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-        <div className="text-center text-[#94a3b8]">加载中...</div>
+      <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+        <div className="text-center text-neutral-7">{t('loading')}</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-        <div className="text-center text-red-400">{error}</div>
+      <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+        <div className="text-center text-semantic-error">{error}</div>
       </div>
     );
   }
 
   if (!data || data.totalSavedCents === 0) {
     return (
-      <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">💰 成本节省</h3>
+      <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-neutral-10 mb-4">{t('costSavings')}</h3>
         <div className="text-center py-8">
-          <div className="text-4xl font-bold text-[#00c9ff] mb-2">$0.00</div>
-          <div className="text-[#94a3b8]">还没有节省数据，开始使用吧！</div>
+          <div className="text-4xl font-bold text-brand-primary mb-2">$0.00</div>
+          <div className="text-neutral-7">{t('noSavingsData')}</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">💰 成本节省</h3>
+    <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
+      <h3 className="text-lg font-semibold text-neutral-10 mb-4">{t('costSavings')}</h3>
 
-      {/* 大数字展示 */}
-      <div className="text-center py-6 bg-gradient-to-r from-[#00c9ff]/10 to-[#92fe9d]/10 rounded-lg mb-6">
-        <div className="text-5xl font-bold text-[#00c9ff] mb-2">
+      <div className="text-center py-6 bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 rounded-lg mb-6">
+        <div className="text-5xl font-bold text-brand-primary mb-2">
           ${data.totalSavedDollars.toFixed(2)}
         </div>
-        <div className="text-[#94a3b8]">
-          相比使用 GPT-4 节省了 
-          <span className="text-[#92fe9d] font-semibold">{data.averageSavedPercent}%</span>
+        <div className="text-neutral-7">
+          {t('savedVsGpt4')}
+          <span className="text-brand-accent font-semibold"> {data.averageSavedPercent}%</span>
         </div>
       </div>
 
-      {/* 节省趋势 */}
       {data.daily.length > 0 && (
         <div>
-          <div className="text-sm text-[#94a3b8] mb-3">最近节省趋势</div>
+          <div className="text-sm text-neutral-7 mb-3">{t('recentSavingsTrend')}</div>
           <div className="space-y-2">
             {data.daily.slice(0, 7).map((day, index) => (
               <div key={index} className="flex items-center justify-between text-sm">
-                <span className="text-[#94a3b8]">{day.date}</span>
-                <span className="text-[#92fe9d]">
+                <span className="text-neutral-7">{day.date}</span>
+                <span className="text-brand-accent">
                   ${(day.savedCents / 100).toFixed(2)}
                 </span>
               </div>
@@ -107,13 +107,10 @@ export function CostTracker({ userId }: CostTrackerProps) {
         </div>
       )}
 
-      {/* 提示 */}
-      <div className="mt-4 pt-4 border-t border-[#1e293b]">
-        <div className="flex items-center gap-2 text-xs text-[#94a3b8]">
+      <div className="mt-4 pt-4 border-t border-border-subtle">
+        <div className="flex items-center gap-2 text-xs text-neutral-7">
           <span>💡</span>
-          <span>
-            智能路由为您选择了更经济的模型，每次请求都在省钱！
-          </span>
+          <span>{t('savingsDescription')}</span>
         </div>
       </div>
     </div>

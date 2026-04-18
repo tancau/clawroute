@@ -12,10 +12,12 @@ import { TopModels } from '@/components/Dashboard/TopModels';
 import { AdvancedPanel } from '@/components/configure/AdvancedPanel';
 import { Activity, DollarSign, Zap, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations } from 'next-intl';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useUserStore();
+  const t = useTranslations('dashboard');
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -39,33 +41,33 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-neutral-10">Dashboard</h1>
-          <p className="text-neutral-7 mt-1">Welcome back, {user.name || user.email}</p>
+          <h1 className="text-3xl font-bold text-neutral-10">{t('title')}</h1>
+          <p className="text-neutral-7 mt-1">{t('welcome')}, {user.name || user.email}</p>
         </div>
 
         {/* Layer 1: Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
-            label="Credits"
+            label={t('credits')}
             value={user.credits?.toLocaleString() || '0'}
             icon={Zap}
             format="number"
           />
           <StatCard
-            label="Monthly Requests"
+            label={t('monthlyRequests')}
             value="--"
             icon={Activity}
             format="number"
           />
           <StatCard
-            label="Monthly Savings"
+            label={t('monthlySavings')}
             value="--"
             icon={DollarSign}
             format="currency"
-            trend={{ value: 12, direction: 'up', label: 'vs last month' }}
+            trend={{ value: 12, direction: 'up', label: t('vsLastMonth') }}
           />
           <StatCard
-            label="Monthly Earnings"
+            label={t('monthlyEarnings')}
             value="--"
             icon={TrendingUp}
             format="currency"
@@ -87,9 +89,9 @@ export default function DashboardPage() {
         {/* Layer 3: Advanced (collapsible) */}
         <div className="space-y-4">
           <AdvancedPanel
-            label="Key Management"
-            apiDiscoveryLabel="API Keys"
-            configImportLabel="Test Panel"
+            label={t('keyManagement')}
+            apiDiscoveryLabel={t('apiKeys')}
+            configImportLabel={t('testPanel')}
           />
         </div>
       </div>
