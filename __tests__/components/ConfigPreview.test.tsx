@@ -12,7 +12,7 @@ vi.mock('@/lib/export-utils', () => ({
 }));
 
 vi.mock('@/lib/config-generator', () => ({
-  generateOpenClawConfig: () => '{\n  "models": {},\n  "agents": {}\n}',
+  generateClawRouteConfig: () => '{\n  "models": {},\n  "agents": {}\n}',
 }));
 
 vi.mock('@/store/use-app-store', () => ({
@@ -38,11 +38,11 @@ vi.mock('next-intl', () => ({
       'copy': '复制',
       'download': '下载',
       'copiedToClipboard': '已复制到剪贴板',
-      'jsonCopied': 'openclaw.json 配置已复制',
+      'jsonCopied': 'clawroute.json 配置已复制',
       'copyFailedTitle': '复制失败',
       'copyManually': '请手动复制',
       'downloadSuccess': '下载成功',
-      'jsonDownloaded': 'openclaw.json 已下载',
+      'jsonDownloaded': 'clawroute.json 已下载',
     };
     return translations[key] ?? key;
   },

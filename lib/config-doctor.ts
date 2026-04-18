@@ -21,7 +21,7 @@ export interface HealthReport {
 }
 
 /**
- * Validate an OpenClaw config and produce a health report.
+ * Validate a ClawRoute config and produce a health report.
  */
 export function diagnoseConfig(config: Record<string, unknown>): HealthReport {
   const issues: HealthIssue[] = [];
@@ -54,12 +54,12 @@ export function diagnoseConfig(config: Record<string, unknown>): HealthReport {
   // ─── Structure checks ───
 
   if (!models) {
-    issues.push({ severity: 'error', category: 'structure', message: 'Missing models section', detail: 'openclaw.json must have a "models" key with providers.', fix: 'Add: "models": { "mode": "merge", "providers": { ... } }' });
+    issues.push({ severity: 'error', category: 'structure', message: 'Missing models section', detail: 'clawroute.json must have a "models" key with providers.', fix: 'Add: "models": { "mode": "merge", "providers": { ... } }' });
     score -= 30;
   }
 
   if (!agents) {
-    issues.push({ severity: 'warning', category: 'structure', message: 'Missing agents section', detail: 'No agents.defaults configured. OpenClaw will use default model selection.', fix: 'Add: "agents": { "defaults": { "model": { "primary": "..." } } }' });
+    issues.push({ severity: 'warning', category: 'structure', message: 'Missing agents section', detail: 'No agents.defaults configured. ClawRoute will use default model selection.', fix: 'Add: "agents": { "defaults": { "model": { "primary": "..." } } }' });
     score -= 15;
   }
 
@@ -82,7 +82,7 @@ export function diagnoseConfig(config: Record<string, unknown>): HealthReport {
     }
 
     if (!pdata.apiKey || (typeof pdata.apiKey === 'string' && pdata.apiKey.trim() === '')) {
-      issues.push({ severity: 'warning', category: 'auth', message: `Provider "${pid}" has no API key`, detail: 'OpenClaw will fail to authenticate with this provider.', fix: `Add your API key to provider "${pid}"` });
+      issues.push({ severity: 'warning', category: 'auth', message: `Provider "${pid}" has no API key`, detail: 'ClawRoute will fail to authenticate with this provider.', fix: `Add your API key to provider "${pid}"` });
       score -= 8;
     }
 
@@ -130,7 +130,7 @@ export function diagnoseConfig(config: Record<string, unknown>): HealthReport {
       }
     }
   } else if (agents) {
-    issues.push({ severity: 'warning', category: 'model-ref', message: 'No primary model set', detail: 'agents.defaults.model.primary is not configured. OpenClaw will use its default.', fix: 'Set "primary": "provider/model-id" in agents.defaults.model' });
+    issues.push({ severity: 'warning', category: 'model-ref', message: 'No primary model set', detail: 'agents.defaults.model.primary is not configured. ClawRoute will use its default.', fix: 'Set "primary": "provider/model-id" in agents.defaults.model' });
     score -= 10;
   }
 
@@ -157,7 +157,7 @@ export function diagnoseConfig(config: Record<string, unknown>): HealthReport {
   }
 
   if (primary && fallbacks.length === 0) {
-    issues.push({ severity: 'info', category: 'best-practice', message: 'No fallback models configured', detail: 'If your primary goes down, OpenClaw has no backup. Adding fallbacks improves reliability.', fix: 'Add 1-3 fallback models for resilience.' });
+    issues.push({ severity: 'info', category: 'best-practice', message: 'No fallback models configured', detail: 'If your primary goes down, ClawRoute has no backup. Adding fallbacks improves reliability.', fix: 'Add 1-3 fallback models for resilience.' });
     score -= 3;
   }
 

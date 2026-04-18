@@ -117,11 +117,11 @@
     "copySuccess": "Copied!",
     "copyFailed": "Copy failed, please copy manually",
     "copiedToClipboard": "Copied to clipboard",
-    "jsonCopied": "openclaw.json config copied",
+    "jsonCopied": "clawroute.json config copied",
     "copyFailedTitle": "Copy failed",
     "copyManually": "Please copy manually",
     "downloadSuccess": "Download successful",
-    "jsonDownloaded": "openclaw.json downloaded"
+    "jsonDownloaded": "clawroute.json downloaded"
   },
   "template": {
     "title": "Preset Templates",
@@ -170,7 +170,7 @@
     "owner": "Owner",
     "context": "Context",
     "generateConfig": "Generate & Copy Config",
-    "downloadConfig": "Download openclaw.json",
+    "downloadConfig": "Download clawroute.json",
     "verifyKey": "Verify Key",
     "verifying": "Verifying...",
     "keyValid": "Key is valid",
@@ -179,8 +179,8 @@
   },
   "configImport": {
     "title": "Import & Health Check",
-    "description": "Paste openclaw.json to auto-parse + diagnose issues",
-    "pastePlaceholder": "Paste your openclaw.json content...",
+    "description": "Paste clawroute.json to auto-parse + diagnose issues",
+    "pastePlaceholder": "Paste your clawroute.json content...",
     "analyze": "Analyze & Check",
     "invalidJson": "Invalid JSON format",
     "parseError": "Parse failed",

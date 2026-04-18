@@ -131,7 +131,7 @@ export function ApiDiscovery() {
     const blob = new Blob([c], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'openclaw.json'; a.click();
+    a.href = url; a.download = 'clawroute.json'; a.click();
     URL.revokeObjectURL(url);
   };
 

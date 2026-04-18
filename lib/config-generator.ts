@@ -1,9 +1,9 @@
-import type { ModelSelection, OpenClawConfig, OpenClawProviderEntry, OpenClawModelEntry } from './types';
+import type { ModelSelection, ClawRouteConfig, ClawRouteProviderEntry, ClawRouteModelEntry } from './types';
 import { getModelById } from './models-db';
 
 /**
  * Provider metadata for config generation.
- * Maps provider IDs to their OpenClaw config details.
+ * Maps provider IDs to their config details.
  */
 const PROVIDER_META: Record<string, {
   baseUrl: string;
@@ -37,14 +37,14 @@ function providerFromId(fullId: string): string {
 }
 
 /**
- * Build an OpenClaw-compatible JSON config from a ModelSelection.
+ * Build a ClawRoute-compatible JSON config from a ModelSelection.
  *
- * Output matches the real openclaw.json structure:
+ * Output matches the real clawroute.json structure:
  * - models.providers (only used providers with their models)
  * - agents.defaults.model.primary + fallbacks
  * - agents.defaults.models (allowlist with aliases)
  */
-export function generateOpenClawConfig(selection: ModelSelection): string {
+export function generateClawRouteConfig(selection: ModelSelection): string {
   const allModelIds = [selection.primaryModelId, ...selection.fallbackModelIds];
 
   // 1. Collect which model IDs are used and map to providers
@@ -58,16 +58,16 @@ export function generateOpenClawConfig(selection: ModelSelection): string {
   }
 
   // 2. Build provider configs
-  const providersConfig: Record<string, OpenClawProviderEntry> = {};
+  const providersConfig: Record<string, ClawRouteProviderEntry> = {};
 
   for (const [providerId, usedModelIdSet] of Array.from(providerUsedModels.entries())) {
     const meta = PROVIDER_META[providerId];
     if (!meta) continue;
 
-    const modelsForConfig: OpenClawModelEntry[] = [];
+    const modelsForConfig: ClawRouteModelEntry[] = [];
     for (const modelId of Array.from(usedModelIdSet)) {
       const model = getModelById(modelId);
-      const entry: OpenClawModelEntry = {
+      const entry: ClawRouteModelEntry = {
         id: shortModelId(modelId),
         name: model?.name ?? shortModelId(modelId),
         input: model?.input ?? ['text'],
@@ -111,7 +111,7 @@ export function generateOpenClawConfig(selection: ModelSelection): string {
   }
 
   // 4. Assemble full config
-  const config: OpenClawConfig = {
+  const config: ClawRouteConfig = {
     models: {
       mode: 'merge',
       providers: providersConfig,
@@ -130,7 +130,7 @@ export function generateOpenClawConfig(selection: ModelSelection): string {
   return JSON.stringify(config, null, 2);
 }
 
-/** Validate OpenClaw JSON config */
+/** Validate ClawRoute JSON config */
 export function validateConfig(jsonString: string): boolean {
   try {
     const parsed = JSON.parse(jsonString);

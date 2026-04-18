@@ -19,8 +19,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ClawRoute - OpenClaw 智能路由配置生成器",
-  description: "让 OpenClaw 用户用最少的配置工作，获得最大的成本节省",
+  title: "ClawRoute - 智能路由配置生成器",
+  description: "用最少的配置工作，获得最大的 API 成本节省",
 };
 
 export default async function RootLayout({

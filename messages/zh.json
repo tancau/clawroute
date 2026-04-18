@@ -117,11 +117,11 @@
     "copySuccess": "复制成功",
     "copyFailed": "复制失败，请手动复制",
     "copiedToClipboard": "已复制到剪贴板",
-    "jsonCopied": "openclaw.json 配置已复制",
+    "jsonCopied": "clawroute.json 配置已复制",
     "copyFailedTitle": "复制失败",
     "copyManually": "请手动复制",
     "downloadSuccess": "下载成功",
-    "jsonDownloaded": "openclaw.json 已下载"
+    "jsonDownloaded": "clawroute.json 已下载"
   },
   "template": {
     "title": "预设模板",
@@ -170,7 +170,7 @@
     "owner": "所有者",
     "context": "上下文",
     "generateConfig": "生成并复制配置",
-    "downloadConfig": "下载 openclaw.json",
+    "downloadConfig": "下载 clawroute.json",
     "verifyKey": "验证 Key",
     "verifying": "验证中...",
     "keyValid": "Key 有效",
@@ -179,8 +179,8 @@
   },
   "configImport": {
     "title": "导入 & 体检",
-    "description": "粘贴 openclaw.json，自动解析 + 健康体检",
-    "pastePlaceholder": "粘贴你的 openclaw.json 内容...",
+    "description": "粘贴 clawroute.json，自动解析 + 健康体检",
+    "pastePlaceholder": "粘贴你的 clawroute.json 内容...",
     "analyze": "解析 & 体检",
     "invalidJson": "无效的 JSON 格式",
     "parseError": "解析失败",

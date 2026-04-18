@@ -12,7 +12,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {/* Brand */}
         <div className="text-center">
           <h1 className="text-3xl font-bold gradient-text mb-2">ClawRoute</h1>
-          <p className="text-sm text-neutral-7">OpenClaw Smart Router Config Generator</p>
+          <p className="text-sm text-neutral-7">Smart Router Config Generator</p>
         </div>
 
         {children}

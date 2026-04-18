@@ -21,14 +21,14 @@ export interface Model {
   qualityRating: 1 | 2 | 3;
   capabilityTags: string[];
   recommendationReason?: string;
-  // OpenClaw format fields
+  // Config format fields
   input?: string[];
   contextWindow?: number;
   maxTokens?: number;
   api?: string;
 }
 
-/** Model selection for OpenClaw: primary + fallbacks */
+/** Model selection: primary + fallbacks */
 export interface ModelSelection {
   primaryModelId: string;        // provider/model format
   fallbackModelIds: string[];    // ordered fallback list, provider/model format
@@ -68,7 +68,7 @@ export interface SceneModelMapping {
 }
 
 // ===== Config Generation Types =====
-export interface OpenClawModelEntry {
+export interface ClawRouteModelEntry {
   id: string;
   name: string;
   input: string[];
@@ -82,17 +82,17 @@ export interface OpenClawModelEntry {
   };
 }
 
-export interface OpenClawProviderEntry {
+export interface ClawRouteProviderEntry {
   baseUrl: string;
   apiKey: string;
   api: string;
-  models: OpenClawModelEntry[];
+  models: ClawRouteModelEntry[];
 }
 
-export interface OpenClawConfig {
+export interface ClawRouteConfig {
   models: {
     mode: string;
-    providers: Record<string, OpenClawProviderEntry>;
+    providers: Record<string, ClawRouteProviderEntry>;
   };
   agents: {
     defaults: {
