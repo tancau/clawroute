@@ -78,33 +78,57 @@ function ConfigureContent() {
       {/* Step Content */}
       <div className="max-w-5xl mx-auto mb-8">
         {configStep === 1 && (
-          <StepScene
-            switchSceneLabel={t('switchScene')}
-            nextLabel={t('next') || 'Next'}
-            onNext={handleNext}
-          />
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-10 mb-1">{t('step1Title')}</h2>
+              <p className="text-sm text-neutral-7">{t('step1Desc')}</p>
+            </div>
+            <StepScene
+              switchSceneLabel={t('switchScene')}
+              nextLabel={t('next') || 'Next'}
+              onNext={handleNext}
+            />
+          </div>
         )}
         {configStep === 2 && (
-          <StepCompare
-            nextLabel={t('next') || 'Next'}
-            onNext={handleNext}
-          />
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-10 mb-1">{t('step2Title')}</h2>
+              <p className="text-sm text-neutral-7">{t('step2Desc')}</p>
+            </div>
+            <StepCompare
+              nextLabel={t('next') || 'Next'}
+              onNext={handleNext}
+            />
+          </div>
         )}
         {configStep === 3 && (
-          <StepConfigure
-            errorTitle={tError('title')}
-            errorDescription={tError('description')}
-            reloadLabel={tError('reload')}
-            nextLabel={t('next') || 'Next'}
-            onNext={handleNext}
-          />
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-10 mb-1">{t('step3Title')}</h2>
+              <p className="text-sm text-neutral-7">{t('step3Desc')}</p>
+            </div>
+            <StepConfigure
+              errorTitle={tError('title')}
+              errorDescription={tError('description')}
+              reloadLabel={tError('reload')}
+              nextLabel={t('next') || 'Next'}
+              onNext={handleNext}
+            />
+          </div>
         )}
         {configStep === 4 && (
-          <StepPreview
-            errorTitle={tError('title')}
-            errorDescription={tError('description')}
-            reloadLabel={tError('reload')}
-          />
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-10 mb-1">{t('step4Title')}</h2>
+              <p className="text-sm text-neutral-7">{t('step4Desc')}</p>
+            </div>
+            <StepPreview
+              errorTitle={tError('title')}
+              errorDescription={tError('description')}
+              reloadLabel={tError('reload')}
+            />
+          </div>
         )}
       </div>
 

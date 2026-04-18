@@ -60,7 +60,15 @@
     "next": "Next",
     "advancedTools": "Advanced Tools",
     "apiDiscovery": "API Discovery",
-    "configImport": "Config Import"
+    "configImport": "Config Import",
+    "step1Title": "Choose Your Scenario",
+    "step1Desc": "Scenarios determine which models suit you best. Different scenarios have different requirements for speed, quality, and cost.",
+    "step2Title": "Compare Candidate Models",
+    "step2Desc": "Based on your scenario, here are the recommended models. Compare their speed, quality, and cost to prepare for the next step.",
+    "step3Title": "Configure Routing Strategy",
+    "step3Desc": "Pick a primary model (for daily use) and fallback models (for when the primary is unavailable). You can also apply a template first, then fine-tune.",
+    "step4Title": "Export Config File",
+    "step4Desc": "This is your clawroute.json config file. Download it and place it in your ClawRoute project root to take effect."
   },
   "modelCompare": {
     "title": "Model Comparison",
@@ -105,13 +113,16 @@
     "title": "Model Selection",
     "primaryLabel": "Primary Model",
     "selectPrimary": "Select primary model",
-    "primaryHint": "This is the default model. Prefer low cost and fast speed.",
+    "primaryHint": "The default model for daily use. Prefer low cost and fast speed.",
+    "primaryExplanation": "All requests go to this model by default. Pick one with good cost-performance ratio.",
     "fallbackLabel": "Fallback Models",
     "addFallback": "Add fallback model",
-    "fallbackHint": "Used when the primary model is unavailable, ordered by priority"
+    "fallbackHint": "Tried in order when the primary is unavailable or times out",
+    "fallbackExplanation": "When the primary model fails, requests automatically fall back to these. Earlier ones are tried first."
   },
   "configPreview": {
     "title": "Config Preview",
+    "usage": "Save this file as clawroute.json in your project root. ClawRoute will load it automatically on startup.",
     "copy": "Copy",
     "download": "Download",
     "copySuccess": "Copied!",

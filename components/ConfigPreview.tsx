@@ -52,6 +52,8 @@ export function ConfigPreview() {
         </div>
       </div>
 
+      <p className="text-xs text-neutral-7">{t('usage')}</p>
+
       <div className="border rounded-md overflow-auto max-h-[400px]">
         <Highlight theme={themes.nightOwlLight} code={jsonContent} language="json">
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
