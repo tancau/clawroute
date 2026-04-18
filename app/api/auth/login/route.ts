@@ -1,38 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { findUserByEmail, verifyPassword, generateTokens } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/v1/users/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
+    if (!body.email || !body.password) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_INPUT', message: 'Email and password are required' } },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(data, { status: 200 });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    const isNetworkError = message.includes('fetch') || message.includes('ECONNREFUSED') || message.includes('connect');
+    // Find user
+    const user = await findUserByEmail(body.email);
+    if (!user) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } },
+        { status: 401 }
+      );
+    }
+
+    // Verify password
+    if (!verifyPassword(body.password, user.passwordHash)) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } },
+        { status: 401 }
+      );
+    }
+
+    // Generate tokens (exclude passwordHash from response)
+    const safeUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      tier: user.tier,
+      credits: user.credits,
+      createdAt: user.createdAt,
+    };
+    const tokens = generateTokens(safeUser.id, safeUser.tier);
 
     return NextResponse.json(
-      {
-        error: {
-          code: isNetworkError ? 'BACKEND_UNAVAILABLE' : 'INTERNAL_ERROR',
-          message: isNetworkError
-            ? 'Backend service is not available. Please ensure the backend is running or try again later.'
-            : 'Login failed. Please try again.',
-        },
-      },
-      { status: isNetworkError ? 503 : 500 }
+      { user: safeUser, ...tokens },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error('Login error:', err);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_ERROR', message: 'Login failed. Please try again.' } },
+      { status: 500 }
     );
   }
 }

@@ -1,38 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { findUserByEmail, createUser, generateTokens } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/v1/users/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
+    // Validate input
+    if (!body.email || !body.password) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_INPUT', message: 'Email and password are required' } },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(data, { status: 201 });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    const isNetworkError = message.includes('fetch') || message.includes('ECONNREFUSED') || message.includes('connect');
+    if (body.password.length < 6) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_INPUT', message: 'Password must be at least 6 characters' } },
+        { status: 400 }
+      );
+    }
+
+    // Check if email already exists
+    const existing = await findUserByEmail(body.email);
+    if (existing) {
+      return NextResponse.json(
+        { error: { code: 'EMAIL_EXISTS', message: 'Email already registered' } },
+        { status: 409 }
+      );
+    }
+
+    // Create user
+    const user = await createUser(body.email, body.password, body.name);
+    const tokens = generateTokens(user.id, user.tier);
 
     return NextResponse.json(
-      {
-        error: {
-          code: isNetworkError ? 'BACKEND_UNAVAILABLE' : 'INTERNAL_ERROR',
-          message: isNetworkError
-            ? 'Backend service is not available. Please ensure the backend is running or try again later.'
-            : 'Registration failed. Please try again.',
-        },
-      },
-      { status: isNetworkError ? 503 : 500 }
+      { user, ...tokens },
+      { status: 201 }
+    );
+  } catch (err) {
+    console.error('Registration error:', err);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_ERROR', message: 'Registration failed. Please try again.' } },
+      { status: 500 }
     );
   }
 }
