@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { DashboardShell } from '@/components/dashboard/DashboardShell';
 
 interface SavingsData {
   totalRequests: number;
@@ -71,20 +71,12 @@ export default function SavingsPage() {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <DashboardShell>
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-neutral-10">{t('savings')}</h1>
-            <p className="text-neutral-7 mt-1">{t('savingsDetail')}</p>
-          </div>
-          <Link
-            href="/dashboard"
-            className="px-4 py-2 bg-surface-raised text-neutral-7 rounded-lg hover:bg-surface-overlay transition-colors"
-          >
-            {t('backToDashboard')}
-          </Link>
+        <div>
+          <h1 className="text-3xl font-bold text-neutral-10">{t('savings')}</h1>
+          <p className="text-neutral-7 mt-1">{t('savingsDetail')}</p>
         </div>
 
         {/* Summary Cards */}
@@ -185,6 +177,6 @@ export default function SavingsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 }
