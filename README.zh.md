@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/tancau/hopllm?style=flat-square)](https://github.com/tancau/hopllm)
 
-**在线体验**：[https://clawroute.vercel.app](https://clawroute.vercel.app)
+**在线体验**：[https://hopllm.com](https://hopllm.com)
 
 ---
 
@@ -18,7 +18,7 @@ HopLLM（智跳）是一个**智能路由 API 代理**，帮你：
 2. 拖拽调整路由规则
 3. 一键导出 OpenClaw 可用的 YAML 配置
 
-**简单来说**：你告诉 ClawRoute 你用 OpenClaw 做什么，它帮你生成最优的模型路由配置。
+**简单来说**：HopLLM 帮你生成最优的模型路由配置，智能路由，自动省钱。
 
 ---
 
@@ -55,14 +55,14 @@ HopLLM（智跳）是一个**智能路由 API 代理**，帮你：
 ## 🚀 快速开始
 
 ### 在线体验（无需安装）
-👉 [https://clawroute.vercel.app](https://clawroute.vercel.app)
+👉 [https://hopllm.com](https://hopllm.com)
 
 ### 本地运行
 
 ```bash
 # 克隆仓库
-git clone https://github.com/tancau/clawroute.git
-cd clawroute
+git clone https://github.com/tancau/hopllm.git
+cd hopllm
 
 # 安装依赖
 pnpm install
@@ -96,7 +96,7 @@ pnpm test
 ## 📐 项目架构
 
 ```
-clawroute/
+hopllm/
 ├── app/
 │   └── [locale]/           # 国际化路由 (zh/en)
 │       ├── page.tsx        # 首页（场景选择）
@@ -133,8 +133,8 @@ MIT License — 可免费商用，但请保留署名。
 
 ## 🔗 相关链接
 
-- 🌐 **在线体验**：[https://clawroute.vercel.app](https://clawroute.vercel.app)
-- 📂 **GitHub**：[github.com/tancau/clawroute](https://github.com/tancau/clawroute)
+- 🌐 **在线体验**：[https://hopllm.com](https://hopllm.com)
+- 📂 **GitHub**：[github.com/tancau/hopllm](https://github.com/tancau/hopllm)
 - 📖 **OpenClaw 文档**：[docs.openclaw.ai](https://docs.openclaw.ai)
 - 🤖 **OpenRouter**：[openrouter.ai](https://openrouter.ai) — 模型聚合平台
 
@@ -142,8 +142,8 @@ MIT License — 可免费商用，但请保留署名。
 
 | 首页 | 配置页 | 模板市场 |
 |:---:|:---:|:---:|
-| <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-home.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-config.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-tpl.png" width="300"/> |
+| <img src="https://raw.githubusercontent.com/tancau/hopllm/master/public/sc-home.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/hopllm/master/public/sc-config.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/hopllm/master/public/sc-tpl.png" width="300"/> |
 
 ---
 
-*如果你觉得 ClawRoute 有用，请给我们一个 ⭐*
+*如果你觉得 HopLLM 有用，请给我们一个 ⭐*
