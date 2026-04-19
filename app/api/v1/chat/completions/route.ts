@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities } from '@/lib/routing/providers';
 import { keyManager } from '@/lib/routing/key-manager';
-import { findUserByApiKey, getUserProviderKeys } from '@/lib/auth';
+import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth';
 
 // ==================== 类型定义 ====================
 
@@ -430,10 +430,17 @@ async function validateApiKey(apiKey: string | null): Promise<UserValidation | n
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
-function checkRateLimit(clientId: string): { allowed: boolean; retryAfter?: number } {
+// Tier-based rate limits (requests per minute)
+const TIER_LIMITS: Record<string, number> = {
+  free: 20,
+  pro: 100,
+  team: 1000,
+};
+
+function checkRateLimit(clientId: string, tier: string = 'free'): { allowed: boolean; retryAfter?: number; remaining?: number } {
   const now = Date.now();
   const windowMs = 60000; // 1 minute
-  const maxRequests = 100;
+  const maxRequests = TIER_LIMITS[tier] ?? TIER_LIMITS.free ?? 20;
 
   let entry = rateLimitMap.get(clientId);
   if (!entry || now > entry.resetAt) {
@@ -447,10 +454,14 @@ function checkRateLimit(clientId: string): { allowed: boolean; retryAfter?: numb
     return {
       allowed: false,
       retryAfter: Math.ceil((entry.resetAt - now) / 1000),
+      remaining: 0,
     };
   }
 
-  return { allowed: true };
+  return { 
+    allowed: true,
+    remaining: maxRequests - entry.count,
+  };
 }
 
 // ==================== 主 Handler ====================
@@ -460,23 +471,7 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    // 1. Rate Limiting
-    const clientId = request.headers.get('X-User-Id') || request.headers.get('X-Forwarded-For') || 'anonymous';
-    const rateCheck = checkRateLimit(clientId);
-    if (!rateCheck.allowed) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'RATE_LIMITED',
-            message: 'Too many requests. Please try again later.',
-            retry_after: rateCheck.retryAfter,
-          },
-        },
-        { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter) } }
-      );
-    }
-
-    // 2. 验证 API Key
+    // 1. 验证 API Key（先验证用户）
     const authHeader = request.headers.get('authorization');
     const apiKey = authHeader?.replace('Bearer ', '') || authHeader;
 
@@ -498,7 +493,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 3. 解析请求
+    // 2. Rate Limiting (Tier-based)
+    const clientId = user?.userId || request.headers.get('X-Forwarded-For') || 'anonymous';
+    const rateCheck = checkRateLimit(clientId, user?.tier || 'free');
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'RATE_LIMITED',
+            message: 'Too many requests. Please try again later.',
+            retry_after: rateCheck.retryAfter,
+          },
+        },
+        { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter) } }
+      );
+    }
+
+    // 3. Credits 检查（仅对已认证用户）
+    if (user && user.credits <= 0) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INSUFFICIENT_CREDITS',
+            message: 'You have run out of credits. Please upgrade to Pro or purchase more credits.',
+            hint: 'Visit /dashboard to upgrade',
+          },
+        },
+        { status: 402 } // 402 Payment Required
+      );
+    }
+
+    // 4. 解析请求
     const body: ChatCompletionRequest = await request.json();
 
     if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
@@ -513,15 +538,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. 分类意图
+    // 5. 分类意图
     const lastMessage = body.messages[body.messages.length - 1];
     const userMessage = lastMessage?.content || '';
     const classification = classifyIntent(userMessage);
 
-    // 5. 选择模型
+    // 6. 选择模型
     const route = routeModel(classification.intent, body.model);
 
-    // 6. 执行请求
+    // 7. 执行请求
     const provider = getProvider(route.provider);
     if (!provider) {
       return NextResponse.json(
@@ -537,6 +562,11 @@ export async function POST(request: NextRequest) {
 
     // 流式响应处理
     if (body.stream) {
+      // 扣减 Credits（流式请求开始时扣减）
+      if (user) {
+        await deductCredits(user.userId, 1);
+      }
+      
       // 优先使用用户的 API Key
       let apiKeyForStream: string | null = null;
       if (user?.providerKeys && user.providerKeys[route.provider]) {
@@ -585,6 +615,11 @@ export async function POST(request: NextRequest) {
     // 非流式响应处理
     const { response, usedModel, usedProvider } = await executeWithRetry(route, body, requestId, user?.providerKeys);
     const data = await response.json();
+
+    // 扣减 Credits（请求成功后扣减）
+    if (user) {
+      await deductCredits(user.userId, 1);
+    }
 
     const latencyMs = Date.now() - startTime;
 

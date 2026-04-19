@@ -295,3 +295,75 @@ export async function getUserProviderKeys(userId: string): Promise<Record<string
   }
   return {};
 }
+
+// ===== Credits Operations =====
+
+/**
+ * 扣减用户 Credits
+ * @returns true 如果扣减成功，false 如果余额不足
+ */
+export async function deductCredits(userId: string, amount: number): Promise<boolean> {
+  const sql = await getPostgres();
+  
+  if (sql) {
+    await ensureTable();
+    const result = await sql`
+      UPDATE users 
+      SET credits = credits - ${amount}, updated_at = ${Date.now()}
+      WHERE id = ${userId} AND credits >= ${amount}
+    `;
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Fallback: memory store
+  const user = memoryUsers.get(userId);
+  if (user && user.credits >= amount) {
+    user.credits -= amount;
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 获取用户当前 Credits
+ */
+export async function getCredits(userId: string): Promise<number> {
+  const sql = await getPostgres();
+  
+  if (sql) {
+    await ensureTable();
+    const result = await sql`
+      SELECT credits FROM users WHERE id = ${userId}
+    `;
+    return (result.rows[0]?.credits as number) ?? 0;
+  }
+
+  // Fallback: memory store
+  const user = memoryUsers.get(userId);
+  return user?.credits ?? 0;
+}
+
+/**
+ * 增加 Credits（用于充值或升级赠送）
+ */
+export async function addCredits(userId: string, amount: number): Promise<boolean> {
+  const sql = await getPostgres();
+  
+  if (sql) {
+    await ensureTable();
+    await sql`
+      UPDATE users 
+      SET credits = credits + ${amount}, updated_at = ${Date.now()}
+      WHERE id = ${userId}
+    `;
+    return true;
+  }
+
+  // Fallback: memory store
+  const user = memoryUsers.get(userId);
+  if (user) {
+    user.credits += amount;
+    return true;
+  }
+  return false;
+}
