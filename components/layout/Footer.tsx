@@ -10,7 +10,7 @@ export function Footer() {
     <footer className="border-t border-border-subtle mt-auto">
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         <span className="text-xs text-neutral-7">{t('dataUpdated')}: 2026-04-16</span>
-        <span className="gradient-text font-semibold text-sm">ClawRoute - {t('openSource')}</span>
+        <span className="gradient-text font-semibold text-sm">HopLLM (智跳) - {t('openSource')}</span>
         <div className="flex items-center gap-3">
           <a
             href="https://github.com/tancau/clawroute"

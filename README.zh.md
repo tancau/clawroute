@@ -1,21 +1,19 @@
-# 🦞 ClawRoute
+# 🚀 HopLLM (智跳)
 
-> 为 OpenClaw 用户打造的智能模型路由配置工具 — 节省 60-80% 的 API 费用。
+> 为你打造的智能模型路由配置工具 — 节省 60-80% 的 API 费用。
 
 [English](./README.md) | 简体中文
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/tancau/clawroute?style=flat-square)](https://github.com/tancau/clawroute)
+[![GitHub Stars](https://img.shields.io/github/stars/tancau/hopllm?style=flat-square)](https://github.com/tancau/hopllm)
 
 **在线体验**：[https://clawroute.vercel.app](https://clawroute.vercel.app)
 
 ---
 
-## 🎯 ClawRoute 是什么？
+## 🎯 HopLLM 是什么？
 
-OpenClaw 默认把所有请求都发送到同一个模型 — 这就像用法拉利去买菜。
-
-ClawRoute 是一个**可视化的路由配置生成器**，帮你：
+HopLLM（智跳）是一个**智能路由 API 代理**，帮你：
 1. 选择使用场景
 2. 拖拽调整路由规则
 3. 一键导出 OpenClaw 可用的 YAML 配置

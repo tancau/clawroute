@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "ClawRoute",
-    "subtitle": "智能路由 API 代理"
+    "title": "HopLLM",
+    "subtitle": "智能路由省钱首选"
   },
   "nav": {
     "home": "首页",
@@ -17,7 +17,7 @@
     "heroHighlight": "智能路由",
     "heroTitle": "让 AI 推理更聪明",
     "heroSubtitle": "一个请求，自动路由到最优模型。省钱 80%，延迟更低，质量不变。",
-    "heroDescription": "ClawRoute 是智能路由 API 代理：替换你的 OpenAI base_url，用 model: \"auto\" 发请求，自动分类意图、选择最优模型、转发请求。",
+    "heroDescription": "HopLLM（智跳）是智能路由 API 代理：替换你的 OpenAI base_url，用 model: \"auto\" 发请求，自动分类意图、选择最优模型、转发请求。",
     "startProxy": "启动代理",
     "getApiKey": "获取 API 密钥",
     "browseTemplates": "浏览方案",
@@ -327,8 +327,8 @@
     "errorDescription": "加载仪表盘时发生错误，请尝试重新加载页面。"
   },
   "apiKey": {
-    "title": "ClawRouter API 密钥",
-    "description": "您的个人 API 密钥，用于访问 ClawRouter 智能路由服务",
+    "title": "HopLLM API 密钥",
+    "description": "您的个人 API 密钥，用于访问 HopLLM 智能路由服务",
     "yourApiKey": "您的 API 密钥",
     "copy": "复制",
     "copied": "已复制",
@@ -337,7 +337,7 @@
     "regenerateWarning": "重新生成后，旧密钥将失效。请更新您的应用程序配置。",
     "noApiKey": "未找到 API 密钥。请联系支持或尝试退出登录后重新登录。",
     "usageExample": "使用示例",
-    "usageDescription": "将 OpenAI 的 base_url 替换为 ClawRouter，使用 model='auto' 即可享受智能路由",
+    "usageDescription": "将 OpenAI 的 base_url 替换为 HopLLM，使用 model='auto' 即可享受智能路由",
     "python": "Python",
     "javascript": "JavaScript",
     "autoRouteComment": "智能路由自动选择最优模型",
@@ -371,7 +371,7 @@
     "step1Title": "配置密钥",
     "step1Desc": "为想要使用的 Provider 添加自己的 API 密钥。",
     "step2Title": "智能路由",
-    "step2Desc": "ClawRouter 使用你的密钥发送请求，完全控制成本。",
+    "step2Desc": "HopLLM 使用你的密钥发送请求，完全控制成本。",
     "step3Title": "追踪用量",
     "step3Desc": "直接在各 Provider 的仪表盘监控使用量。",
     "getApiKey": "获取 API 密钥",
@@ -382,7 +382,7 @@
   },
   "auth": {
     "welcomeBack": "欢迎回来",
-    "loginTo": "登录到 ClawRoute",
+    "loginTo": "登录到 HopLLM",
     "email": "邮箱",
     "password": "密码",
     "forgotPassword": "忘记密码？",
@@ -390,7 +390,7 @@
     "noAccount": "还没有账户？",
     "registerNow": "立即注册",
     "createAccount": "创建账户",
-    "registerTo": "注册到 ClawRoute",
+    "registerTo": "注册到 HopLLM",
     "name": "姓名",
     "confirmPassword": "确认密码",
     "register": "注册",

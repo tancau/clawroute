@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "ClawRoute",
-    "subtitle": "Smart Routing API Proxy"
+    "title": "HopLLM",
+    "subtitle": "Smart Routing, Cost Savings"
   },
   "nav": {
     "home": "Home",
@@ -17,7 +17,7 @@
     "heroHighlight": "Smart Routing",
     "heroTitle": "Make AI Inference Smarter",
     "heroSubtitle": "One request, auto-routed to the optimal model. Save 80%, lower latency, same quality.",
-    "heroDescription": "ClawRoute is a smart routing API proxy: swap your OpenAI base_url, send requests with model: \"auto\", and we auto-classify intent, select the best model, and forward the request.",
+    "heroDescription": "HopLLM is a smart routing API proxy: swap your OpenAI base_url, send requests with model: \"auto\", and we auto-classify intent, select the best model, and forward the request.",
     "startProxy": "Start Proxy",
     "getApiKey": "Get Your API Key",
     "browseTemplates": "Browse Plans",
@@ -327,8 +327,8 @@
     "errorDescription": "An error occurred while loading the dashboard. Please try reloading the page."
   },
   "apiKey": {
-    "title": "ClawRouter API Key",
-    "description": "Your personal API key for accessing ClawRouter smart routing services",
+    "title": "HopLLM API Key",
+    "description": "Your personal API key for accessing HopLLM smart routing services",
     "yourApiKey": "Your API Key",
     "copy": "Copy",
     "copied": "Copied",
@@ -337,7 +337,7 @@
     "regenerateWarning": "Regenerating will invalidate your old key. Update your applications accordingly.",
     "noApiKey": "No API key found. Please contact support or try logging out and back in.",
     "usageExample": "Usage Example",
-    "usageDescription": "Replace your OpenAI base_url with ClawRouter and use model='auto' for smart routing",
+    "usageDescription": "Replace your OpenAI base_url with HopLLM and use model='auto' for smart routing",
     "python": "Python",
     "javascript": "JavaScript",
     "autoRouteComment": "Smart routing selects optimal model",
@@ -371,7 +371,7 @@
     "step1Title": "Configure Your Keys",
     "step1Desc": "Add your own API keys for the providers you want to use.",
     "step2Title": "Smart Routing",
-    "step2Desc": "ClawRouter will use your keys when making requests, giving you full control over costs.",
+    "step2Desc": "HopLLM will use your keys when making requests, giving you full control over costs.",
     "step3Title": "Track Usage",
     "step3Desc": "Monitor usage directly on each provider's dashboard.",
     "getApiKey": "Get API Key",
@@ -382,7 +382,7 @@
   },
   "auth": {
     "welcomeBack": "Welcome back",
-    "loginTo": "Login to ClawRoute",
+    "loginTo": "Login to HopLLM",
     "email": "Email",
     "password": "Password",
     "forgotPassword": "Forgot password?",
@@ -390,7 +390,7 @@
     "noAccount": "No account yet?",
     "registerNow": "Register now",
     "createAccount": "Create Account",
-    "registerTo": "Register to ClawRoute",
+    "registerTo": "Register to HopLLM",
     "name": "Name",
     "confirmPassword": "Confirm Password",
     "register": "Register",

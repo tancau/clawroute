@@ -1,11 +1,11 @@
-# 🦞 ClawRoute
+# 🚀 HopLLM (智跳)
 
-> Smart model routing config generator for OpenClaw users — Save 60-80% on API costs.
+> Smart model routing config generator — Save 60-80% on API costs.
 
 English | [简体中文](./README.zh.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/tancau/clawroute?style=flat-square)](https://github.com/tancau/clawroute)
+[![GitHub Stars](https://img.shields.io/github/stars/tancau/hopllm?style=flat-square)](https://github.com/tancau/hopllm)
 
 **Live Demo**: [https://clawroute.vercel.app](https://clawroute.vercel.app)
 
@@ -13,24 +13,22 @@ English | [简体中文](./README.zh.md)
 
 ## 🎬 Demo Video
 
-Watch how ClawRoute helps you save 60-80% on OpenClaw costs in under 30 seconds:
+Watch how HopLLM helps you save 60-80% on API costs in under 30 seconds:
 
-[![ClawRoute Demo](https://img.shields.io/badge/Video-Coming%20Soon-blue?style=for-the-badge)](https://github.com/tancau/clawroute/discussions)
+[![HopLLM Demo](https://img.shields.io/badge/Video-Coming%20Soon-blue?style=for-the-badge)](https://github.com/tancau/hopllm/discussions)
 
 *Video coming soon — showing scene selection → config generation → export*
 
 ---
 
-## 🎯 What is ClawRoute?
+## 🎯 What is HopLLM?
 
-OpenClaw sends all requests to the same model by default — like driving a Ferrari to buy groceries.
-
-ClawRoute is a **visual routing config generator** that helps you:
+HopLLM is a **smart routing API proxy** that helps you:
 1. Select your use case
 2. Drag-and-drop to adjust routing rules
 3. Export OpenClaw-compatible YAML config with one click
 
-**Simply put**: Tell ClawRoute what you use OpenClaw for, and it generates the optimal model routing configuration.
+**Simply put**: Tell HopLLM what you need, and it generates the optimal model routing configuration.
 
 ---
 
@@ -67,14 +65,14 @@ Visual editing of routing rules, no YAML writing required:
 ## 🚀 Quick Start
 
 ### Live Demo (No Installation)
-👉 [https://clawroute.vercel.app](https://clawroute.vercel.app)
+👉 [https://hopllm.com](https://hopllm.com)
 
 ### Run Locally
 
 ```bash
 # Clone the repo
-git clone https://github.com/tancau/clawroute.git
-cd clawroute
+git clone https://github.com/tancau/hopllm.git
+cd hopllm
 
 # Install dependencies
 pnpm install
@@ -108,7 +106,7 @@ Open [http://localhost:3000](http://localhost:3000) to use.
 ## 📐 Project Structure
 
 ```
-clawroute/
+hopllm/
 ├── app/
 │   └── [locale]/           # i18n routes (zh/en)
 │       ├── page.tsx        # Home (scene selector)
@@ -145,8 +143,8 @@ MIT License — Free for commercial use, but please keep attribution.
 
 ## 🔗 Links
 
-- 🌐 **Live Demo**: [https://clawroute.vercel.app](https://clawroute.vercel.app)
-- 📂 **GitHub**: [github.com/tancau/clawroute](https://github.com/tancau/clawroute)
+- 🌐 **Live Demo**: [https://hopllm.com](https://hopllm.com)
+- 📂 **GitHub**: [github.com/tancau/hopllm](https://github.com/tancau/hopllm)
 - 📖 **OpenClaw Docs**: [docs.openclaw.ai](https://docs.openclaw.ai)
 - 🤖 **OpenRouter**: [openrouter.ai](https://openrouter.ai) — Model aggregation platform
 
@@ -154,8 +152,8 @@ MIT License — Free for commercial use, but please keep attribution.
 
 | Home | Configure | Templates |
 |:---:|:---:|:---:|
-| <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-home.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-config.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/clawroute/master/public/sc-tpl.png" width="300"/> |
+| <img src="https://raw.githubusercontent.com/tancau/hopllm/master/public/sc-home.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/hopllm/master/public/sc-config.png" width="300"/> | <img src="https://raw.githubusercontent.com/tancau/hopllm/master/public/sc-tpl.png" width="300"/> |
 
 ---
 
-*If you find ClawRoute useful, please give us a ⭐*
+*If you find HopLLM useful, please give us a ⭐*

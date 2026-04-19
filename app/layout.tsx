@@ -19,8 +19,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ClawRoute - 智能路由配置生成器",
-  description: "用最少的配置工作，获得最大的 API 成本节省",
+  title: "HopLLM (智跳) - 智能路由省钱首选",
+  description: "智能路由 API 代理，自动选择最优模型，节省 80% API 成本",
 };
 
 export default async function RootLayout({
