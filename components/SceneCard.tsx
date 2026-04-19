@@ -10,7 +10,9 @@ interface SceneCardProps {
 }
 
 export function SceneCard({ scene, onSelect }: SceneCardProps) {
-  const t = useTranslations('home');
+  const tScenes = useTranslations('scenes');
+  const tDescriptions = useTranslations('sceneDescriptions');
+  const tHome = useTranslations('home');
 
   return (
     <div
@@ -20,10 +22,10 @@ export function SceneCard({ scene, onSelect }: SceneCardProps) {
       <div className="absolute inset-0 rounded-xl p-[1px] bg-gradient-to-br from-primary via-accent to-secondary opacity-50 group-hover:opacity-100 transition-opacity"></div>
       <div className="relative bg-card rounded-xl p-6 text-center h-full">
         <span className="text-5xl mb-4 block">{scene.icon}</span>
-        <h3 className="text-xl font-semibold mb-2 text-foreground">{scene.name}</h3>
-        <p className="text-sm text-muted-foreground mb-3">{scene.description}</p>
+        <h3 className="text-xl font-semibold mb-2 text-foreground">{tScenes(scene.id)}</h3>
+        <p className="text-sm text-muted-foreground mb-3">{tDescriptions(scene.id)}</p>
         <span className="inline-block text-xs font-medium bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          {t('savingLabelShort')} {scene.estimatedSaving}
+          {tHome('savingLabelShort')} {scene.estimatedSaving}
         </span>
       </div>
     </div>
