@@ -11,6 +11,7 @@
 import { upsertModels, type ModelCatalogEntry } from '../db/model-catalog';
 import { db } from '../db';
 import { inferIntents, inferQualityScore, inferLatency } from './merge';
+import { logger } from '../monitoring/logger';
 
 /** 已知但未完全适配的平台 */
 export const KNOWN_BUT_UNADAPTED_PROVIDERS: Record<string, KnownProvider> = {

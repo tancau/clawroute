@@ -12,6 +12,8 @@ export {
   deductCredits,
   addCredits,
   verifyPassword,
+  regenerateApiKey,
+  getUserByApiKey,
   UserSchema,
   type User,
 } from './users';

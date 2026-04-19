@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PiggyBank, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, PiggyBank, Settings, LogOut, Key } from 'lucide-react';
 import { useUserStore } from '@/store/use-user-store';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   const navItems = [
     { href: '/dashboard', label: t('overview'), icon: LayoutDashboard },
+    { href: '/dashboard/api-key', label: t('apiKeyNav'), icon: Key },
     { href: '/dashboard/savings', label: t('savings'), icon: PiggyBank },
     { href: '/dashboard/preferences', label: t('preferences'), icon: Settings },
   ];

@@ -2,6 +2,8 @@
  * 数据源定义和抓取逻辑
  */
 
+import { logger } from '../monitoring/logger';
+
 /** 主流平台列表 */
 export const MAINSTREAM_PROVIDERS = [
   'openai',
@@ -54,7 +56,7 @@ const EXCLUDE_PATTERNS = [
  * 无需认证，343+ 模型含完整定价
  */
 export async function fetchOpenRouter(): Promise<RawModel[]> {
-  console.log('  Fetching from OpenRouter (no API key required)...');
+  logger.info('Fetching from OpenRouter (no API key required)');
 
   const response = await fetch('https://openrouter.ai/api/v1/models', {
     headers: { 'Accept': 'application/json' },
@@ -113,7 +115,7 @@ export async function fetchOpenRouter(): Promise<RawModel[]> {
       };
     });
 
-  console.log(`  Found ${models.length} models from OpenRouter`);
+  logger.info(`Found models from OpenRouter`, { count: models.length });
   return models;
 }
 
@@ -122,7 +124,7 @@ export async function fetchOpenRouter(): Promise<RawModel[]> {
  * 2671 模型，字段最丰富
  */
 export async function fetchLiteLLM(): Promise<RawModel[]> {
-  console.log('  Fetching from LiteLLM (GitHub raw, no API key)...');
+  logger.info('Fetching from LiteLLM (GitHub raw, no API key)');
 
   const response = await fetch(
     'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json',
@@ -184,7 +186,7 @@ export async function fetchLiteLLM(): Promise<RawModel[]> {
     });
   }
 
-  console.log(`  Found ${models.length} models from LiteLLM`);
+  logger.info(`Found models from LiteLLM`, { count: models.length });
   return models;
 }
 
@@ -193,7 +195,7 @@ export async function fetchLiteLLM(): Promise<RawModel[]> {
  * 标准化格式，价格以 $/1M token 为单位
  */
 export async function fetchBenchGecko(): Promise<ValidationModel[]> {
-  console.log('  Fetching from BenchGecko for validation...');
+  logger.info('Fetching from BenchGecko for validation');
 
   const response = await fetch(
     'https://raw.githubusercontent.com/BenchGecko/llm-pricing/main/pricing.json',
@@ -218,7 +220,7 @@ export async function fetchBenchGecko(): Promise<ValidationModel[]> {
     is_free: m.is_free || false,
   }));
 
-  console.log(`  Found ${models.length} models from BenchGecko`);
+  logger.info(`Found models from BenchGecko`, { count: models.length });
   return models;
 }
 

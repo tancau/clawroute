@@ -1,4 +1,5 @@
 import { getProvider, type ProviderConfig } from '../../config/providers';
+import { logger } from '../../monitoring/logger';
 
 /**
  * Key 状态
@@ -37,7 +38,7 @@ export class KeyManager {
     // 从环境变量获取 key
     const envKey = process.env[provider.apiKeyEnv];
     if (!envKey) {
-      console.warn(`[KeyManager] No API key found for provider: ${providerName} (${provider.apiKeyEnv})`);
+      logger.warn(`No API key found for provider: ${providerName}`, { env: provider.apiKeyEnv });
       return [];
     }
 
@@ -56,7 +57,7 @@ export class KeyManager {
     this.keyIndex.set(providerName, 0);
     this.stats.set(providerName, { totalRequests: 0, totalErrors: 0 });
 
-    console.log(`[KeyManager] Loaded ${keyStatuses.length} keys for provider: ${providerName}`);
+    logger.info(`Loaded ${keyStatuses.length} keys for provider`, { provider: providerName });
     return keyStatuses;
   }
 
@@ -76,7 +77,7 @@ export class KeyManager {
     // 过滤有效的 key
     const validKeys = keyStatuses.filter(k => k.valid);
     if (validKeys.length === 0) {
-      console.warn(`[KeyManager] No valid keys for provider: ${providerName}`);
+      logger.warn(`No valid keys for provider`, { provider: providerName });
       // 尝试重新加载
       this.loadKeys(providerName);
       const reloaded = this.keys.get(providerName)?.filter(k => k.valid) || [];
@@ -125,13 +126,13 @@ export class KeyManager {
         stats.totalErrors++;
       }
 
-      console.warn(`[KeyManager] Key marked invalid for ${providerName}: ${reason || 'unknown error'}`);
+      logger.warn(`Key marked invalid`, { provider: providerName, reason: reason || 'unknown error' });
     }
 
     // 如果所有 key 都失效，尝试重新加载
     const validKeys = keyStatuses.filter(k => k.valid);
     if (validKeys.length === 0) {
-      console.log(`[KeyManager] All keys invalid for ${providerName}, attempting reload...`);
+      logger.info(`All keys invalid for provider, attempting reload`, { provider: providerName });
       this.loadKeys(providerName);
     }
   }
@@ -184,7 +185,7 @@ export class KeyManager {
     if (keyStatus) {
       keyStatus.valid = true;
       keyStatus.errorCount = 0;
-      console.log(`[KeyManager] Key status reset for ${providerName}`);
+      logger.info(`Key status reset`, { provider: providerName });
     }
   }
 
@@ -195,7 +196,7 @@ export class KeyManager {
     this.keys.clear();
     this.keyIndex.clear();
     this.stats.clear();
-    console.log('[KeyManager] All caches cleared');
+    logger.info('All caches cleared');
   }
 }
 

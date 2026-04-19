@@ -5,6 +5,7 @@
 import { syncPrices, syncModels, importFromProviders } from './index';
 import { getLastSyncTime, getCatalogStats } from '../db/model-catalog';
 import { modelCapabilities } from '../config/providers';
+import { logger } from '../monitoring/logger';
 
 export class ModelSyncScheduler {
   private timers: ReturnType<typeof setInterval>[] = [];
@@ -15,7 +16,7 @@ export class ModelSyncScheduler {
    */
   start(): void {
     if (this.isRunning) {
-      console.warn('[ModelSync] Scheduler already running');
+      logger.warn('Scheduler already running');
       return;
     }
 
@@ -24,9 +25,9 @@ export class ModelSyncScheduler {
     // 检查是否需要首次初始化
     const stats = getCatalogStats();
     if (stats.total === 0) {
-      console.log('[ModelSync] Catalog empty, importing from providers.ts...');
+      logger.info('Catalog empty, importing from providers.ts');
       const result = importFromProviders(modelCapabilities);
-      console.log(`[ModelSync] Imported: ${result.inserted} inserted, ${result.updated} updated`);
+      logger.info(`Imported models`, { inserted: result.inserted, updated: result.updated });
     }
 
     // 启动时检查是否需要同步
@@ -34,9 +35,9 @@ export class ModelSyncScheduler {
     const shouldSyncNow = !lastSync || Date.now() - lastSync > 60 * 60 * 1000; // 1 小时
 
     if (shouldSyncNow) {
-      console.log('[ModelSync] Last sync overdue, running now...');
+      logger.info('Last sync overdue, running now');
       this.runSyncPrices().catch(err =>
-        console.error('[ModelSync] Startup sync failed:', err.message)
+        logger.error('Startup sync failed', { error: err.message })
       );
     }
 
@@ -44,7 +45,7 @@ export class ModelSyncScheduler {
     this.timers.push(
       setInterval(() => {
         this.runSyncPrices().catch(err =>
-          console.error('[ModelSync] Price sync failed:', err.message)
+          logger.error('Price sync failed', { error: err.message })
         );
       }, 6 * 60 * 60 * 1000)
     );
@@ -53,12 +54,12 @@ export class ModelSyncScheduler {
     this.timers.push(
       setInterval(() => {
         this.runSyncModels().catch(err =>
-          console.error('[ModelSync] Model sync failed:', err.message)
+          logger.error('Model sync failed', { error: err.message })
         );
       }, 24 * 60 * 60 * 1000)
     );
 
-    console.log('[ModelSync] Scheduler started (prices: 6h, models: 24h)');
+    logger.info('Scheduler started', { priceInterval: '6h', modelInterval: '24h' });
   }
 
   /**
@@ -70,14 +71,14 @@ export class ModelSyncScheduler {
     }
     this.timers = [];
     this.isRunning = false;
-    console.log('[ModelSync] Scheduler stopped');
+    logger.info('Scheduler stopped');
   }
 
   /**
    * 手动触发价格同步
    */
   async runSyncPrices(): Promise<void> {
-    console.log('[ModelSync] Starting price sync...');
+    logger.info('Starting price sync');
     const startTime = Date.now();
 
     try {
@@ -85,27 +86,32 @@ export class ModelSyncScheduler {
       const duration = Date.now() - startTime;
 
       if (result.error) {
-        console.error(`[ModelSync] Price sync failed: ${result.error} (${duration}ms)`);
+        logger.error(`Price sync failed`, { error: result.error, duration });
       } else {
-        console.log(
-          `[ModelSync] Price sync complete: ${result.modelsFound} found, ` +
-          `${result.modelsAdded} added, ${result.modelsUpdated} updated, ` +
-          `${result.priceChanges} price changes (${duration}ms)`
+        logger.info(
+          `Price sync complete`,
+          {
+            modelsFound: result.modelsFound,
+            modelsAdded: result.modelsAdded,
+            modelsUpdated: result.modelsUpdated,
+            priceChanges: result.priceChanges,
+            duration
+          }
         );
 
         if (result.priceAlerts.length > 0) {
-          console.warn(`[ModelSync] ${result.priceAlerts.length} price alerts:`);
-          for (const alert of result.priceAlerts.slice(0, 5)) {
-            console.warn(
-              `  ${alert.provider}/${alert.model_id} ${alert.field}: ` +
-              `ours=${alert.ourValue.toFixed(4)} ref=${alert.referenceValue.toFixed(4)} ` +
-              `deviation=${(alert.deviation * 100).toFixed(1)}%`
-            );
-          }
+          logger.warn(`${result.priceAlerts.length} price alerts`, {
+            alerts: result.priceAlerts.slice(0, 5).map(a => ({
+              provider: a.provider,
+              model: a.model_id,
+              field: a.field,
+              deviation: `${(a.deviation * 100).toFixed(1)}%`
+            }))
+          });
         }
       }
     } catch (error: any) {
-      console.error(`[ModelSync] Price sync error: ${error.message}`);
+      logger.error(`Price sync error`, { error: error.message });
     }
   }
 
@@ -113,7 +119,7 @@ export class ModelSyncScheduler {
    * 手动触发完整模型同步
    */
   async runSyncModels(): Promise<void> {
-    console.log('[ModelSync] Starting full model sync...');
+    logger.info('Starting full model sync');
     const startTime = Date.now();
 
     try {
@@ -121,16 +127,21 @@ export class ModelSyncScheduler {
       const duration = Date.now() - startTime;
 
       if (result.error) {
-        console.error(`[ModelSync] Model sync failed: ${result.error} (${duration}ms)`);
+        logger.error(`Model sync failed`, { error: result.error, duration });
       } else {
-        console.log(
-          `[ModelSync] Model sync complete: ${result.modelsFound} found, ` +
-          `${result.modelsAdded} added, ${result.modelsUpdated} updated, ` +
-          `${result.priceChanges} price changes (${duration}ms)`
+        logger.info(
+          `Model sync complete`,
+          {
+            modelsFound: result.modelsFound,
+            modelsAdded: result.modelsAdded,
+            modelsUpdated: result.modelsUpdated,
+            priceChanges: result.priceChanges,
+            duration
+          }
         );
       }
     } catch (error: any) {
-      console.error(`[ModelSync] Model sync error: ${error.message}`);
+      logger.error(`Model sync error`, { error: error.message });
     }
   }
 

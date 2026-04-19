@@ -22,6 +22,7 @@ import {
   getModelById,
   type ModelCatalogEntry,
 } from '../db/model-catalog';
+import { logger } from '../monitoring/logger';
 
 export interface SyncResult {
   source: string;
@@ -198,7 +199,7 @@ async function mergeAndValidate(): Promise<SyncResult> {
       const validation = validatePrices(enriched, benchgecko);
       alerts = validation.alerts;
     } catch {
-      console.warn('  BenchGecko validation skipped (fetch failed)');
+      logger.warn('BenchGecko validation skipped (fetch failed)');
     }
 
     // 写入数据库

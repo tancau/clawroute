@@ -10,6 +10,7 @@ export const UserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   passwordHash: z.string(),
+  apiKey: z.string().optional(),
   tier: z.enum(['free', 'pro', 'enterprise']),
   credits: z.number().int().nonnegative(),
   createdAt: z.number(),
@@ -69,6 +70,15 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 /**
+ * 生成 ClawRouter API Key
+ * 格式: cr- + 48 字符随机字符串
+ */
+export function generateApiKey(): string {
+  const randomBytes = crypto.randomBytes(24).toString('hex');
+  return `cr-${randomBytes}`;
+}
+
+/**
  * 用户管理工具
  */
 export const UserTool: Tool<typeof CreateUserInput, User> = {
@@ -97,16 +107,18 @@ export const UserTool: Tool<typeof CreateUserInput, User> = {
     const now = Date.now();
     const id = crypto.randomUUID();
     const passwordHash = hashPassword(input.password);
+    const apiKey = generateApiKey();
 
     const stmt = db.prepare(`
-      INSERT INTO users (id, email, password_hash, tier, credits, created_at, updated_at, metadata)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO users (id, email, password_hash, api_key, tier, credits, created_at, updated_at, metadata)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     stmt.run(
       id,
       input.email,
       passwordHash,
+      apiKey,
       input.tier || 'free',
       100, // 新用户 100 次免费调用
       now,
@@ -118,6 +130,7 @@ export const UserTool: Tool<typeof CreateUserInput, User> = {
       id,
       email: input.email,
       passwordHash,
+      apiKey,
       tier: input.tier || 'free',
       credits: 100,
       createdAt: now,
@@ -152,12 +165,45 @@ export function getUser(input: z.infer<typeof GetUserInput>): User | null {
     id: row.id,
     email: row.email,
     passwordHash: row.password_hash,
+    apiKey: row.api_key,
     tier: row.tier,
     credits: row.credits,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
   };
+}
+
+/**
+ * 根据 API Key 查询用户
+ */
+export function getUserByApiKey(apiKey: string): User | null {
+  const stmt = db.prepare('SELECT * FROM users WHERE api_key = ?');
+  const row = stmt.get(apiKey) as any;
+  
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    email: row.email,
+    passwordHash: row.password_hash,
+    apiKey: row.api_key,
+    tier: row.tier,
+    credits: row.credits,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
+  };
+}
+
+/**
+ * 重新生成 API Key
+ */
+export function regenerateApiKey(userId: string): string | null {
+  const newApiKey = generateApiKey();
+  const stmt = db.prepare('UPDATE users SET api_key = ?, updated_at = ? WHERE id = ?');
+  const result = stmt.run(newApiKey, Date.now(), userId);
+  return result.changes > 0 ? newApiKey : null;
 }
 
 /**

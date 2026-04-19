@@ -7,6 +7,7 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  apiKey?: string;
   credits: number;
   createdAt: number;
 }
@@ -210,6 +211,13 @@ class ApiClient {
   async deleteKey(keyId: string) {
     return this.request<{ success: boolean }>(`/v1/keys/${keyId}`, {
       method: 'DELETE',
+    });
+  }
+
+  // ===== User API =====
+  async regenerateApiKey(userId: string) {
+    return this.request<{ apiKey: string }>(`/v1/users/${userId}/regenerate-key`, {
+      method: 'POST',
     });
   }
 

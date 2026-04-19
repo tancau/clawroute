@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import type { Database as DatabaseType } from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { logger } from '../monitoring/logger';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../../../data/clawrouter.db');
@@ -26,6 +27,7 @@ export function initDatabase() {
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      api_key TEXT UNIQUE,
       tier TEXT NOT NULL DEFAULT 'free',
       credits INTEGER NOT NULL DEFAULT 100,
       status TEXT NOT NULL DEFAULT 'active',
@@ -36,6 +38,7 @@ export function initDatabase() {
     
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+    CREATE INDEX IF NOT EXISTS idx_users_api_key ON users(api_key);
   `);
 
   // 共享 API Key 表
@@ -215,5 +218,5 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
   `);
 
-  console.log('Database initialized successfully');
+  logger.info('Database initialized successfully');
 }

@@ -13,6 +13,7 @@ import { AdvancedPanel } from '@/components/configure/AdvancedPanel';
 import { Activity, DollarSign, Zap, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -38,7 +39,12 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell>
-      <div className="max-w-7xl mx-auto space-y-8">
+      <ErrorBoundary
+        errorTitle={t('errorTitle')}
+        errorDescription={t('errorDescription')}
+        reloadLabel={t('reload')}
+      >
+        <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-neutral-10">{t('title')}</h1>
@@ -94,7 +100,8 @@ export default function DashboardPage() {
             configImportLabel={t('testPanel')}
           />
         </div>
-      </div>
+        </div>
+      </ErrorBoundary>
     </DashboardShell>
   );
 }

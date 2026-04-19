@@ -7,7 +7,7 @@ import { ClassifyTool } from '../tools/classify';
 import { RouteTool } from '../tools/route';
 import { ProxyTool, createSSEStream } from '../tools/proxy';
 import { initDatabase, db } from '../db';
-import { UserTool, getUser, updateUser, deductCredits, verifyPassword, hashPassword } from '../users';
+import { UserTool, getUser, updateUser, deductCredits, verifyPassword, hashPassword, regenerateApiKey } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
 import { getUserStats, getAggregatedStats, getRecentRequests, getTopModels } from '../analytics';
@@ -909,6 +909,44 @@ app.get('/v1/users/:id', async (c) => {
   
   const { passwordHash, ...userSafe } = user;
   return c.json({ user: userSafe });
+});
+
+// 重新生成 API Key
+app.post('/v1/users/:id/regenerate-key', async (c) => {
+  try {
+    const userId = c.req.param('id');
+    const user = getUser({ id: userId });
+    
+    if (!user) {
+      return c.json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'User not found',
+        },
+      }, 404);
+    }
+    
+    const newApiKey = regenerateApiKey(userId);
+    
+    if (!newApiKey) {
+      return c.json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to regenerate API key',
+        },
+      }, 500);
+    }
+    
+    return c.json({ apiKey: newApiKey });
+  } catch (error) {
+    logger.error('Regenerate API key error:', error);
+    return c.json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to regenerate API key',
+      },
+    }, 500);
+  }
 });
 
 // ==================== API Key 管理 ====================

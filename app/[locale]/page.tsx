@@ -20,8 +20,8 @@ ${t('codeLine3')}`;
         heroTitle={t('heroTitle')}
         heroSubtitle={t('heroSubtitle')}
         heroDescription={t('heroDescription')}
-        startProxy={t('startProxy')}
         browseTemplates={t('browseTemplates')}
+        getApiKey={t('getApiKey')}
       />
 
       <FeaturesSection
