@@ -52,6 +52,21 @@
     "research-assistant": "Academic research, literature analysis, requires deep reasoning and long context",
     "dev-tools": "Code generation, debugging, refactoring, requires code understanding and generation"
   },
+  "calculator": {
+    "title": "Cost Calculator",
+    "monthlyCalls": "Monthly Calls",
+    "avgTokens": "Avg Tokens per Call",
+    "withoutClawroute": "Without HopLLM",
+    "withClawroute": "With HopLLM",
+    "savings": "Savings",
+    "month": "month",
+    "annualSavings": "Annual Savings",
+    "cta": "Get Started",
+    "presetPersonal": "Personal",
+    "presetSmall": "Small Project",
+    "presetMedium": "Medium Project",
+    "presetLarge": "Large Project"
+  },
   "configure": {
     "title": "Proxy Configuration",
     "switchScene": "Switch Scene",

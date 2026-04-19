@@ -46,10 +46,10 @@ export function CostCalculator({
   }, [monthlyCalls, avgTokens]);
   
   const presets = [
-    { label: '个人使用', calls: 5000, tokens: 2000 },
-    { label: '小型项目', calls: 20000, tokens: 3000 },
-    { label: '中型项目', calls: 100000, tokens: 5000 },
-    { label: '大型项目', calls: 500000, tokens: 8000 },
+    { label: t('presetPersonal'), calls: 5000, tokens: 2000 },
+    { label: t('presetSmall'), calls: 20000, tokens: 3000 },
+    { label: t('presetMedium'), calls: 100000, tokens: 5000 },
+    { label: t('presetLarge'), calls: 500000, tokens: 8000 },
   ];
   
   return (

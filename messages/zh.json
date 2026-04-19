@@ -52,6 +52,21 @@
     "research-assistant": "学术研究、文献分析，需要深度推理和长上下文",
     "dev-tools": "代码生成、调试、重构，需要代码理解和生成能力"
   },
+  "calculator": {
+    "title": "成本计算器",
+    "monthlyCalls": "每月调用次数",
+    "avgTokens": "平均每次 Token 数",
+    "withoutClawroute": "不使用 HopLLM",
+    "withClawroute": "使用 HopLLM",
+    "savings": "节省",
+    "month": "月",
+    "annualSavings": "年节省",
+    "cta": "开始使用",
+    "presetPersonal": "个人使用",
+    "presetSmall": "小型项目",
+    "presetMedium": "中型项目",
+    "presetLarge": "大型项目"
+  },
   "configure": {
     "title": "代理配置",
     "switchScene": "切换场景",
