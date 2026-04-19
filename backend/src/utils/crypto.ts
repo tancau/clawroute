@@ -32,7 +32,7 @@ function getEncryptionKey(): Buffer {
   
   // 开发环境：使用固定密钥
   console.warn('\x1b[33m%s\x1b[0m', 'WARNING: Using development encryption key. Set ENCRYPTION_KEY in production!');
-  const devKey = crypto.createHash('sha256').update('clawrouter-dev-key').digest();
+  const devKey = crypto.createHash('sha256').update('hopllm-dev-key').digest();
   return devKey;
 }
 

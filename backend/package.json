@@ -1,5 +1,5 @@
 {
-  "name": "clawrouter-backend",
+  "name": "hopllm-backend",
   "version": "0.1.0",
   "description": "Dynamic intelligent routing middleware for LLM APIs",
   "type": "module",

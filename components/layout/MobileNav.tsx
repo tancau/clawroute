@@ -27,7 +27,7 @@ export function MobileNav({ open, onOpenChange, navItems, isActive }: MobileNavP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[320px]">
         <DialogHeader>
-          <DialogTitle className="gradient-text text-xl">ClawRoute</DialogTitle>
+          <DialogTitle className="gradient-text text-xl">HopLLM</DialogTitle>
         </DialogHeader>
         <nav className="flex flex-col gap-1 mt-4">
           {navItems.map((item) => (

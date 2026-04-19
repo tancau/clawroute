@@ -30,7 +30,7 @@ yarn-error.log*
 .env
 
 # database
-data/clawrouter.db
+data/hopllm.db
 
 # vercel
 .vercel

@@ -27,7 +27,7 @@ export async function copyToClipboard(content: string): Promise<boolean> {
 }
 
 /** Trigger JSON file download */
-export function downloadJson(content: string, filename: string = 'clawroute.json'): void {
+export function downloadJson(content: string, filename: string = 'hopllm.json'): void {
   const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

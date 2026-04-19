@@ -1,9 +1,9 @@
-# ClawRoute 质量改进 - 技术设计文档
+# HopLLM 质量改进 - 技术设计文档
 
 ## 1. 设计概述
 
 ### 1.1 设计目标
-将 ClawRoute 质量改进需求规格中的 14 项功能需求转化为可实施的技术方案，确保每项改进向后兼容、可独立实施、可独立验证。
+将 HopLLM 质量改进需求规格中的 14 项功能需求转化为可实施的技术方案，确保每项改进向后兼容、可独立实施、可独立验证。
 
 ### 1.2 设计原则
 - **向后兼容**：每项改进不改变应用对外行为，仅修复内部质量问题
@@ -90,7 +90,7 @@ FR-5, FR-6, FR-7, FR-8, FR-9, FR-10, FR-11, FR-12
     "startConfig": "开始配置",
     "browseTemplates": "浏览模板市场",
     "testimonialsTitle": "来自用户的评价",
-    "featuresTitle": "为什么选择 ClawRoute",
+    "featuresTitle": "为什么选择 HopLLM",
     "featureSavingTitle": "显著节省",
     "featureSavingDesc": "智能路由让你节省 60-80% 的 OpenClaw 费用",
     "featureOOTBTitle": "开箱即用",

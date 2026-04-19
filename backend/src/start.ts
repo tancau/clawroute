@@ -4,7 +4,7 @@ import { modelSyncScheduler } from './sync/scheduler';
 
 const port = Number(process.env.PORT) || 3000;
 
-console.log(`🚀 ClawRouter API running on http://localhost:${port}`);
+console.log(`🚀 HopLLM API running on http://localhost:${port}`);
 
 // 启动模型目录定时同步
 modelSyncScheduler.start();

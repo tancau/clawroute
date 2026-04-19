@@ -37,7 +37,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         {user && (
           <div className="mb-4 px-3 py-2">
             <p className="text-sm font-medium text-neutral-10 truncate">{user.name || user.email}</p>
-            <p className="text-xs text-neutral-7">ClawRoute</p>
+            <p className="text-xs text-neutral-7">HopLLM</p>
           </div>
         )}
         {navItems.map((item) => {

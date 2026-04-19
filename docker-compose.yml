@@ -1,9 +1,9 @@
 version: "3.9"
 
 services:
-  clawroute:
+  hopllm:
     build: .
-    container_name: clawroute
+    container_name: hopllm
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -14,7 +14,7 @@ services:
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
       - OLLAMA_URL=http://ollama:11434
     volumes:
-      - clawroute-data:/app/data
+      - hopllm-data:/app/data
     depends_on:
       - ollama
 
@@ -36,5 +36,5 @@ services:
     #           capabilities: [gpu]
 
 volumes:
-  clawroute-data:
+  hopllm-data:
   ollama-data:

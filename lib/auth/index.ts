@@ -62,7 +62,7 @@ interface InternalUser extends SafeUser {
 
 // ===== Token Generation =====
 
-const JWT_SECRET = () => process.env.JWT_SECRET || 'clawrouter-dev-secret';
+const JWT_SECRET = () => process.env.JWT_SECRET || 'hopllm-dev-secret';
 
 export function generateTokens(userId: string, tier: string) {
   const now = Math.floor(Date.now() / 1000);

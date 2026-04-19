@@ -68,7 +68,7 @@ export interface SceneModelMapping {
 }
 
 // ===== Config Generation Types =====
-export interface ClawRouteModelEntry {
+export interface HopLLMModelEntry {
   id: string;
   name: string;
   input: string[];
@@ -82,17 +82,17 @@ export interface ClawRouteModelEntry {
   };
 }
 
-export interface ClawRouteProviderEntry {
+export interface HopLLMProviderEntry {
   baseUrl: string;
   apiKey: string;
   api: string;
-  models: ClawRouteModelEntry[];
+  models: HopLLMModelEntry[];
 }
 
-export interface ClawRouteConfig {
+export interface HopLLMConfig {
   models: {
     mode: string;
-    providers: Record<string, ClawRouteProviderEntry>;
+    providers: Record<string, HopLLMProviderEntry>;
   };
   agents: {
     defaults: {

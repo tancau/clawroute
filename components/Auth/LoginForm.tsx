@@ -25,7 +25,7 @@ export function LoginForm() {
     <div className="w-full max-w-md mx-auto">
       <div className="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-8">
         <h1 className="text-2xl font-bold text-white mb-2 text-center">欢迎回来</h1>
-        <p className="text-[#94a3b8] text-center mb-8">登录到 ClawRouter</p>
+        <p className="text-[#94a3b8] text-center mb-8">登录到 HopLLM</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

@@ -18,7 +18,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 clawroute
+    adduser --system --uid 1001 hopllm
 
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
@@ -28,9 +28,9 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/backend ./backend
 
-RUN mkdir -p /app/data && chown -R clawroute:nodejs /app/data
+RUN mkdir -p /app/data && chown -R hopllm:nodejs /app/data
 
-USER clawroute
+USER hopllm
 
 EXPOSE 3000
 

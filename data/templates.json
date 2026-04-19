@@ -10,7 +10,7 @@
         "fallbackModelIds": ["deepseek/deepseek-v3", "anthropic/claude-3.5-haiku", "deepseek/deepseek-r1"]
       },
       "estimatedSavingRate": 72,
-      "author": "ClawRoute"
+      "author": "HopLLM"
     },
     {
       "id": "tpl-customer-service",
@@ -22,7 +22,7 @@
         "fallbackModelIds": ["deepseek/deepseek-v3", "qwen/qwen3.6-plus", "anthropic/claude-3.5-haiku"]
       },
       "estimatedSavingRate": 55,
-      "author": "ClawRoute"
+      "author": "HopLLM"
     },
     {
       "id": "tpl-content-creation",
@@ -34,7 +34,7 @@
         "fallbackModelIds": ["anthropic/claude-3.5-sonnet", "openai/gpt-4o", "anthropic/claude-3-opus"]
       },
       "estimatedSavingRate": 40,
-      "author": "ClawRoute"
+      "author": "HopLLM"
     },
     {
       "id": "tpl-data-analysis",
@@ -46,7 +46,7 @@
         "fallbackModelIds": ["deepseek/deepseek-v3", "deepseek/deepseek-r1", "anthropic/claude-3.5-sonnet"]
       },
       "estimatedSavingRate": 62,
-      "author": "ClawRoute"
+      "author": "HopLLM"
     },
     {
       "id": "tpl-research-assistant",
@@ -58,7 +58,7 @@
         "fallbackModelIds": ["anthropic/claude-3.5-sonnet", "google/gemini-1.5-pro", "anthropic/claude-3-opus"]
       },
       "estimatedSavingRate": 45,
-      "author": "ClawRoute"
+      "author": "HopLLM"
     },
     {
       "id": "tpl-dev-tools",
@@ -70,7 +70,7 @@
         "fallbackModelIds": ["qwen/qwen3.5-coder-plus", "deepseek/deepseek-r1", "anthropic/claude-3.5-haiku"]
       },
       "estimatedSavingRate": 58,
-      "author": "ClawRoute"
+      "author": "HopLLM"
     }
   ]
 }

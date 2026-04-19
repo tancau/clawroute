@@ -11,7 +11,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       <div className="w-full max-w-md space-y-6">
         {/* Brand */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold gradient-text mb-2">ClawRoute</h1>
+          <h1 className="text-3xl font-bold gradient-text mb-2">HopLLM</h1>
           <p className="text-sm text-neutral-7">Smart Router Config Generator</p>
         </div>
 

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useAppStore } from '@/store/use-app-store';
-import { generateClawRouteConfig } from '@/lib/config-generator';
+import { generateHopLLMConfig } from '@/lib/config-generator';
 import { copyToClipboard, downloadJson } from '@/lib/export-utils';
 import { Button } from '@/components/ui/button';
 import { Copy, Download } from 'lucide-react';
@@ -19,7 +19,7 @@ export function ConfigPreview() {
     if (!selection.primaryModelId) {
       return '{\n  // Select a primary model to generate config\n}';
     }
-    return generateClawRouteConfig(selection);
+    return generateHopLLMConfig(selection);
   }, [selection]);
 
   const handleCopy = async () => {

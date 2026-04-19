@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { logger } from '../monitoring/logger';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../../../data/clawrouter.db');
+const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../../../data/hopllm.db');
 
 // 确保数据目录存在
 import fs from 'fs';

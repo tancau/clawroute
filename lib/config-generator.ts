@@ -1,4 +1,4 @@
-import type { ModelSelection, ClawRouteConfig, ClawRouteProviderEntry, ClawRouteModelEntry } from './types';
+import type { ModelSelection, HopLLMConfig, HopLLMProviderEntry, HopLLMModelEntry } from './types';
 import { getModelById } from './models-db';
 
 /**
@@ -37,14 +37,14 @@ function providerFromId(fullId: string): string {
 }
 
 /**
- * Build a ClawRoute-compatible JSON config from a ModelSelection.
+ * Build a HopLLM-compatible JSON config from a ModelSelection.
  *
- * Output matches the real clawroute.json structure:
+ * Output matches the real hopllm.json structure:
  * - models.providers (only used providers with their models)
  * - agents.defaults.model.primary + fallbacks
  * - agents.defaults.models (allowlist with aliases)
  */
-export function generateClawRouteConfig(selection: ModelSelection): string {
+export function generateHopLLMConfig(selection: ModelSelection): string {
   const allModelIds = [selection.primaryModelId, ...selection.fallbackModelIds];
 
   // 1. Collect which model IDs are used and map to providers
@@ -58,16 +58,16 @@ export function generateClawRouteConfig(selection: ModelSelection): string {
   }
 
   // 2. Build provider configs
-  const providersConfig: Record<string, ClawRouteProviderEntry> = {};
+  const providersConfig: Record<string, HopLLMProviderEntry> = {};
 
   for (const [providerId, usedModelIdSet] of Array.from(providerUsedModels.entries())) {
     const meta = PROVIDER_META[providerId];
     if (!meta) continue;
 
-    const modelsForConfig: ClawRouteModelEntry[] = [];
+    const modelsForConfig: HopLLMModelEntry[] = [];
     for (const modelId of Array.from(usedModelIdSet)) {
       const model = getModelById(modelId);
-      const entry: ClawRouteModelEntry = {
+      const entry: HopLLMModelEntry = {
         id: shortModelId(modelId),
         name: model?.name ?? shortModelId(modelId),
         input: model?.input ?? ['text'],
@@ -111,7 +111,7 @@ export function generateClawRouteConfig(selection: ModelSelection): string {
   }
 
   // 4. Assemble full config
-  const config: ClawRouteConfig = {
+  const config: HopLLMConfig = {
     models: {
       mode: 'merge',
       providers: providersConfig,
@@ -130,7 +130,7 @@ export function generateClawRouteConfig(selection: ModelSelection): string {
   return JSON.stringify(config, null, 2);
 }
 
-/** Validate ClawRoute JSON config */
+/** Validate HopLLM JSON config */
 export function validateConfig(jsonString: string): boolean {
   try {
     const parsed = JSON.parse(jsonString);

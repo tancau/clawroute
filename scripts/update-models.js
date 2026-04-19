@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * ClawRoute Model Updater
+ * HopLLM Model Updater
  * 
  * Fetches latest model lists from OpenRouter (free, no API key required)
  * and merges with our curated provider data
@@ -94,7 +94,7 @@ function calculateCostPer1KToken(pricing) {
 }
 
 async function updateModels() {
-  console.log('🔄 ClawRoute Model Updater\n');
+  console.log('🔄 HopLLM Model Updater\n');
   console.log('Fetching latest models from OpenRouter (free, no API key)...\n');
   
   // Fetch from OpenRouter

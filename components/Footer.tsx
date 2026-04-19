@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="border-t border-border mt-auto">
       <div className="container mx-auto flex h-12 items-center justify-between px-4 text-xs text-muted-foreground">
         <span>{t('dataUpdated')}：2026-04-16</span>
-        <span className="gradient-text font-semibold">ClawRoute - {t('openSource')}</span>
+        <span className="gradient-text font-semibold">HopLLM - {t('openSource')}</span>
       </div>
     </footer>
   );

@@ -672,7 +672,7 @@ app.post('/v1/users/login', async (c) => {
     const { passwordHash, ...userSafe } = user;
     
     // 生成 JWT access token 和 refresh token
-    const jwtSecret = process.env.JWT_SECRET || 'clawrouter-dev-secret';
+    const jwtSecret = process.env.JWT_SECRET || 'hopllm-dev-secret';
     const now = Math.floor(Date.now() / 1000);
     const accessToken = signJWT(
       { userId: user.id, tier: user.tier, iat: now, exp: now + 3600 },
@@ -715,7 +715,7 @@ app.post('/v1/auth/refresh', async (c) => {
     }
     
     // Verify refresh token using JWT
-    const jwtSecret = process.env.JWT_SECRET || 'clawrouter-dev-secret';
+    const jwtSecret = process.env.JWT_SECRET || 'hopllm-dev-secret';
     const payload = verifyJWT(body.refreshToken, jwtSecret);
     if (!payload || payload.type !== 'refresh') {
       return c.json({
