@@ -1,0 +1,617 @@
+/**
+ * POST /v1/chat/completions
+ * 
+ * 智能路由 API - Phase 1 实现
+ * 
+ * 功能：
+ * 1. 验证 API Key（查询数据库）
+ * 2. 智能路由选择模型
+ * 3. 转发请求到提供商
+ * 4. 返回响应（支持流式和非流式）
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities } from '@/lib/routing/providers';
+import { keyManager } from '@/lib/routing/key-manager';
+
+// ==================== 类型定义 ====================
+
+interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+  name?: string;
+}
+
+interface ChatCompletionRequest {
+  model: string;
+  messages: ChatMessage[];
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  stream?: boolean;
+  stop?: string[];
+  presence_penalty?: number;
+  frequency_penalty?: number;
+}
+
+interface IntentClassification {
+  intent: string;
+  confidence: number;
+  source: 'rule' | 'cached';
+}
+
+// ==================== 意图分类（简化版） ====================
+
+const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
+  { patterns: [/写代码|code|编程|function|class|bug|fix|debug|实现|开发/i], intent: 'coding' },
+  { patterns: [/分析|analyze|数据|report|统计|比较|对比/i], intent: 'analysis' },
+  { patterns: [/推理|reasoning|证明|推导|逻辑|数学|math|计算/i], intent: 'reasoning' },
+  { patterns: [/翻译|translate|translate|语言|language/i], intent: 'translation' },
+  { patterns: [/创意|creative|故事|story|写作|write|文章/i], intent: 'creative' },
+  { patterns: [/聊天|chat|问候|hi|hello|你好|帮忙/i], intent: 'casual_chat' },
+  { patterns: [/长文本|long|文档|document|总结|summary/i], intent: 'long_context' },
+];
+
+function classifyIntent(message: string): IntentClassification {
+  const lowerMessage = message.toLowerCase();
+  
+  for (const rule of INTENT_RULES) {
+    for (const pattern of rule.patterns) {
+      if (pattern.test(lowerMessage)) {
+        return {
+          intent: rule.intent,
+          confidence: 0.9,
+          source: 'rule',
+        };
+      }
+    }
+  }
+  
+  // 默认意图
+  return {
+    intent: 'casual_chat',
+    confidence: 0.5,
+    source: 'rule',
+  };
+}
+
+// ==================== 模型路由 ====================
+
+interface RouteResult {
+  selectedModel: string;
+  provider: string;
+  baseUrl: string;
+  reason: string;
+  alternatives: Array<{ model: string; provider: string }>;
+}
+
+function routeModel(intent: string, requestedModel?: string): RouteResult {
+  // 如果用户指定了模型，直接使用
+  if (requestedModel && requestedModel !== 'auto') {
+    const capability = getModelCapability(requestedModel);
+    if (capability) {
+      const provider = getProvider(capability.provider);
+      if (provider) {
+        return {
+          selectedModel: requestedModel,
+          provider: capability.provider,
+          baseUrl: provider.baseUrl,
+          reason: 'User specified model',
+          alternatives: [],
+        };
+      }
+    }
+    // 尝试从模型名推断 provider
+    if (requestedModel.includes('/')) {
+      // OpenRouter 格式: provider/model
+      return {
+        selectedModel: requestedModel,
+        provider: 'openrouter',
+        baseUrl: 'https://openrouter.ai/api/v1',
+        reason: 'OpenRouter model format detected',
+        alternatives: [],
+      };
+    }
+  }
+  
+  // 获取意图对应的候选模型
+  const candidates = getModelsForIntent(intent);
+  
+  if (candidates.length === 0) {
+    // 默认使用 DeepSeek（性价比高）
+    return {
+      selectedModel: 'deepseek-chat',
+      provider: 'deepseek',
+      baseUrl: 'https://api.deepseek.com/v1',
+      reason: 'Default fallback: DeepSeek chat',
+      alternatives: [],
+    };
+  }
+  
+  // 过滤有可用 Key 的模型
+  const availableCandidates = candidates.filter(m => {
+    const key = keyManager.getNextKey(m.provider);
+    return !!key;
+  });
+  
+  // 如果没有可用的，回退到第一个候选
+  const effectiveCandidates = availableCandidates.length > 0 ? availableCandidates : candidates;
+  
+  // 选择最佳模型（按质量分数排序）
+  const selected = effectiveCandidates[0]!;
+  const provider = getProvider(selected.provider);
+  
+  if (!provider) {
+    // 回退到 OpenRouter
+    const freeModels = modelCapabilities.filter(m => m.features?.includes('free'));
+    const freeModel = freeModels[0];
+    if (freeModel) {
+      return {
+        selectedModel: freeModel.model,
+        provider: 'openrouter',
+        baseUrl: 'https://openrouter.ai/api/v1',
+        reason: 'Fallback to free model via OpenRouter',
+        alternatives: freeModels.slice(1, 3).map(m => ({ model: m.model, provider: 'openrouter' })),
+      };
+    }
+  }
+  
+  return {
+    selectedModel: selected.model,
+    provider: selected.provider,
+    baseUrl: provider?.baseUrl || 'https://api.deepseek.com/v1',
+    reason: `Best match for ${intent}: quality ${(selected.qualityScore || 0.8) * 100}%`,
+    alternatives: effectiveCandidates.slice(1, 3).map(m => ({ model: m.model, provider: m.provider })),
+  };
+}
+
+// ==================== 代理请求 ====================
+
+const MAX_RETRIES = 3;
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+
+async function proxyRequest(
+  url: string,
+  requestBody: Record<string, unknown>,
+  apiKey: string,
+  requestId: string,
+  timeout: number,
+): Promise<Response> {
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'X-Request-ID': requestId,
+    },
+    body: JSON.stringify(requestBody),
+    signal: AbortSignal.timeout(timeout),
+  });
+}
+
+async function executeWithRetry(
+  route: RouteResult,
+  request: ChatCompletionRequest,
+  requestId: string,
+): Promise<{ response: Response; usedModel: string; usedProvider: string }> {
+  const provider = getProvider(route.provider);
+  if (!provider) {
+    throw new Error(`Provider not found: ${route.provider}`);
+  }
+
+  const url = `${provider.baseUrl}/chat/completions`;
+  const requestBody = {
+    model: route.selectedModel,
+    messages: request.messages,
+    temperature: request.temperature,
+    max_tokens: request.max_tokens,
+    top_p: request.top_p,
+    stream: request.stream,
+    stop: request.stop,
+    presence_penalty: request.presence_penalty,
+    frequency_penalty: request.frequency_penalty,
+  };
+
+  // 构建尝试列表：主模型 + 备选模型
+  const attempts: Array<{ model: string; provider: string; url: string; timeout: number }> = [
+    { model: route.selectedModel, provider: route.provider, url, timeout: provider.timeout },
+  ];
+
+  // 添加备选模型
+  for (const alt of route.alternatives) {
+    const altProvider = getProvider(alt.provider);
+    if (altProvider) {
+      attempts.push({
+        model: alt.model,
+        provider: alt.provider,
+        url: `${altProvider.baseUrl}/chat/completions`,
+        timeout: altProvider.timeout,
+      });
+    }
+  }
+
+  let lastError: Error | null = null;
+
+  for (let i = 0; i < Math.min(attempts.length, MAX_RETRIES); i++) {
+    const attempt = attempts[i]!;
+    const attemptRequestBody = { ...requestBody, model: attempt.model };
+
+    // 获取 API Key
+    const apiKey = keyManager.getNextKey(attempt.provider);
+    if (!apiKey) {
+      lastError = new Error(`No API key for ${attempt.provider}`);
+      continue;
+    }
+
+    // Exponential backoff
+    if (i > 0) {
+      const delay = Math.min(500 * Math.pow(2, i - 1), 10000);
+      await new Promise(r => setTimeout(r, delay));
+    }
+
+    try {
+      const response = await proxyRequest(
+        attempt.url,
+        attemptRequestBody,
+        apiKey,
+        requestId,
+        attempt.timeout,
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        // Auth errors: 标记 key 失效
+        if (response.status === 401 || response.status === 403) {
+          keyManager.markKeyInvalid(attempt.provider, apiKey, `Auth error: ${response.status}`);
+        }
+
+        // Retryable status
+        if (RETRYABLE_STATUS.has(response.status)) {
+          const retryAfter = response.headers.get('Retry-After');
+          if (retryAfter) {
+            const waitMs = parseInt(retryAfter, 10) * 1000;
+            if (waitMs > 0 && waitMs < 60000) {
+              await new Promise(r => setTimeout(r, waitMs));
+            }
+          }
+          lastError = new Error(`Provider error (retryable): ${response.status}`);
+          continue;
+        }
+
+        // Non-retryable
+        throw new Error(`Provider error: ${response.status} - ${errorText.slice(0, 200)}`);
+      }
+
+      return { response, usedModel: attempt.model, usedProvider: attempt.provider };
+    } catch (error) {
+      if (error instanceof Error) {
+        lastError = error;
+        if (error.name === 'TimeoutError' || error.message.includes('timeout')) {
+          continue;
+        }
+        if (error.message.startsWith('Provider error (retryable)')) {
+          continue;
+        }
+        throw error;
+      }
+      throw error;
+    }
+  }
+
+  throw lastError || new Error('All retry attempts failed');
+}
+
+// ==================== SSE 流处理 ====================
+
+function createSSEStream(
+  url: string,
+  requestBody: Record<string, unknown>,
+  apiKey: string,
+  requestId: string,
+  timeout: number,
+): ReadableStream<Uint8Array> {
+  return new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+            'X-Request-ID': requestId,
+          },
+          body: JSON.stringify(requestBody),
+          signal: AbortSignal.timeout(timeout),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          const errorChunk = `data: ${JSON.stringify({ error: { message: `Provider error: ${response.status} - ${errorText.slice(0, 200)}` } })}\n\n`;
+          controller.enqueue(encoder.encode(errorChunk));
+          controller.close();
+          return;
+        }
+
+        if (!response.body) {
+          controller.close();
+          return;
+        }
+
+        // 直接转发流
+        const reader = response.body.getReader();
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+        } finally {
+          reader.releaseLock();
+        }
+
+        controller.close();
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg } })}\n\n`;
+        controller.enqueue(encoder.encode(errorChunk));
+        controller.close();
+      }
+    },
+  });
+}
+
+// ==================== API Key 验证 ====================
+
+interface UserValidation {
+  userId: string;
+  tier: string;
+  credits: number;
+}
+
+async function validateApiKey(apiKey: string | null): Promise<UserValidation | null> {
+  if (!apiKey) {
+    return null;
+  }
+
+  // 开发模式：允许任何以 'sk-' 或 'cr-' 开头的 key
+  if (process.env.NODE_ENV === 'development') {
+    if (apiKey.startsWith('sk-') || apiKey.startsWith('cr-') || apiKey.startsWith('sk-or-')) {
+      return {
+        userId: 'dev-user',
+        tier: 'free',
+        credits: 1000,
+      };
+    }
+  }
+
+  // 尝试从数据库验证（如果有 Vercel Postgres）
+  try {
+    const { sql } = await import('@vercel/postgres');
+    const result = await sql`
+      SELECT id, tier, credits FROM users WHERE api_key = ${apiKey} AND status = 'active'
+    `;
+    if (result.rows.length > 0) {
+      const row = result.rows[0]!;
+      return {
+        userId: row.id as string,
+        tier: row.tier as string,
+        credits: row.credits as number,
+      };
+    }
+  } catch {
+    // Postgres 不可用，使用开发模式验证
+    if (apiKey.startsWith('sk-') || apiKey.startsWith('cr-') || apiKey.startsWith('sk-or-')) {
+      return {
+        userId: 'fallback-user',
+        tier: 'free',
+        credits: 100,
+      };
+    }
+  }
+
+  return null;
+}
+
+// ==================== Rate Limiting ====================
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(clientId: string): { allowed: boolean; retryAfter?: number } {
+  const now = Date.now();
+  const windowMs = 60000; // 1 minute
+  const maxRequests = 100;
+
+  let entry = rateLimitMap.get(clientId);
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + windowMs };
+    rateLimitMap.set(clientId, entry);
+  }
+
+  entry.count++;
+
+  if (entry.count > maxRequests) {
+    return {
+      allowed: false,
+      retryAfter: Math.ceil((entry.resetAt - now) / 1000),
+    };
+  }
+
+  return { allowed: true };
+}
+
+// ==================== 主 Handler ====================
+
+export async function POST(request: NextRequest) {
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+
+  try {
+    // 1. Rate Limiting
+    const clientId = request.headers.get('X-User-Id') || request.headers.get('X-Forwarded-For') || 'anonymous';
+    const rateCheck = checkRateLimit(clientId);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'RATE_LIMITED',
+            message: 'Too many requests. Please try again later.',
+            retry_after: rateCheck.retryAfter,
+          },
+        },
+        { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfter) } }
+      );
+    }
+
+    // 2. 验证 API Key
+    const authHeader = request.headers.get('authorization');
+    const apiKey = authHeader?.replace('Bearer ', '') || authHeader;
+
+    const user = await validateApiKey(apiKey);
+    if (!user) {
+      // 开发模式：允许无 API Key 访问（使用环境变量中的 key）
+      if (process.env.NODE_ENV === 'development' || process.env.ALLOW_NO_AUTH === 'true') {
+        // 继续处理，使用系统配置的 API Keys
+      } else {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'UNAUTHORIZED',
+              message: 'Invalid or missing API key',
+            },
+          },
+          { status: 401 }
+        );
+      }
+    }
+
+    // 3. 解析请求
+    const body: ChatCompletionRequest = await request.json();
+
+    if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INVALID_REQUEST',
+            message: 'messages field is required and must be a non-empty array',
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    // 4. 分类意图
+    const lastMessage = body.messages[body.messages.length - 1];
+    const userMessage = lastMessage?.content || '';
+    const classification = classifyIntent(userMessage);
+
+    // 5. 选择模型
+    const route = routeModel(classification.intent, body.model);
+
+    // 6. 执行请求
+    const provider = getProvider(route.provider);
+    if (!provider) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'PROVIDER_UNAVAILABLE',
+            message: `Provider ${route.provider} is not available`,
+          },
+        },
+        { status: 503 }
+      );
+    }
+
+    // 流式响应处理
+    if (body.stream) {
+      const apiKeyForStream = keyManager.getNextKey(route.provider);
+      if (!apiKeyForStream) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'NO_API_KEY',
+              message: `No API key available for provider: ${route.provider}`,
+            },
+          },
+          { status: 503 }
+        );
+      }
+
+      const requestBody = {
+        model: route.selectedModel,
+        messages: body.messages,
+        temperature: body.temperature,
+        max_tokens: body.max_tokens,
+        top_p: body.top_p,
+        stream: true,
+        stop: body.stop,
+        presence_penalty: body.presence_penalty,
+        frequency_penalty: body.frequency_penalty,
+      };
+
+      const url = `${provider.baseUrl}/chat/completions`;
+      const sseStream = createSSEStream(url, requestBody, apiKeyForStream, requestId, provider.timeout);
+
+      return new Response(sseStream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'X-Accel-Buffering': 'no',
+        },
+      });
+    }
+
+    // 非流式响应处理
+    const { response, usedModel, usedProvider } = await executeWithRetry(route, body, requestId);
+    const data = await response.json();
+
+    const latencyMs = Date.now() - startTime;
+
+    // 添加路由信息
+    const result = {
+      ...data,
+      _routing: {
+        intent: classification.intent,
+        confidence: classification.confidence,
+        model: usedModel,
+        provider: usedProvider,
+        reason: route.reason,
+        alternatives: route.alternatives,
+        latency_ms: latencyMs,
+      },
+    };
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('[ChatCompletions] Error:', error);
+    const latencyMs = Date.now() - startTime;
+
+    return NextResponse.json(
+      {
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error instanceof Error ? error.message : 'Chat completion failed',
+          latency_ms: latencyMs,
+        },
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// ==================== OPTIONS Handler (CORS) ====================
+
+export async function OPTIONS() {
+  return NextResponse.json(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Authorization, Content-Type, X-Request-ID',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
