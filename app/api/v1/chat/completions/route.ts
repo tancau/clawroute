@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities } from '@/lib/routing/providers';
 import { keyManager } from '@/lib/routing/key-manager';
 import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth';
+import { logRequest } from '@/lib/db';
 
 // ==================== 类型定义 ====================
 
@@ -469,13 +470,18 @@ function checkRateLimit(clientId: string, tier: string = 'free'): { allowed: boo
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
+  
+  // 声明变量以便在 catch 块中访问
+  let route: RouteResult | undefined;
+  let classification: IntentClassification | undefined;
+  let user: UserValidation | null | undefined;
 
   try {
     // 1. 验证 API Key（先验证用户）
     const authHeader = request.headers.get('authorization');
     const apiKey = authHeader?.replace('Bearer ', '') || authHeader;
 
-    const user = await validateApiKey(apiKey);
+    user = await validateApiKey(apiKey);
     if (!user) {
       // 开发模式：允许无 API Key 访问（使用环境变量中的 key）
       if (process.env.NODE_ENV === 'development' || process.env.ALLOW_NO_AUTH === 'true') {
@@ -542,10 +548,10 @@ export async function POST(request: NextRequest) {
     // 5. 分类意图
     const lastMessage = body.messages[body.messages.length - 1];
     const userMessage = lastMessage?.content || '';
-    const classification = classifyIntent(userMessage);
+    classification = classifyIntent(userMessage);
 
     // 6. 选择模型
-    const route = routeModel(classification.intent, body.model);
+    route = routeModel(classification.intent, body.model);
 
     // 7. 执行请求
     const provider = getProvider(route.provider);
@@ -626,6 +632,33 @@ export async function POST(request: NextRequest) {
 
     const latencyMs = Date.now() - startTime;
 
+    // 记录请求日志
+    if (user) {
+      try {
+        // 从响应中提取 token 使用量
+        const usage = data.usage || {};
+        const inputTokens = usage.prompt_tokens || 0;
+        const outputTokens = usage.completion_tokens || 0;
+        // 简单的成本计算（实际应该根据模型定价）
+        const costUsd = (inputTokens + outputTokens) * 0.00001;
+
+        await logRequest({
+          id: requestId,
+          userId: user.userId,
+          model: usedModel,
+          provider: usedProvider,
+          inputTokens,
+          outputTokens,
+          costUsd,
+          intent: classification.intent,
+          latencyMs,
+          success: true,
+        });
+      } catch (logError) {
+        console.error('[ChatCompletions] Failed to log request:', logError);
+      }
+    }
+
     // 添加路由信息
     const result = {
       ...data,
@@ -644,6 +677,27 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[ChatCompletions] Error:', error);
     const latencyMs = Date.now() - startTime;
+
+    // 记录失败的请求日志
+    if (user) {
+      try {
+        await logRequest({
+          id: requestId,
+          userId: user?.userId || 'unknown',
+          model: route?.selectedModel || 'unknown',
+          provider: route?.provider || 'unknown',
+          inputTokens: 0,
+          outputTokens: 0,
+          costUsd: 0,
+          intent: classification?.intent || 'unknown',
+          latencyMs,
+          success: false,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        });
+      } catch (logError) {
+        console.error('[ChatCompletions] Failed to log error:', logError);
+      }
+    }
 
     return NextResponse.json(
       {
