@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/use-user-store';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { StatCard } from '@/components/dashboard/StatCard';
+import { ProxyStatusIndicator } from '@/components/dashboard/ProxyStatusIndicator';
+import { UsageOverview } from '@/components/dashboard/UsageOverview';
+import { CreditsTrend } from '@/components/dashboard/CreditsTrend';
 import { UsageChart } from '@/components/Dashboard/UsageChart';
 import { CostTracker } from '@/components/Dashboard/CostTracker';
 import { RecentRequests } from '@/components/Dashboard/RecentRequests';
@@ -14,6 +17,7 @@ import { Activity, DollarSign, Zap, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 import { ErrorBoundary } from '@/components/error-boundary';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -51,6 +55,22 @@ export default function DashboardPage() {
           <p className="text-neutral-7 mt-1">{t('welcome')}, {user.name || user.email}</p>
         </div>
 
+        {/* Proxy Status */}
+        <ProxyStatusIndicator className="inline-flex" />
+
+        {/* Quick Links */}
+        <div className="flex gap-4 text-sm">
+          <Link href="/docs" className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg hover:bg-brand-primary/20 transition-colors">
+            📖 Docs
+          </Link>
+          <Link href="/dashboard/stats" className="px-4 py-2 bg-brand-accent/10 text-brand-accent rounded-lg hover:bg-brand-accent/20 transition-colors">
+            📊 Statistics
+          </Link>
+          <Link href="/configure" className="px-4 py-2 bg-surface-overlay text-neutral-10 rounded-lg hover:bg-surface-raised transition-colors">
+            ⚙️ Configure
+          </Link>
+        </div>
+
         {/* Layer 1: Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
@@ -80,19 +100,25 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Layer 1: Charts */}
+        {/* Layer 2: Usage Overview & Credits Trend */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <UsageOverview userId={user.id} />
+          <CreditsTrend userId={user.id} />
+        </div>
+
+        {/* Layer 3: Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <UsageChart userId={user.id} days={7} />
           <CostTracker userId={user.id} />
         </div>
 
-        {/* Layer 2: Recent Requests & Top Models */}
+        {/* Layer 4: Recent Requests & Top Models */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <RecentRequests userId={user.id} />
           <TopModels userId={user.id} />
         </div>
 
-        {/* Layer 3: Advanced (collapsible) */}
+        {/* Layer 5: Advanced (collapsible) */}
         <div className="space-y-4">
           <AdvancedPanel
             label={t('keyManagement')}

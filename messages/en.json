@@ -416,5 +416,26 @@
     "title": "Something went wrong",
     "description": "An error occurred while loading the page",
     "reload": "Reload"
+  },
+  "docs": {
+    "title": "Documentation",
+    "quickStart": "Quick Start",
+    "apiTutorial": "API Tutorial",
+    "faq": "FAQ",
+    "videoDemo": "Video Demo",
+    "threeSteps": "Three Steps to Start",
+    "getApiKey": "Get Your API Key",
+    "changeBaseUrl": "Change base_url",
+    "useAutoModel": "Use model=\"auto\"",
+    "codeExamples": "Code Examples",
+    "readyToStart": "Ready to get started?",
+    "signUpNow": "Sign up now to get your API key and start using smart routing"
+  },
+  "stats": {
+    "title": "Usage Statistics",
+    "requestTrend": "Request Trend",
+    "savingsChart": "Cost Savings",
+    "modelDistribution": "Model Distribution",
+    "intentClassification": "Intent Classification"
   }
 }

@@ -416,5 +416,26 @@
     "title": "出了点问题",
     "description": "页面加载遇到错误",
     "reload": "重新加载"
+  },
+  "docs": {
+    "title": "文档",
+    "quickStart": "快速开始",
+    "apiTutorial": "API 教程",
+    "faq": "常见问题",
+    "videoDemo": "视频演示",
+    "threeSteps": "三步开始",
+    "getApiKey": "获取 API Key",
+    "changeBaseUrl": "修改 base_url",
+    "useAutoModel": "使用 model=\"auto\"",
+    "codeExamples": "代码示例",
+    "readyToStart": "准备好开始了吗？",
+    "signUpNow": "立即注册，获取您的 API Key，开始使用智能路由"
+  },
+  "stats": {
+    "title": "使用统计",
+    "requestTrend": "请求趋势",
+    "savingsChart": "成本节省",
+    "modelDistribution": "模型分布",
+    "intentClassification": "意图分类"
   }
 }
