@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/use-user-store';
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { ProxyStatusIndicator } from '@/components/dashboard/ProxyStatusIndicator';
@@ -23,10 +24,18 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useUserStore();
   const t = useTranslations('dashboard');
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/auth/login');
+    }
+    // Check if user needs onboarding
+    if (isAuthenticated && typeof window !== 'undefined') {
+      const onboardingDone = localStorage.getItem('hopllm-onboarding-done');
+      if (!onboardingDone) {
+        setShowOnboarding(true);
+      }
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -42,7 +51,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <DashboardShell>
+    <>
+      <OnboardingModal open={showOnboarding} onOpenChange={setShowOnboarding} />
+      <DashboardShell>
       <ErrorBoundary
         errorTitle={t('errorTitle')}
         errorDescription={t('errorDescription')}
@@ -129,5 +140,6 @@ export default function DashboardPage() {
         </div>
       </ErrorBoundary>
     </DashboardShell>
+    </>
   );
 }
