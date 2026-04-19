@@ -509,8 +509,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Credits 检查（仅对已认证用户）
-    if (user && user.credits <= 0) {
+    // 3. Credits 检查（仅对 free tier 用户）
+    // Pro/Team 用户享受无限 credits
+    if (user && user.tier === 'free' && user.credits <= 0) {
       return NextResponse.json(
         {
           error: {
@@ -562,8 +563,9 @@ export async function POST(request: NextRequest) {
 
     // 流式响应处理
     if (body.stream) {
-      // 扣减 Credits（流式请求开始时扣减）
-      if (user) {
+      // 扣减 Credits（仅对 free tier 用户）
+      // Pro/Team 用户享受无限 credits
+      if (user && user.tier === 'free') {
         await deductCredits(user.userId, 1);
       }
       
@@ -616,8 +618,9 @@ export async function POST(request: NextRequest) {
     const { response, usedModel, usedProvider } = await executeWithRetry(route, body, requestId, user?.providerKeys);
     const data = await response.json();
 
-    // 扣减 Credits（请求成功后扣减）
-    if (user) {
+    // 扣减 Credits（仅对 free tier 用户）
+    // Pro/Team 用户享受无限 credits
+    if (user && user.tier === 'free') {
       await deductCredits(user.userId, 1);
     }
 
