@@ -52,10 +52,12 @@ export interface SafeUser {
   credits: number;
   apiKey?: string;
   createdAt: number;
+  providerKeys?: Record<string, string>; // 用户配置的 Provider API Keys
 }
 
 interface InternalUser extends SafeUser {
   passwordHash: string;
+  providerKeysEncrypted?: string; // 加密存储的 Provider Keys
 }
 
 // ===== Token Generation =====
@@ -113,7 +115,8 @@ async function ensureTable() {
       api_key TEXT UNIQUE,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL,
-      metadata TEXT
+      metadata TEXT,
+      provider_keys TEXT
     )
   `;
   try {
@@ -131,7 +134,7 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
   if (sql) {
     await ensureTable();
     const result = await sql`
-      SELECT id, email, password_hash, name, tier, credits, api_key, created_at
+      SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
       FROM users WHERE email = ${email}
     `;
     if (result.rows.length === 0) return null;
@@ -145,6 +148,7 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
       credits: row.credits as number,
       apiKey: (row.api_key as string) || undefined,
       createdAt: row.created_at as number,
+      providerKeysEncrypted: (row.provider_keys as string) || undefined,
     };
   }
 
@@ -179,4 +183,115 @@ export async function createUser(email: string, password: string, name?: string)
 
 export function isUsingPostgres(): boolean {
   return postgresAvailable === true;
+}
+
+// ===== Provider Keys Operations =====
+
+/**
+ * 通过 API Key 查找用户
+ */
+export async function findUserByApiKey(apiKey: string): Promise<InternalUser | null> {
+  const sql = await getPostgres();
+
+  if (sql) {
+    await ensureTable();
+    const result = await sql`
+      SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
+      FROM users WHERE api_key = ${apiKey} AND status = 'active'
+    `;
+    if (result.rows.length === 0) return null;
+    const row = result.rows[0]!;
+    return {
+      id: row.id as string,
+      email: row.email as string,
+      passwordHash: row.password_hash as string,
+      name: (row.name as string) || undefined,
+      tier: row.tier as string,
+      credits: row.credits as number,
+      apiKey: (row.api_key as string) || undefined,
+      createdAt: row.created_at as number,
+      providerKeysEncrypted: (row.provider_keys as string) || undefined,
+    };
+  }
+
+  // Fallback: memory store
+  for (const user of Array.from(memoryUsers.values())) {
+    if (user.apiKey === apiKey) {
+      return user;
+    }
+  }
+  return null;
+}
+
+/**
+ * 更新用户的 Provider Keys
+ */
+export async function updateUserProviderKeys(
+  userId: string,
+  providerKeys: Record<string, string>
+): Promise<boolean> {
+  const { encryptProviderKeys } = await import('../encryption');
+  const encrypted = Object.keys(providerKeys).length > 0
+    ? encryptProviderKeys(providerKeys)
+    : null;
+
+  const sql = await getPostgres();
+
+  if (sql) {
+    await ensureTable();
+    await sql`
+      UPDATE users 
+      SET provider_keys = ${encrypted}, updated_at = ${Date.now()}
+      WHERE id = ${userId}
+    `;
+    return true;
+  }
+
+  // Fallback: memory store
+  for (const user of Array.from(memoryUsers.values())) {
+    if (user.id === userId) {
+      user.providerKeysEncrypted = encrypted || undefined;
+      user.providerKeys = providerKeys;
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * 获取用户的 Provider Keys（解密后）
+ */
+export async function getUserProviderKeys(userId: string): Promise<Record<string, string>> {
+  const sql = await getPostgres();
+
+  if (sql) {
+    await ensureTable();
+    const result = await sql`
+      SELECT provider_keys FROM users WHERE id = ${userId}
+    `;
+    if (result.rows.length === 0) return {};
+    
+    const encrypted = result.rows[0]?.provider_keys as string | null;
+    if (!encrypted) return {};
+    
+    try {
+      const { decryptProviderKeys } = await import('../encryption');
+      return decryptProviderKeys(encrypted);
+    } catch {
+      return {};
+    }
+  }
+
+  // Fallback: memory store
+  for (const user of Array.from(memoryUsers.values())) {
+    if (user.id === userId && user.providerKeysEncrypted) {
+      try {
+        const { decryptProviderKeys } = await import('../encryption');
+        return decryptProviderKeys(user.providerKeysEncrypted);
+      } catch {
+        return {};
+      }
+    }
+  }
+  return {};
 }

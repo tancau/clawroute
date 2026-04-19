@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities } from '@/lib/routing/providers';
 import { keyManager } from '@/lib/routing/key-manager';
+import { findUserByApiKey, getUserProviderKeys } from '@/lib/auth';
 
 // ==================== 类型定义 ====================
 
@@ -193,6 +194,7 @@ async function executeWithRetry(
   route: RouteResult,
   request: ChatCompletionRequest,
   requestId: string,
+  userProviderKeys?: Record<string, string>,
 ): Promise<{ response: Response; usedModel: string; usedProvider: string }> {
   const provider = getProvider(route.provider);
   if (!provider) {
@@ -236,8 +238,17 @@ async function executeWithRetry(
     const attempt = attempts[i]!;
     const attemptRequestBody = { ...requestBody, model: attempt.model };
 
-    // 获取 API Key
-    const apiKey = keyManager.getNextKey(attempt.provider);
+    // 获取 API Key：优先使用用户配置的 Key
+    let apiKey: string | null = null;
+    
+    if (userProviderKeys && userProviderKeys[attempt.provider]) {
+      // 使用用户配置的 API Key
+      apiKey = userProviderKeys[attempt.provider] || null;
+    } else {
+      // 使用系统配置的 API Key
+      apiKey = keyManager.getNextKey(attempt.provider);
+    }
+    
     if (!apiKey) {
       lastError = new Error(`No API key for ${attempt.provider}`);
       continue;
@@ -369,6 +380,7 @@ interface UserValidation {
   userId: string;
   tier: string;
   credits: number;
+  providerKeys?: Record<string, string>; // 用户配置的 Provider API Keys
 }
 
 async function validateApiKey(apiKey: string | null): Promise<UserValidation | null> {
@@ -387,22 +399,21 @@ async function validateApiKey(apiKey: string | null): Promise<UserValidation | n
     }
   }
 
-  // 尝试从数据库验证（如果有 Vercel Postgres）
+  // 使用 auth 模块的 findUserByApiKey
   try {
-    const { sql } = await import('@vercel/postgres');
-    const result = await sql`
-      SELECT id, tier, credits FROM users WHERE api_key = ${apiKey} AND status = 'active'
-    `;
-    if (result.rows.length > 0) {
-      const row = result.rows[0]!;
+    const user = await findUserByApiKey(apiKey);
+    if (user) {
+      // 获取用户的 Provider Keys
+      const providerKeys = await getUserProviderKeys(user.id);
       return {
-        userId: row.id as string,
-        tier: row.tier as string,
-        credits: row.credits as number,
+        userId: user.id,
+        tier: user.tier,
+        credits: user.credits,
+        providerKeys: Object.keys(providerKeys).length > 0 ? providerKeys : undefined,
       };
     }
   } catch {
-    // Postgres 不可用，使用开发模式验证
+    // 数据库不可用，使用开发模式验证
     if (apiKey.startsWith('sk-') || apiKey.startsWith('cr-') || apiKey.startsWith('sk-or-')) {
       return {
         userId: 'fallback-user',
@@ -526,7 +537,14 @@ export async function POST(request: NextRequest) {
 
     // 流式响应处理
     if (body.stream) {
-      const apiKeyForStream = keyManager.getNextKey(route.provider);
+      // 优先使用用户的 API Key
+      let apiKeyForStream: string | null = null;
+      if (user?.providerKeys && user.providerKeys[route.provider]) {
+        apiKeyForStream = user.providerKeys[route.provider] || null;
+      } else {
+        apiKeyForStream = keyManager.getNextKey(route.provider);
+      }
+      
       if (!apiKeyForStream) {
         return NextResponse.json(
           {
@@ -565,7 +583,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 非流式响应处理
-    const { response, usedModel, usedProvider } = await executeWithRetry(route, body, requestId);
+    const { response, usedModel, usedProvider } = await executeWithRetry(route, body, requestId, user?.providerKeys);
     const data = await response.json();
 
     const latencyMs = Date.now() - startTime;
