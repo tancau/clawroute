@@ -50,6 +50,7 @@ export interface SafeUser {
   name?: string;
   tier: string;
   credits: number;
+  apiKey?: string;
   createdAt: number;
 }
 
@@ -109,6 +110,7 @@ async function ensureTable() {
       tier TEXT NOT NULL DEFAULT 'free',
       credits INTEGER NOT NULL DEFAULT 100,
       status TEXT NOT NULL DEFAULT 'active',
+      api_key TEXT UNIQUE,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL,
       metadata TEXT
@@ -129,7 +131,7 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
   if (sql) {
     await ensureTable();
     const result = await sql`
-      SELECT id, email, password_hash, name, tier, credits, created_at
+      SELECT id, email, password_hash, name, tier, credits, api_key, created_at
       FROM users WHERE email = ${email}
     `;
     if (result.rows.length === 0) return null;
@@ -141,6 +143,7 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
       name: (row.name as string) || undefined,
       tier: row.tier as string,
       credits: row.credits as number,
+      apiKey: (row.api_key as string) || undefined,
       createdAt: row.created_at as number,
     };
   }
@@ -152,6 +155,7 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
 export async function createUser(email: string, password: string, name?: string): Promise<SafeUser> {
   const id = crypto.randomUUID();
   const passwordHash = hashPassword(password);
+  const apiKey = `cr-${crypto.randomBytes(24).toString('hex')}`;
   const now = Date.now();
 
   const sql = await getPostgres();
@@ -159,18 +163,18 @@ export async function createUser(email: string, password: string, name?: string)
   if (sql) {
     await ensureTable();
     await sql`
-      INSERT INTO users (id, email, password_hash, name, tier, credits, created_at, updated_at)
-      VALUES (${id}, ${email}, ${passwordHash}, ${name || null}, 'free', 100, ${now}, ${now})
+      INSERT INTO users (id, email, password_hash, name, tier, credits, api_key, created_at, updated_at)
+      VALUES (${id}, ${email}, ${passwordHash}, ${name || null}, 'free', 100, ${apiKey}, ${now}, ${now})
     `;
   } else {
     // Fallback: memory store
     const user: InternalUser = {
-      id, email, passwordHash, name, tier: 'free', credits: 100, createdAt: now,
+      id, email, passwordHash, name, tier: 'free', credits: 100, apiKey, createdAt: now,
     };
     memoryUsers.set(email, user);
   }
 
-  return { id, email, name, tier: 'free', credits: 100, createdAt: now };
+  return { id, email, name, tier: 'free', credits: 100, apiKey, createdAt: now };
 }
 
 export function isUsingPostgres(): boolean {

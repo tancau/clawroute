@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
       name: user.name,
       tier: user.tier,
       credits: user.credits,
+      apiKey: user.apiKey,
       createdAt: user.createdAt,
     };
     const tokens = generateTokens(safeUser.id, safeUser.tier);
