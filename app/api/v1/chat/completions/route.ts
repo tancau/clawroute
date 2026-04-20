@@ -136,10 +136,53 @@ function routeModel(intent: string, requestedModel?: string, userProviderKeys?: 
     }
   }
   
+  // === 优先检查用户自定义 Provider ===
+  if (userProviderKeys) {
+    for (const [providerId, value] of Object.entries(userProviderKeys)) {
+      if (typeof value === 'object' && value !== null && 'custom' in value) {
+        const customConfig = value as { name: string; baseUrl: string; apiKey: string; models?: string[]; custom: boolean };
+        // 检查自定义 Provider 的模型是否匹配意图
+        if (customConfig.models && customConfig.models.length > 0) {
+          // 选择第一个可用的模型
+          const selectedModel = customConfig.models[0]!;
+          return {
+            selectedModel,
+            provider: providerId,
+            baseUrl: customConfig.baseUrl,
+            reason: `Using user custom provider: ${customConfig.name}`,
+            alternatives: customConfig.models.slice(1, 3).map(m => ({ model: m, provider: providerId })),
+          };
+        }
+      }
+    }
+  }
+
   // 获取意图对应的候选模型
   const candidates = getModelsForIntent(intent);
   
   if (candidates.length === 0) {
+    // 检查是否有用户配置的预定义 Provider
+    if (userProviderKeys) {
+      for (const [providerId, value] of Object.entries(userProviderKeys)) {
+        // 跳过自定义 Provider（已处理）
+        if (typeof value === 'object' && value !== null && 'custom' in value) continue;
+        
+        const apiKey = typeof value === 'string' ? value : null;
+        if (apiKey) {
+          const provider = getProvider(providerId);
+          if (provider && provider.models.length > 0) {
+            return {
+              selectedModel: provider.models[0]!,
+              provider: providerId,
+              baseUrl: provider.baseUrl,
+              reason: `Using user configured provider: ${provider.name}`,
+              alternatives: provider.models.slice(1, 3).map(m => ({ model: m, provider: providerId })),
+            };
+          }
+        }
+      }
+    }
+    
     // 默认使用 DeepSeek（性价比高）
     return {
       selectedModel: 'deepseek-chat',
@@ -150,8 +193,15 @@ function routeModel(intent: string, requestedModel?: string, userProviderKeys?: 
     };
   }
   
-  // 过滤有可用 Key 的模型
+  // 过滤有可用 Key 的模型（优先检查用户配置）
   const availableCandidates = candidates.filter(m => {
+    // 先检查用户配置
+    if (userProviderKeys && userProviderKeys[m.provider]) {
+      const value = userProviderKeys[m.provider];
+      if (typeof value === 'string') return true; // 用户配置的预定义 Provider
+      if (typeof value === 'object' && value !== null && 'apiKey' in value) return true; // 自定义 Provider
+    }
+    // 再检查系统配置
     const key = keyManager.getNextKey(m.provider);
     return !!key;
   });
