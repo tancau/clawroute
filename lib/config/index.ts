@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * 系统配置 API
  * 提供类型安全的配置读取接口
