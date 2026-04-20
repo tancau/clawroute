@@ -4,6 +4,8 @@
  */
 
 import { sql } from '@vercel/postgres';
+import { ensureAllFeedbackTables } from './db/feedback-tables';
+import { ensureSystemConfigTable, initializeDefaultConfigs } from './db/system-config';
 
 // 确保所有必要的表存在
 export async function ensureAllTables() {
@@ -12,7 +14,12 @@ export async function ensureAllTables() {
     ensureAlertsTable(),
     ensureWebhooksTable(),
     ensureRequestLogsTable(),
+    ensureAllFeedbackTables(),
   ]);
+  
+  // 初始化系统配置表和默认值
+  await ensureSystemConfigTable();
+  await initializeDefaultConfigs();
 }
 
 // 通知记录表

@@ -4,6 +4,7 @@ import { getAllModels, getModelsByScene, sortModels } from '@/lib/models-db';
 import scenesDataRaw from '@/data/scenes.json';
 import templatesDataRaw from '@/data/templates.json';
 import sceneModelMappingRaw from '@/data/scene-model-mapping.json';
+import { defaultLanguage } from '@/lib/i18n/config';
 
 const scenesData = scenesDataRaw as { scenes: Scene[]; lastUpdated: string };
 const templatesData = templatesDataRaw as { templates: Template[] };
@@ -139,7 +140,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   // UI slice
-  locale: 'zh' as Locale,
+  locale: defaultLanguage as Locale,
   setLocale: (locale) => set({ locale }),
   copySuccess: false,
   setCopySuccess: (success) => set({ copySuccess: success }),

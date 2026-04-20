@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "HopLLM",
+    "subtitle": "Routage Intelligent, Économies"
+  },
+  "nav": {
+    "home": "Accueil",
+    "configure": "Config Proxy",
+    "templates": "Marché",
+    "dashboard": "Tableau de bord",
+    "docs": "Docs"
+  },
+  "home": {
+    "heading": "Choisissez votre Plan Proxy",
+    "subheading": "Routage intelligent, économies automatiques",
+    "savingLabel": "Économie typique",
+    "heroHighlight": "Routage Intelligent",
+    "heroTitle": "Rendez l'Inférence IA plus Intelligente",
+    "heroSubtitle": "Une requête, routée automatiquement vers le modèle optimal. Économisez 80%, latence réduite, même qualité.",
+    "heroDescription": "HopLLM est un proxy API de routage intelligent: remplacez votre base_url OpenAI, envoyez des requêtes avec model: \"auto\", et nous classons l'intention automatiquement, sélectionnons le meilleur modèle et transférons la requête.",
+    "startProxy": "Démarrer Proxy",
+    "getApiKey": "Obtenir Clé API",
+    "browseTemplates": "Voir les Plans",
+    "featuresTitle": "Capacités Principales",
+    "featureRoutingTitle": "Proxy de Routage Intelligent",
+    "featureRoutingDesc": "Classification d'intention à 3 couches + notation multidimensionnelle des modèles, sélectionne automatiquement le modèle optimal. API compatible OpenAI, coût de migration zéro.",
+    "featureStreamingTitle": "Streaming et Auto-Réessai",
+    "featureStreamingDesc": "Passthrough streaming SSE pour résultats en temps réel. Auto-réessai sur 429/5xx + failover vers modèles de secours.",
+    "featureBillingTitle": "Facturation Précise et Pool de Clés",
+    "featureBillingDesc": "Facturation par token × prix du modèle, adieu les forfaits fixes. Pool de clés partagé avec équilibrage de charge.",
+    "quickStartTitle": "Démarrage Rapide",
+    "savingLabelShort": "Économise"
+  },
+  "scenes": {
+    "trading-bot": "Bot de Trading",
+    "customer-service": "Service Client",
+    "content-creation": "Création de Contenu",
+    "data-analysis": "Analyse de Données",
+    "research-assistant": "Assistant de Recherche",
+    "dev-tools": "Outils Dev"
+  },
+  "footer": {
+    "dataUpdated": "Données mises à jour",
+    "openSource": "Open Source",
+    "apiStatus": "État API",
+    "docs": "Docs",
+    "about": "À propos",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "contact": "Contact"
+  },
+  "about": {
+    "heroTitle": "À propos",
+    "heroSubtitle": "Rendre l'inférence IA plus intelligente et abordable",
+    "featuresTitle": "Ce qui nous différencie",
+    "feature1Title": "Routage Intelligent",
+    "feature1Desc": "Classification d'intention basée sur l'IA pour sélectionner automatiquement le modèle optimal",
+    "feature2Title": "Économies",
+    "feature2Desc": "Économisez jusqu'à 80% par rapport à l'utilisation de modèles premium pour toutes les requêtes",
+    "feature3Title": "Migration Zéro",
+    "feature3Desc": "API entièrement compatible OpenAI, changez simplement votre base_url",
+    "feature4Title": "Haute Disponibilité",
+    "feature4Desc": "Auto-réessai et failover vers les modèles de secours pour la fiabilité"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bon retour",
+    "logout": "Déconnexion",
+    "loading": "Chargement..."
+  },
+  "auth": {
+    "welcomeBack": "Bon retour",
+    "loginTo": "Connexion à HopLLM",
+    "email": "Email",
+    "password": "Mot de passe",
+    "login": "Connexion",
+    "noAccount": "Pas de compte?",
+    "registerNow": "S'inscrire maintenant"
+  },
+  "errorBoundary": {
+    "title": "Une erreur s'est produite",
+    "description": "Une erreur est survenue lors du chargement de la page",
+    "reload": "Recharger"
+  }
+}

@@ -1,14 +1,14 @@
 import { getRequestConfig } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { defaultLocale, locales } from '@/i18n';
+import { defaultLanguage, isValidLanguage, LanguageCode } from '@/lib/i18n/config';
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
-  const localeCookie = cookieStore.get('locale')?.value;
+  const localeCookie = cookieStore.get('preferred-language')?.value;
 
-  const locale = localeCookie && locales.includes(localeCookie as typeof locales[number])
+  const locale: LanguageCode = localeCookie && isValidLanguage(localeCookie)
     ? localeCookie
-    : defaultLocale;
+    : defaultLanguage;
 
   return {
     locale,

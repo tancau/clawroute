@@ -79,7 +79,7 @@ export const providers: ProviderConfig[] = [
     timeout: 45000,
     priority: 60,
     enabled: true,
-  }
+  },
   {
     name: 'infini-coding-plan',
     baseUrl: 'https://cloud.infini-ai.com/maas/coding/v1',
@@ -99,7 +99,7 @@ export const providers: ProviderConfig[] = [
     timeout: 45000,
     priority: 75,
     enabled: true,
-  },,
+  },
   {
     name: 'litellm',
     baseUrl: process.env.LITELLM_URL || 'http://23.94.236.146:3000/v1',

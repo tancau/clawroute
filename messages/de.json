@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "HopLLM",
+    "subtitle": "Intelligentes Routing, Kostenersparnis"
+  },
+  "nav": {
+    "home": "Startseite",
+    "configure": "Proxy-Konfig",
+    "templates": "Marktplatz",
+    "dashboard": "Dashboard",
+    "docs": "Docs"
+  },
+  "home": {
+    "heading": "Wählen Sie Ihren Proxy-Plan",
+    "subheading": "Intelligentes Routing, automatische Einsparungen",
+    "savingLabel": "Typische Ersparnis",
+    "heroHighlight": "Intelligentes Routing",
+    "heroTitle": "Machen Sie KI-Inferenz intelligenter",
+    "heroSubtitle": "Eine Anfrage, automatisch zum optimalen Modell geroutet. 80% Ersparnis, geringere Latenz, gleiche Qualität.",
+    "heroDescription": "HopLLM ist ein intelligenter Routing-API-Proxy: Ersetzen Sie Ihre OpenAI base_url, senden Sie Anfragen mit model: \"auto\", und wir klassifizieren die Absicht automatisch, wählen das beste Modell und leiten die Anfrage weiter.",
+    "startProxy": "Proxy starten",
+    "getApiKey": "API-Key erhalten",
+    "browseTemplates": "Pläne durchsuchen",
+    "featuresTitle": "Kernfähigkeiten",
+    "featureRoutingTitle": "Intelligenter Routing-Proxy",
+    "featureRoutingDesc": "3-Schichten-Absichtsklassifizierung + mehrdimensionale Modellbewertung, wählt automatisch das optimale Modell. OpenAI-kompatible API, Null Migrationskosten.",
+    "featureStreamingTitle": "Streaming & Auto-Wiederholung",
+    "featureStreamingDesc": "SSE-Streaming-Passthrough für Echtzeit-Ergebnisse. Auto-Wiederholung bei 429/5xx + Failover zu Backup-Modellen.",
+    "featureBillingTitle": "Präzise Abrechnung & Key-Pool",
+    "featureBillingDesc": "Token-basierte × Modellpreis-Abrechnung, Schluss mit Pauschalgebühren. Gemeinsamer Key-Pool mit Lastverteilung.",
+    "quickStartTitle": "Schnellstart",
+    "savingLabelShort": "Spart"
+  },
+  "scenes": {
+    "trading-bot": "Trading-Bot",
+    "customer-service": "Kundenservice",
+    "content-creation": "Content-Erstellung",
+    "data-analysis": "Datenanalyse",
+    "research-assistant": "Forschungsassistent",
+    "dev-tools": "Dev-Tools"
+  },
+  "footer": {
+    "dataUpdated": "Daten aktualisiert",
+    "openSource": "Open Source",
+    "apiStatus": "API-Status",
+    "docs": "Docs",
+    "about": "Über uns",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "contact": "Kontakt"
+  },
+  "about": {
+    "heroTitle": "Über uns",
+    "heroSubtitle": "KI-Inferenz intelligenter und erschwinglicher machen",
+    "featuresTitle": "Was uns anders macht",
+    "feature1Title": "Intelligentes Routing",
+    "feature1Desc": "KI-gestützte Absichtsklassifizierung zur automatischen Auswahl des optimalen Modells",
+    "feature2Title": "Kostenersparnis",
+    "feature2Desc": "Sparen Sie bis zu 80% im Vergleich zur Verwendung von Premium-Modellen für alle Anfragen",
+    "feature3Title": "Null Migration",
+    "feature3Desc": "Vollständig OpenAI-kompatible API, ändern Sie einfach Ihre base_url",
+    "feature4Title": "Hohe Verfügbarkeit",
+    "feature4Desc": "Auto-Wiederholung und Failover zu Backup-Modellen für Zuverlässigkeit"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen zurück",
+    "logout": "Abmelden",
+    "loading": "Laden..."
+  },
+  "auth": {
+    "welcomeBack": "Willkommen zurück",
+    "loginTo": "Bei HopLLM anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "login": "Anmelden",
+    "noAccount": "Kein Konto?",
+    "registerNow": "Jetzt registrieren"
+  },
+  "errorBoundary": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Beim Laden der Seite ist ein Fehler aufgetreten",
+    "reload": "Neu laden"
+  }
+}

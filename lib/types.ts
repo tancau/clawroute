@@ -1,7 +1,9 @@
 // ===== Enums =====
 export type SortMode = 'costFirst' | 'qualityFirst' | 'speedFirst';
 
-export type Locale = 'zh' | 'en';
+// ===== Language Types =====
+// Re-export from i18n config for consistency
+export type { LanguageCode as Locale } from '@/lib/i18n/config';
 
 // ===== Core Data Models =====
 export interface Scene {

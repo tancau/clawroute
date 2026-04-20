@@ -195,23 +195,32 @@ export async function createUser(email: string, password: string, name?: string)
   const apiKey = `cr-${crypto.randomBytes(24).toString('hex')}`;
   const now = Date.now();
 
+  // 获取动态配置的默认 credits
+  let defaultCredits = 100;
+  try {
+    const { getConfig } = await import('../config');
+    defaultCredits = await getConfig<number>('system.default_credits', 100);
+  } catch {
+    // 配置系统不可用时使用默认值
+  }
+
   const sql = await getPostgres();
 
   if (sql) {
     await ensureTable();
     await sql`
       INSERT INTO users (id, email, password_hash, name, tier, credits, api_key, created_at, updated_at)
-      VALUES (${id}, ${email}, ${passwordHash}, ${name || null}, 'free', 100, ${apiKey}, ${now}, ${now})
+      VALUES (${id}, ${email}, ${passwordHash}, ${name || null}, 'free', ${defaultCredits}, ${apiKey}, ${now}, ${now})
     `;
   } else {
     // Fallback: memory store
     const user: InternalUser = {
-      id, email, passwordHash, name, tier: 'free', credits: 100, apiKey, createdAt: now,
+      id, email, passwordHash, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now,
     };
     memoryUsers.set(email, user);
   }
 
-  return { id, email, name, tier: 'free', credits: 100, apiKey, createdAt: now };
+  return { id, email, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now };
 }
 
 export function isUsingPostgres(): boolean {

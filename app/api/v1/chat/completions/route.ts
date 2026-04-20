@@ -15,6 +15,7 @@ import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities,
 import { keyManager } from '@/lib/routing/key-manager';
 import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth';
 import { logRequest } from '@/lib/db';
+import { getConfig, getDailyLimitByTier } from '@/lib/config';
 
 // ==================== 类型定义 ====================
 
@@ -627,17 +628,13 @@ async function validateApiKey(apiKey: string | null): Promise<UserValidation | n
 
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
-// Tier-based rate limits (requests per minute)
-const TIER_LIMITS: Record<string, number> = {
-  free: 20,
-  pro: 100,
-  team: 1000,
-};
+// Rate limiting now uses dynamic config from lib/config
+// TIER_LIMITS removed - use getDailyLimitByTier() instead
 
-function checkRateLimit(clientId: string, tier: string = 'free'): { allowed: boolean; retryAfter?: number; remaining?: number } {
+async function checkRateLimit(clientId: string, tier: string = 'free'): Promise<{ allowed: boolean; retryAfter?: number; remaining?: number }> {
   const now = Date.now();
   const windowMs = 60000; // 1 minute
-  const maxRequests = TIER_LIMITS[tier] ?? TIER_LIMITS.free ?? 20;
+  const maxRequests = await getConfig<number>('api.rate_limit_per_minute', 10);
 
   let entry = rateLimitMap.get(clientId);
   if (!entry || now > entry.resetAt) {
@@ -695,9 +692,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 2. Rate Limiting (Tier-based)
+    // 2. Rate Limiting (Tier-based, dynamic config)
     const clientId = user?.userId || request.headers.get('X-Forwarded-For') || 'anonymous';
-    const rateCheck = checkRateLimit(clientId, user?.tier || 'free');
+    const rateCheck = await checkRateLimit(clientId, user?.tier || 'free');
     if (!rateCheck.allowed) {
       return NextResponse.json(
         {
@@ -713,7 +710,10 @@ export async function POST(request: NextRequest) {
 
     // 3. Credits 检查（仅对 free tier 用户）
     // Pro/Team 用户享受无限 credits
-    if (user && user.tier === 'free' && user.credits <= 0) {
+    const defaultCredits = await getConfig<number>('system.default_credits', 100);
+    const creditCostPerRequest = await getConfig<number>('system.credit_cost_per_request', 1);
+    
+    if (user && user.tier === 'free' && user.credits < creditCostPerRequest) {
       return NextResponse.json(
         {
           error: {

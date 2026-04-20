@@ -1,0 +1,156 @@
+{
+  "app": {
+    "title": "HopLLM",
+    "subtitle": "智慧路由，節省成本"
+  },
+  "nav": {
+    "home": "首頁",
+    "configure": "代理配置",
+    "templates": "方案市場",
+    "dashboard": "儀表盤",
+    "docs": "文檔"
+  },
+  "home": {
+    "heading": "選擇你的代理方案",
+    "subheading": "智慧路由，自動省錢",
+    "savingLabel": "通常節省",
+    "heroHighlight": "智慧路由",
+    "heroTitle": "讓 AI 推理更聰明",
+    "heroSubtitle": "一個請求，自動路由到最優模型。省錢 80%，延遲更低，質量不變。",
+    "heroDescription": "HopLLM（智跳）是智慧路由 API 代理：替換你的 OpenAI base_url，用 model: \"auto\" 發請求，自動分類意圖、選擇最優模型、轉發請求。",
+    "startProxy": "啟動代理",
+    "getApiKey": "獲取 API 密鑰",
+    "browseTemplates": "瀏覽方案",
+    "testimonialsTitle": "用戶評價",
+    "featuresTitle": "核心能力",
+    "featureRoutingTitle": "智慧路由代理",
+    "featureRoutingDesc": "三層意圖分類 + 多維模型評分，自動選擇最優模型。OpenAI 兼容 API，零遷移成本接入。",
+    "featureStreamingTitle": "流式代理 & 自動重試",
+    "featureStreamingDesc": "SSE 流式透傳，實時返回生成結果。429/5xx 自動重試 + Failover 備用模型切換，保障可用性。",
+    "featureBillingTitle": "精確計費 & Key 池",
+    "featureBillingDesc": "按 token × 模型單價精確計費，告別固定扣費。共享 Key 池負載均衡，最少調用優先。",
+    "quickStartTitle": "快速開始",
+    "savingLabelShort": "節省",
+    "codeComment": "# 替換 OpenAI SDK 的 base_url 即可接入",
+    "codeLine1": "from openai import OpenAI",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
+  },
+  "scenes": {
+    "trading-bot": "交易 Bot",
+    "customer-service": "客服助手",
+    "content-creation": "內容創作",
+    "data-analysis": "數據分析",
+    "research-assistant": "研究助手",
+    "dev-tools": "開發工具"
+  },
+  "sceneDescriptions": {
+    "trading-bot": "加密貨幣/股票交易自動化，需要快速響應和數據分析能力",
+    "customer-service": "智能客服對話，需要中文理解和快速響應",
+    "content-creation": "文章撰寫、文案生成，需要高質量輸出",
+    "data-analysis": "數據處理、可視化、統計分析，需要推理和編碼能力",
+    "research-assistant": "學術研究、文獻分析，需要深度推理和長上下文",
+    "dev-tools": "代碼生成、調試、重構，需要代碼理解和生成能力"
+  },
+  "calculator": {
+    "title": "成本計算器",
+    "monthlyCalls": "每月調用次數",
+    "avgTokens": "每次調用平均 Token 數",
+    "withoutClawroute": "不使用 HopLLM",
+    "withClawroute": "使用 HopLLM",
+    "savings": "節省",
+    "month": "月",
+    "annualSavings": "年節省",
+    "cta": "開始使用",
+    "presetPersonal": "個人",
+    "presetSmall": "小項目",
+    "presetMedium": "中型項目",
+    "presetLarge": "大型項目"
+  },
+  "configure": {
+    "title": "代理配置",
+    "switchScene": "切換場景",
+    "noScene": "請先選擇一個場景",
+    "goHome": "返回首頁",
+    "loading": "加載中...",
+    "next": "下一步",
+    "advancedTools": "高級工具",
+    "apiDiscovery": "API 發現",
+    "configImport": "配置導入",
+    "step1Title": "選擇你的場景",
+    "step1Desc": "場景決定哪些模型最適合你。不同場景對速度、質量和成本有不同的要求。",
+    "step2Title": "比較候選模型",
+    "step2Desc": "根據你的場景，這裡是推薦的模型。比較它們的速度、質量和成本，為下一步做準備。",
+    "step3Title": "配置路由策略",
+    "step3Desc": "選擇一個主模型（日常使用）和備用模型（當主模型不可用時）。你也可以先應用模板，然後微調。",
+    "step4Title": "導出配置文件",
+    "step4Desc": "這是你的 clawroute.json 配置文件。下載並將其放在你的 ClawRoute 項目根目錄即可生效。"
+  },
+  "modelCompare": {
+    "title": "模型比較",
+    "sortCost": "成本優先",
+    "sortQuality": "質量優先",
+    "sortSpeed": "速度優先",
+    "modelName": "模型",
+    "speed": "速度",
+    "quality": "質量",
+    "costPer1K": "成本/1K token",
+    "reason": "原因"
+  },
+  "footer": {
+    "dataUpdated": "數據更新",
+    "openSource": "開源",
+    "apiStatus": "API 狀態",
+    "network": "推理網絡",
+    "docs": "文檔",
+    "about": "關於",
+    "privacy": "隱私",
+    "terms": "條款",
+    "contact": "聯繫"
+  },
+  "about": {
+    "heroTitle": "關於",
+    "heroSubtitle": "讓 AI 推理更聰明、更經濟",
+    "brandZh": "(智跳)",
+    "missionTitle": "我們的使命",
+    "missionDesc": "HopLLM 致力於讓 AI 推理更聰明、更具成本效益。我們相信，強大的 AI 模型不應該需要高昂的價格。",
+    "featuresTitle": "我們的優勢",
+    "feature1Title": "智慧路由",
+    "feature1Desc": "AI 驅動的意圖分類，自動選擇最優模型",
+    "feature2Title": "成本節省",
+    "feature2Desc": "比所有請求使用高級模型節省高達 80%",
+    "feature3Title": "零遷移",
+    "feature3Desc": "完全兼容 OpenAI，只需更改 base_url",
+    "feature4Title": "高可用性",
+    "feature4Desc": "自動重試和故障轉移到備用模型",
+    "ctaTitle": "準備好節省 AI 成本了嗎？",
+    "ctaDesc": "加入數千名使用 HopLLM 優化 AI API 使用的開發者。",
+    "ctaButton": "免費開始"
+  },
+  "language": {
+    "zh": "中文",
+    "en": "English"
+  },
+  "dashboard": {
+    "title": "儀表盤",
+    "welcome": "歡迎回來",
+    "logout": "登出",
+    "loading": "加載中...",
+    "backToDashboard": "返回儀表盤"
+  },
+  "auth": {
+    "welcomeBack": "歡迎回來",
+    "loginTo": "登錄 HopLLM",
+    "email": "郵箱",
+    "password": "密碼",
+    "forgotPassword": "忘記密碼？",
+    "login": "登錄",
+    "noAccount": "還沒有賬號？",
+    "registerNow": "立即註冊"
+  },
+  "errorBoundary": {
+    "title": "出錯了",
+    "description": "加載頁面時發生錯誤",
+    "reload": "重新加載"
+  }
+}

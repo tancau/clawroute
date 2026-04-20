@@ -1,3 +1,1 @@
-export const locales = ['zh', 'en'] as const;
-export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'zh';
+export { locales, defaultLanguage as defaultLocale, type Locale } from './lib/i18n/config';

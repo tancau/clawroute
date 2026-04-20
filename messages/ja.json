@@ -1,0 +1,142 @@
+{
+  "app": {
+    "title": "HopLLM",
+    "subtitle": "スマートルーティング、コスト削減"
+  },
+  "nav": {
+    "home": "ホーム",
+    "configure": "プロキシ設定",
+    "templates": "プラン市場",
+    "dashboard": "ダッシュボード",
+    "docs": "ドキュメント"
+  },
+  "home": {
+    "heading": "プロキシプランを選択",
+    "subheading": "スマートルーティング、自動節約",
+    "savingLabel": "通常節約",
+    "heroHighlight": "スマートルーティング",
+    "heroTitle": "AI推論をより賢く",
+    "heroSubtitle": "1つのリクエストで、最適なモデルに自動ルーティング。80%節約、低遅延、品質はそのまま。",
+    "heroDescription": "HopLLMはスマートルーティングAPIプロキシです：OpenAIのbase_urlを置き換え、model: \"auto\"でリクエストを送信すると、意図を分類し、最適なモデルを選択してリクエストを転送します。",
+    "startProxy": "プロキシを開始",
+    "getApiKey": "APIキーを取得",
+    "browseTemplates": "プランを閲覧",
+    "testimonialsTitle": "ユーザーの声",
+    "featuresTitle": "主要機能",
+    "featureRoutingTitle": "スマートルーティングプロキシ",
+    "featureRoutingDesc": "3層の意図分類+多次元モデルスコアリングで、最適なモデルを自動選択。OpenAI互換API、移行コストゼロ。",
+    "featureStreamingTitle": "ストリーミング＆自動リトライ",
+    "featureStreamingDesc": "SSEストリーミング透過でリアルタイム結果を返信。429/5xxエラー時の自動リトライ+フェイルオーバーで高可用性を実現。",
+    "featureBillingTitle": "精密な課金＆キープール",
+    "featureBillingDesc": "トークン×モデル単価で精密な課金、定額課金に別れを。共有キープールで負荷分散、最少呼び出し優先。",
+    "quickStartTitle": "クイックスタート",
+    "savingLabelShort": "節約",
+    "codeComment": "# OpenAI SDKのbase_urlを置き換えるだけ",
+    "codeLine1": "from openai import OpenAI",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
+  },
+  "scenes": {
+    "trading-bot": "トレーディングボット",
+    "customer-service": "カスタマーサービス",
+    "content-creation": "コンテンツ作成",
+    "data-analysis": "データ分析",
+    "research-assistant": "研究アシスタント",
+    "dev-tools": "開発ツール"
+  },
+  "sceneDescriptions": {
+    "trading-bot": "暗号通貨/株式の自動取引、高速応答とデータ分析が必要",
+    "customer-service": "インテリジェントカスタマーサポート、言語理解と高速応答が必要",
+    "content-creation": "記事執筆、コピー作成、高品質な出力が必要",
+    "data-analysis": "データ処理、可視化、統計分析、推論とコーディングが必要",
+    "research-assistant": "学術研究、文献分析、深い推論と長いコンテキストが必要",
+    "dev-tools": "コード生成、デバッグ、リファクタリング、コード理解と生成が必要"
+  },
+  "calculator": {
+    "title": "コスト計算機",
+    "monthlyCalls": "月間呼び出し回数",
+    "avgTokens": "平均トークン数/呼び出し",
+    "withoutClawroute": "HopLLMなし",
+    "withClawroute": "HopLLMあり",
+    "savings": "節約",
+    "month": "月",
+    "annualSavings": "年間節約",
+    "cta": "始める",
+    "presetPersonal": "個人",
+    "presetSmall": "小規模プロジェクト",
+    "presetMedium": "中規模プロジェクト",
+    "presetLarge": "大規模プロジェクト"
+  },
+  "configure": {
+    "title": "プロキシ設定",
+    "switchScene": "シーンを切り替え",
+    "noScene": "まずシーンを選択してください",
+    "goHome": "ホームへ",
+    "loading": "読み込み中...",
+    "next": "次へ",
+    "advancedTools": "高度なツール",
+    "apiDiscovery": "API発見",
+    "configImport": "設定インポート",
+    "step1Title": "シーンを選択",
+    "step1Desc": "シーンによって最適なモデルが決まります。速度、品質、コストの要件が異なります。",
+    "step2Title": "候補モデルを比較",
+    "step2Desc": "シーンに基づいて推奨モデルを表示します。速度、品質、コストを比較してください。",
+    "step3Title": "ルーティング戦略を設定",
+    "step3Desc": "プライマリモデル（日常使用）とフェイルオーバーモデルを選択します。",
+    "step4Title": "設定ファイルをエクスポート",
+    "step4Desc": "clawroute.json設定ファイルをダウンロードして、プロジェクトのルートに配置します。"
+  },
+  "footer": {
+    "dataUpdated": "データ更新",
+    "openSource": "オープンソース",
+    "apiStatus": "APIステータス",
+    "network": "推論ネットワーク",
+    "docs": "ドキュメント",
+    "about": "概要",
+    "privacy": "プライバシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ"
+  },
+  "about": {
+    "heroTitle": "概要",
+    "heroSubtitle": "AI推論をより賢く、より手頃に",
+    "brandZh": "(智跳)",
+    "missionTitle": "私たちの使命",
+    "missionDesc": "HopLLMはAI推論をより賢く、よりコスト効率よくすることに専念しています。",
+    "featuresTitle": "私たちの利点",
+    "feature1Title": "スマートルーティング",
+    "feature1Desc": "AI搭載の意図分類で最適なモデルを自動選択",
+    "feature2Title": "コスト削減",
+    "feature2Desc": "プレミアムモデルを全リクエストで使用するより80%節約",
+    "feature3Title": "移行不要",
+    "feature3Desc": "OpenAI完全互換、base_urlを変更するだけ",
+    "feature4Title": "高可用性",
+    "feature4Desc": "自動リトライとフェイルオーバーで信頼性を確保",
+  },
+  "language": {
+    "zh": "中文",
+    "en": "English"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcome": "おかえりなさい",
+    "logout": "ログアウト",
+    "loading": "読み込み中...",
+    "backToDashboard": "ダッシュボードに戻る"
+  },
+  "auth": {
+    "welcomeBack": "おかえりなさい",
+    "loginTo": "HopLLMにログイン",
+    "email": "メール",
+    "password": "パスワード",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "login": "ログイン",
+    "noAccount": "アカウントをお持ちでないですか？",
+    "registerNow": "今すぐ登録"
+  },
+  "errorBoundary": {
+    "title": "エラーが発生しました",
+    "description": "ページの読み込み中にエラーが発生しました",
+    "reload": "再読み込み"
+  }
+}

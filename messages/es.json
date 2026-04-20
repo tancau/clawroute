@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "HopLLM",
+    "subtitle": "Enrutamiento Inteligente, Ahorro de Costos"
+  },
+  "nav": {
+    "home": "Inicio",
+    "configure": "Config Proxy",
+    "templates": "Mercado",
+    "dashboard": "Panel",
+    "docs": "Docs"
+  },
+  "home": {
+    "heading": "Elige tu Plan Proxy",
+    "subheading": "Enrutamiento inteligente, ahorro automático",
+    "savingLabel": "Típicamente ahorra",
+    "heroHighlight": "Enrutamiento Inteligente",
+    "heroTitle": "Haz la Inferencia de IA más Inteligente",
+    "heroSubtitle": "Una solicitud, enrutada automáticamente al modelo óptimo. Ahorra 80%, menor latencia, misma calidad.",
+    "heroDescription": "HopLLM es un proxy API de enrutamiento inteligente: cambia tu base_url de OpenAI, envía solicitudes con model: \"auto\", y clasificamos la intención automáticamente, seleccionamos el mejor modelo y reenviamos la solicitud.",
+    "startProxy": "Iniciar Proxy",
+    "getApiKey": "Obtener API Key",
+    "browseTemplates": "Ver Planes",
+    "featuresTitle": "Capacidades Principales",
+    "featureRoutingTitle": "Proxy de Enrutamiento Inteligente",
+    "featureRoutingDesc": "Clasificación de intención de 3 capas + puntuación multidimensional de modelos, selecciona automáticamente el modelo óptimo. API compatible con OpenAI, costo de migración cero.",
+    "featureStreamingTitle": "Streaming y Auto-Reintento",
+    "featureStreamingDesc": "Passthrough de streaming SSE para resultados en tiempo real. Auto-reintento en 429/5xx + failover a modelos de respaldo.",
+    "featureBillingTitle": "Facturación Precisa y Pool de Keys",
+    "featureBillingDesc": "Facturación por token × precio del modelo, adiós a los cargos planos. Pool de keys compartido con balanceo de carga.",
+    "quickStartTitle": "Inicio Rápido",
+    "savingLabelShort": "Ahorra"
+  },
+  "scenes": {
+    "trading-bot": "Bot de Trading",
+    "customer-service": "Servicio al Cliente",
+    "content-creation": "Creación de Contenido",
+    "data-analysis": "Análisis de Datos",
+    "research-assistant": "Asistente de Investigación",
+    "dev-tools": "Herramientas Dev"
+  },
+  "footer": {
+    "dataUpdated": "Datos actualizados",
+    "openSource": "Código Abierto",
+    "apiStatus": "Estado API",
+    "docs": "Docs",
+    "about": "Acerca de",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto"
+  },
+  "about": {
+    "heroTitle": "Acerca de",
+    "heroSubtitle": "Haciendo la inferencia de IA más inteligente y asequible",
+    "featuresTitle": "Qué nos hace diferentes",
+    "feature1Title": "Enrutamiento Inteligente",
+    "feature1Desc": "Clasificación de intención basada en IA para seleccionar el modelo óptimo automáticamente",
+    "feature2Title": "Ahorro de Costos",
+    "feature2Desc": "Ahorra hasta 80% comparado con usar modelos premium para todas las solicitudes",
+    "feature3Title": "Migración Cero",
+    "feature3Desc": "API totalmente compatible con OpenAI, solo cambia tu base_url",
+    "feature4Title": "Alta Disponibilidad",
+    "feature4Desc": "Auto-reintento y failover a modelos de respaldo para confiabilidad"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Bienvenido de vuelta",
+    "logout": "Cerrar sesión",
+    "loading": "Cargando..."
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de vuelta",
+    "loginTo": "Iniciar sesión en HopLLM",
+    "email": "Email",
+    "password": "Contraseña",
+    "login": "Iniciar sesión",
+    "noAccount": "¿No tienes cuenta?",
+    "registerNow": "Regístrate ahora"
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "description": "Ocurrió un error al cargar la página",
+    "reload": "Recargar"
+  }
+}

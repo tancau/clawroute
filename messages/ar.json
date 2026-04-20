@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "HopLLM",
+    "subtitle": "توجيه ذكي، توفير التكاليف"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "configure": "إعدادات الوكيل",
+    "templates": "السوق",
+    "dashboard": "لوحة التحكم",
+    "docs": "الوثائق"
+  },
+  "home": {
+    "heading": "اختر خطة الوكيل الخاصة بك",
+    "subheading": "توجيه ذكي، توفير تلقائي",
+    "savingLabel": "عادة يوفر",
+    "heroHighlight": "توجيه ذكي",
+    "heroTitle": "اجعل استدلال الذكاء الاصطناعي أكثر ذكاءً",
+    "heroSubtitle": "طلب واحد، يتم توجيهه تلقائياً إلى النموذج الأمثل. وفر 80%، زمن استجابة أقل، نفس الجودة.",
+    "heroDescription": "HopLLM هو وكيل API للتوجيه الذكي: استبدل base_url الخاص بـ OpenAI، أرسل الطلبات باستخدام model: \"auto\"، وسنقوم بتصنيف النية تلقائياً واختيار أفضل نموذج وإعادة توجيه الطلب.",
+    "startProxy": "بدء الوكيل",
+    "getApiKey": "الحصول على مفتاح API",
+    "browseTemplates": "تصفح الخطط",
+    "featuresTitle": "القدرات الأساسية",
+    "featureRoutingTitle": "وكيل التوجيه الذكي",
+    "featureRoutingDesc": "تصنيف النية من 3 طبقات + تقييم متعدد الأبعاد للنماذج، يختار النموذج الأمثل تلقائياً. API متوافق مع OpenAI، تكلفة ترحيل صفرية.",
+    "featureStreamingTitle": "البث وإعادة المحاولة التلقائية",
+    "featureStreamingDesc": "تمرير البث عبر SSE للنتائج في الوقت الفعلي. إعادة محاولة تلقائية عند 429/5xx + التبديل إلى نماذج احتياطية.",
+    "featureBillingTitle": "فوترة دقيقة ومجموعة مفاتيح",
+    "featureBillingDesc": "فوترة حسب الرمز × سعر النموذج، وداعاً للرسوم الثابتة. مجموعة مفاتيح مشتركة مع موازنة الحمل.",
+    "quickStartTitle": "البدء السريع",
+    "savingLabelShort": "يوفر"
+  },
+  "scenes": {
+    "trading-bot": "روبوت التداول",
+    "customer-service": "خدمة العملاء",
+    "content-creation": "إنشاء المحتوى",
+    "data-analysis": "تحليل البيانات",
+    "research-assistant": "مساعد البحث",
+    "dev-tools": "أدوات التطوير"
+  },
+  "footer": {
+    "dataUpdated": "تم تحديث البيانات",
+    "openSource": "مفتوح المصدر",
+    "apiStatus": "حالة API",
+    "docs": "الوثائق",
+    "about": "حول",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "contact": "اتصل بنا"
+  },
+  "about": {
+    "heroTitle": "حول",
+    "heroSubtitle": "جعل استدلال الذكاء الاصطناعي أكثر ذكاءً واقتصادية",
+    "featuresTitle": "ما يميزنا",
+    "feature1Title": "توجيه ذكي",
+    "feature1Desc": "تصنيف النية القائم على الذكاء الاصطناعي لاختيار النموذج الأمثل تلقائياً",
+    "feature2Title": "توفير التكاليف",
+    "feature2Desc": "وفر حتى 80% مقارنة باستخدام النماذج المتميزة لجميع الطلبات",
+    "feature3Title": "ترحيل صفري",
+    "feature3Desc": "API متوافق تماماً مع OpenAI، فقط قم بتغيير base_url",
+    "feature4Title": "توفر عالي",
+    "feature4Desc": "إعادة محاولة تلقائية والتبديل إلى نماذج احتياطية للموثوقية"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً بعودتك",
+    "logout": "تسجيل الخروج",
+    "loading": "جاري التحميل..."
+  },
+  "auth": {
+    "welcomeBack": "مرحباً بعودتك",
+    "loginTo": "تسجيل الدخول إلى HopLLM",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "login": "تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "registerNow": "سجل الآن"
+  },
+  "errorBoundary": {
+    "title": "حدث خطأ ما",
+    "description": "حدث خطأ أثناء تحميل الصفحة",
+    "reload": "إعادة التحميل"
+  }
+}
