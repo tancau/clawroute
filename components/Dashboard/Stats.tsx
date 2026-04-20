@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useUserStore } from '@/store/use-user-store';
 
 interface StatsProps {
@@ -8,6 +9,7 @@ interface StatsProps {
 }
 
 export function Stats({ userId }: StatsProps) {
+  const t = useTranslations('stats');
   const { data, earnings, fetchDashboard, fetchUsage, fetchEarnings, isLoading } = useUserStore();
   const loadedRef = useRef(false);
 
@@ -41,25 +43,25 @@ export function Stats({ userId }: StatsProps) {
 
   const stats = [
     {
-      label: '总请求数',
+      label: t('totalRequests'),
       value: data?.usage.requests?.toLocaleString() || '0',
       icon: '📊',
       color: 'from-blue-500 to-cyan-500',
     },
     {
-      label: '使用成本',
+      label: t('usageCost'),
       value: `$${(data?.usage.costDollars || 0).toFixed(2)}`,
       icon: '💸',
       color: 'from-orange-500 to-yellow-500',
     },
     {
-      label: '节省金额',
+      label: t('savedAmount'),
       value: `$${(data?.usage.savedDollars || 0).toFixed(2)}`,
       icon: '💰',
       color: 'from-green-500 to-emerald-500',
     },
     {
-      label: '总收益',
+      label: t('totalEarnings'),
       value: `$${(earnings?.totalDollars || 0).toFixed(2)}`,
       icon: '🤑',
       color: 'from-purple-500 to-pink-500',
@@ -69,13 +71,13 @@ export function Stats({ userId }: StatsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">📊 实时统计</h2>
+        <h2 className="text-xl font-bold text-white">📊 {t('realtimeStats')}</h2>
         <button
           onClick={handleRefresh}
           disabled={isLoading}
           className="px-3 py-1.5 bg-[#1e293b] text-[#94a3b8] rounded-lg hover:bg-[#334155] transition-colors text-sm disabled:opacity-50"
         >
-          🔄 刷新
+          🔄 {t('refresh')}
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

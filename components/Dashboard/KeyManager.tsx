@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useUserStore } from '@/store/use-user-store';
 
 interface KeyManagerProps {
@@ -16,6 +17,7 @@ const PROVIDERS = [
 ];
 
 export function KeyManager({ userId }: KeyManagerProps) {
+  const t = useTranslations('keyManager');
   const { keys, fetchKeys, submitKey, toggleKey, removeKey, isLoading, error } = useUserStore();
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState(PROVIDERS[0]?.id ?? 'openai');
@@ -43,7 +45,7 @@ export function KeyManager({ userId }: KeyManagerProps) {
   };
 
   const handleDelete = async (keyId: string) => {
-    if (confirm('确定要删除这个 Key 吗？')) {
+    if (confirm(t('deleteConfirm'))) {
       await removeKey(keyId);
     }
   };
@@ -51,19 +53,19 @@ export function KeyManager({ userId }: KeyManagerProps) {
   return (
     <div className="bg-[#0f172a] border border-[#1e293b] rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white">API Keys 管理</h2>
+        <h2 className="text-xl font-bold text-white">{t('title')}</h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="px-4 py-2 bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] text-[#0f172a] font-medium rounded-lg hover:opacity-90 transition-opacity"
         >
-          {showAddForm ? '取消' : '+ 添加 Key'}
+          {showAddForm ? t('cancel') : t('addKey')}
         </button>
       </div>
 
       {showAddForm && (
         <form onSubmit={handleSubmit} className="mb-6 p-4 bg-[#1e293b] rounded-lg space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#94a3b8] mb-2">选择 Provider</label>
+            <label className="block text-sm font-medium text-[#94a3b8] mb-2">{t('selectProvider')}</label>
             <select
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
@@ -77,7 +79,7 @@ export function KeyManager({ userId }: KeyManagerProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#94a3b8] mb-2">API Key</label>
+            <label className="block text-sm font-medium text-[#94a3b8] mb-2">{t('apiKey')}</label>
             <input
               type="password"
               value={apiKey}
@@ -93,7 +95,7 @@ export function KeyManager({ userId }: KeyManagerProps) {
             disabled={isLoading}
             className="w-full py-3 bg-[#00c9ff] text-[#0f172a] font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {isLoading ? '提交中...' : '提交'}
+            {isLoading ? t('submitting') : t('submit')}
           </button>
         </form>
       )}
@@ -101,9 +103,9 @@ export function KeyManager({ userId }: KeyManagerProps) {
       <div className="space-y-3">
         {keys.length === 0 ? (
           <div className="text-center py-8 text-[#64748b]">
-            还没有添加任何 API Key
+            {t('noKeysYet')}
             <br />
-            <span className="text-sm">贡献闲置 Key 赚取收益</span>
+            <span className="text-sm">{t('contributeEarnings')}</span>
           </div>
         ) : (
           keys.map((key) => (
@@ -122,7 +124,7 @@ export function KeyManager({ userId }: KeyManagerProps) {
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-sm text-[#94a3b8]">收益</div>
+                  <div className="text-sm text-[#94a3b8]">{t('earnings')}</div>
                   <div className="font-medium text-green-400">
                     ${(key.totalEarnings / 100).toFixed(2)}
                   </div>
@@ -135,7 +137,7 @@ export function KeyManager({ userId }: KeyManagerProps) {
                       : 'bg-[#334155] text-[#64748b]'
                   }`}
                 >
-                  {key.isActive ? '启用' : '禁用'}
+                  {key.isActive ? t('enabled') : t('disabled')}
                 </button>
                 <button
                   onClick={() => handleDelete(key.id)}

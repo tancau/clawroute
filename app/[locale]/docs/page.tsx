@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { 
   Zap, Book, HelpCircle, PlayCircle, ChevronDown, ChevronUp, 
   Copy, Check, ExternalLink, Code, Terminal, Settings, Key
 } from 'lucide-react';
 
 export default function DocsPage() {
-  const locale = useLocale();
+  const t = useTranslations('docsPage');
+  const tFaq = useTranslations('docsFaq');
+  const tDocs = useTranslations('docs');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
@@ -70,55 +72,30 @@ curl https://hopllm.com/v1/chat/completions \\
     },
   ];
 
-  const faqs = locale === 'zh' ? [
+  const faqs = [
     {
-      question: '什么是智能路由？',
-      answer: '智能路由会分析您的请求意图，自动选择最适合的模型。简单任务用低成本模型，复杂任务用高质量模型，帮您节省最多 80% 的成本。',
+      question: tFaq('q1'),
+      answer: tFaq('a1'),
     },
     {
-      question: 'model="auto" 是什么意思？',
-      answer: '设置 model="auto" 后，HopLLM 会自动分析您的请求内容，判断任务类型（如编码、翻译、推理等），然后选择最优模型。您也可以指定具体模型，如 model="gpt-4o"。',
+      question: tFaq('q2'),
+      answer: tFaq('a2'),
     },
     {
-      question: '如何获取 API Key？',
-      answer: '注册登录后，进入 Dashboard → API Key 页面即可查看您的 API Key。您也可以在此页面重新生成密钥。',
+      question: tFaq('q3'),
+      answer: tFaq('a3'),
     },
     {
-      question: '支持哪些模型？',
-      answer: '我们支持 OpenAI、Claude、Gemini、DeepSeek、Qwen 等主流模型。智能路由会根据您的任务自动选择最合适的模型。',
+      question: tFaq('q4'),
+      answer: tFaq('a4'),
     },
     {
-      question: '如何计费？',
-      answer: '按实际使用的模型计费，价格与各模型官方价格一致。智能路由帮您选择更经济的模型，每请求可节省 30-80%。',
+      question: tFaq('q5'),
+      answer: tFaq('a5'),
     },
     {
-      question: '可以使用自己的 API Key 吗？',
-      answer: '可以！在 Dashboard → Providers 页面添加您自己的 API Key。这样您可以直接使用自己的配额，完全控制成本。',
-    },
-  ] : [
-    {
-      question: 'What is smart routing?',
-      answer: 'Smart routing analyzes your request intent and automatically selects the best model. Simple tasks use low-cost models, complex tasks use high-quality models, saving you up to 80% on costs.',
-    },
-    {
-      question: 'What does model="auto" mean?',
-      answer: 'With model="auto", HopLLM automatically analyzes your request content, determines the task type (coding, translation, reasoning, etc.), and selects the optimal model. You can also specify a model, e.g., model="gpt-4o".',
-    },
-    {
-      question: 'How do I get an API key?',
-      answer: 'After registering and logging in, go to Dashboard → API Key to view your API key. You can also regenerate your key from this page.',
-    },
-    {
-      question: 'Which models are supported?',
-      answer: 'We support OpenAI, Claude, Gemini, DeepSeek, Qwen, and other mainstream models. Smart routing automatically selects the best model for your task.',
-    },
-    {
-      question: 'How does billing work?',
-      answer: 'You are billed based on the actual model used, at official model prices. Smart routing helps you choose more economical models, saving 30-80% per request.',
-    },
-    {
-      question: 'Can I use my own API keys?',
-      answer: 'Yes! Go to Dashboard → Providers to add your own API keys. This way you can use your own quotas and fully control costs.',
+      question: tFaq('q6'),
+      answer: tFaq('a6'),
     },
   ];
 
@@ -132,12 +109,10 @@ curl https://hopllm.com/v1/chat/completions \\
             Documentation
           </div>
           <h1 className="text-4xl font-bold text-neutral-10 mb-4">
-            {locale === 'zh' ? '快速开始' : 'Quick Start Guide'}
+            {t('quickStartGuide')}
           </h1>
           <p className="text-lg text-neutral-7 max-w-2xl mx-auto">
-            {locale === 'zh'
-              ? '只需 3 分钟，让您的 AI 应用更智能、更省钱'
-              : 'Get started in 3 minutes and make your AI apps smarter and cheaper'}
+            {t('startIn3Min')}
           </p>
         </div>
       </div>
@@ -147,7 +122,7 @@ curl https://hopllm.com/v1/chat/completions \\
         <section className="mb-16">
           <h2 className="text-2xl font-bold text-neutral-10 mb-8 flex items-center gap-2">
             <Zap className="h-6 w-6 text-brand-primary" />
-            {locale === 'zh' ? '三步开始' : 'Three Steps to Start'}
+            {t('threeSteps')}
           </h2>
 
           <div className="space-y-6">
@@ -160,18 +135,16 @@ curl https://hopllm.com/v1/chat/completions \\
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-neutral-10 flex items-center gap-2">
                     <Key className="h-5 w-5 text-brand-primary" />
-                    {locale === 'zh' ? '获取 API Key' : 'Get Your API Key'}
+                    {tDocs('getApiKey')}
                   </h3>
                   <p className="text-neutral-7 mt-2 mb-4">
-                    {locale === 'zh'
-                      ? '注册账号后，进入 Dashboard 获取您的 API Key。'
-                      : 'After registering, go to Dashboard to get your API key.'}
+                    {t('getApiKeyDesc')}
                   </p>
                   <a
                     href="/dashboard/api-key"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors"
                   >
-                    {locale === 'zh' ? '获取 API Key' : 'Get API Key'}
+                    {t('getApiKey')}
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </div>
@@ -187,12 +160,10 @@ curl https://hopllm.com/v1/chat/completions \\
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-neutral-10 flex items-center gap-2">
                     <Settings className="h-5 w-5 text-brand-accent" />
-                    {locale === 'zh' ? '修改 base_url' : 'Change base_url'}
+                    {tDocs('changeBaseUrl')}
                   </h3>
                   <p className="text-neutral-7 mt-2">
-                    {locale === 'zh'
-                      ? '将您的 OpenAI SDK base_url 改为 https://hopllm.com/v1'
-                      : 'Change your OpenAI SDK base_url to https://hopllm.com/v1'}
+                    {t('changeBaseUrlDesc')}
                   </p>
                   <div className="mt-4 p-3 bg-surface-overlay rounded-lg font-mono text-sm text-neutral-10">
                     base_url=&quot;https://hopllm.com/v1&quot;
@@ -210,12 +181,10 @@ curl https://hopllm.com/v1/chat/completions \\
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-neutral-10 flex items-center gap-2">
                     <Code className="h-5 w-5 text-brand-secondary" />
-                    {locale === 'zh' ? '使用 model="auto"' : 'Use model="auto"'}
+                    {tDocs('useAutoModel')}
                   </h3>
                   <p className="text-neutral-7 mt-2">
-                    {locale === 'zh'
-                      ? '设置 model="auto" 启用智能路由，自动选择最优模型。'
-                      : 'Set model="auto" to enable smart routing and automatically select the best model.'}
+                    {t('useAutoDesc')}
                   </p>
                   <div className="mt-4 p-3 bg-surface-overlay rounded-lg font-mono text-sm text-neutral-10">
                     model=&quot;auto&quot; {/* Smart routing! */}
@@ -230,7 +199,7 @@ curl https://hopllm.com/v1/chat/completions \\
         <section className="mb-16">
           <h2 className="text-2xl font-bold text-neutral-10 mb-8 flex items-center gap-2">
             <Terminal className="h-6 w-6 text-brand-accent" />
-            {locale === 'zh' ? '代码示例' : 'Code Examples'}
+            {t('codeExamples')}
           </h2>
 
           <div className="space-y-6">
@@ -267,7 +236,7 @@ curl https://hopllm.com/v1/chat/completions \\
         <section className="mb-16">
           <h2 className="text-2xl font-bold text-neutral-10 mb-8 flex items-center gap-2">
             <PlayCircle className="h-6 w-6 text-brand-primary" />
-            {locale === 'zh' ? '视频演示' : 'Video Demo'}
+            {t('videoDemo')}
           </h2>
 
           <div className="bg-surface-raised border border-border-subtle rounded-xl p-8 text-center">
@@ -275,14 +244,12 @@ curl https://hopllm.com/v1/chat/completions \\
               <div className="text-center">
                 <PlayCircle className="h-16 w-16 text-brand-primary mx-auto mb-4 opacity-50" />
                 <p className="text-neutral-7">
-                  {locale === 'zh' ? '视频演示即将上线' : 'Video demo coming soon'}
+                  {t('videoComingSoon')}
                 </p>
               </div>
             </div>
             <p className="text-neutral-7 text-sm">
-              {locale === 'zh'
-                ? '观看 5 分钟快速入门视频，了解如何使用 HopLLM 智能路由'
-                : 'Watch a 5-minute quick start video to learn how to use HopLLM smart routing'}
+              {t('videoDesc')}
             </p>
           </div>
         </section>
@@ -291,7 +258,7 @@ curl https://hopllm.com/v1/chat/completions \\
         <section className="mb-16">
           <h2 className="text-2xl font-bold text-neutral-10 mb-8 flex items-center gap-2">
             <HelpCircle className="h-6 w-6 text-brand-secondary" />
-            {locale === 'zh' ? '常见问题' : 'FAQ'}
+            {t('faq')}
           </h2>
 
           <div className="space-y-4">
@@ -324,25 +291,23 @@ curl https://hopllm.com/v1/chat/completions \\
         {/* CTA */}
         <section className="bg-gradient-to-r from-brand-primary/20 to-brand-accent/20 border border-brand-primary/30 rounded-xl p-8 text-center">
           <h2 className="text-2xl font-bold text-neutral-10 mb-4">
-            {locale === 'zh' ? '准备好开始了吗？' : 'Ready to get started?'}
+            {t('readyToStart')}
           </h2>
           <p className="text-neutral-7 mb-6">
-            {locale === 'zh'
-              ? '立即注册，获取您的 API Key，开始使用智能路由'
-              : 'Sign up now to get your API key and start using smart routing'}
+            {t('signUpDesc')}
           </p>
           <div className="flex items-center justify-center gap-4">
             <a
               href="/dashboard/api-key"
               className="px-6 py-3 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors font-medium"
             >
-              {locale === 'zh' ? '获取 API Key' : 'Get API Key'}
+              {t('getApiKey')}
             </a>
             <a
               href="/configure"
               className="px-6 py-3 bg-surface-raised text-neutral-10 rounded-lg hover:bg-surface-overlay transition-colors font-medium border border-border-subtle"
             >
-              {locale === 'zh' ? '配置代理' : 'Configure Proxy'}
+              {t('configureProxy')}
             </a>
           </div>
         </section>

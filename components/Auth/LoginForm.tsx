@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useUserStore } from '@/store/use-user-store';
 
 export function LoginForm() {
   const router = useRouter();
+  const t = useTranslations('auth');
   const { login, isLoading, error, clearError } = useUserStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,13 +26,13 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-8">
-        <h1 className="text-2xl font-bold text-white mb-2 text-center">欢迎回来</h1>
-        <p className="text-[#94a3b8] text-center mb-8">登录到 HopLLM</p>
+        <h1 className="text-2xl font-bold text-white mb-2 text-center">{t('welcomeBack')}</h1>
+        <p className="text-[#94a3b8] text-center mb-8">{t('loginTo')}</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-[#94a3b8] mb-2">
-              邮箱地址
+              {t('email')}
             </label>
             <input
               id="email"
@@ -46,13 +48,13 @@ export function LoginForm() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label htmlFor="password" className="block text-sm font-medium text-[#94a3b8]">
-                密码
+                {t('password')}
               </label>
               <Link 
                 href="/auth/reset-password"
                 className="text-sm text-[#00c9ff] hover:underline"
               >
-                忘记密码？
+                {t('forgotPassword')}
               </Link>
             </div>
             <input
@@ -77,15 +79,15 @@ export function LoginForm() {
             disabled={isLoading}
             className="w-full py-3 bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] text-[#0f172a] font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? '登录中...' : '登录'}
+            {isLoading ? `${t('login')}...` : t('login')}
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-[#94a3b8]">
-            还没有账户？{' '}
+            {t('noAccount')}{' '}
             <Link href="/auth/register" className="text-[#00c9ff] hover:underline">
-              立即注册
+              {t('registerNow')}
             </Link>
           </p>
         </div>
