@@ -111,7 +111,7 @@
     "feature3Title": "移行不要",
     "feature3Desc": "OpenAI完全互換、base_urlを変更するだけ",
     "feature4Title": "高可用性",
-    "feature4Desc": "自動リトライとフェイルオーバーで信頼性を確保",
+    "feature4Desc": "自動リトライとフェイルオーバーで信頼性を確保"
   },
   "language": {
     "zh": "中文",
