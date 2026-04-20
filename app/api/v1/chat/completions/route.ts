@@ -204,21 +204,7 @@ interface RouteResult {
 function routeModel(intent: string, requestedModel?: string, userProviderKeys?: Record<string, unknown>): RouteResult {
   // 如果用户指定了模型，直接使用
   if (requestedModel && requestedModel !== 'auto') {
-    const capability = getModelCapability(requestedModel);
-    if (capability) {
-      const provider = getProviderWithUserKeys(capability.provider, userProviderKeys);
-      if (provider) {
-        return {
-          selectedModel: requestedModel,
-          provider: capability.provider,
-          baseUrl: provider.baseUrl,
-          reason: 'User specified model',
-          alternatives: [],
-        };
-      }
-    }
-    
-    // 检查是否为自定义 Provider 的模型
+    // === 1. 优先检查用户自定义 Provider（关键修复！）===
     if (userProviderKeys) {
       for (const [providerId, value] of Object.entries(userProviderKeys)) {
         if (typeof value === 'object' && value !== null && 'custom' in value) {
@@ -237,7 +223,22 @@ function routeModel(intent: string, requestedModel?: string, userProviderKeys?: 
       }
     }
     
-    // 尝试从模型名推断 provider
+    // === 2. 然后检查预定义模型 ===
+    const capability = getModelCapability(requestedModel);
+    if (capability) {
+      const provider = getProviderWithUserKeys(capability.provider, userProviderKeys);
+      if (provider) {
+        return {
+          selectedModel: requestedModel,
+          provider: capability.provider,
+          baseUrl: provider.baseUrl,
+          reason: 'User specified model',
+          alternatives: [],
+        };
+      }
+    }
+    
+    // === 3. 尝试从模型名推断 provider ===
     if (requestedModel.includes('/')) {
       // OpenRouter 格式: provider/model
       return {
@@ -248,6 +249,15 @@ function routeModel(intent: string, requestedModel?: string, userProviderKeys?: 
         alternatives: [],
       };
     }
+    
+    // === 4. 模型在所有 Provider 中都不存在 ===
+    return {
+      selectedModel: requestedModel,
+      provider: '',
+      baseUrl: '',
+      reason: 'Model not found in user providers or system providers',
+      alternatives: [],
+    };
   }
   
   // === 优先检查用户自定义 Provider ===
