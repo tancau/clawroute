@@ -45,13 +45,33 @@ interface IntentClassification {
 // ==================== 意图分类（简化版） ====================
 
 const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
-  { patterns: [/写代码|code|编程|function|class|bug|fix|debug|实现|开发/i], intent: 'coding' },
-  { patterns: [/分析|analyze|数据|report|统计|比较|对比/i], intent: 'analysis' },
-  { patterns: [/推理|reasoning|证明|推导|逻辑|数学|math|计算/i], intent: 'reasoning' },
-  { patterns: [/翻译|translate|translate|语言|language/i], intent: 'translation' },
-  { patterns: [/创意|creative|故事|story|写作|write|文章/i], intent: 'creative' },
-  { patterns: [/聊天|chat|问候|hi|hello|你好|帮忙/i], intent: 'casual_chat' },
-  { patterns: [/长文本|long|文档|document|总结|summary/i], intent: 'long_context' },
+  // Coding - 最优先，因为编程请求很常见
+  { 
+    patterns: [
+      /写代码|写一个|写个|编程|开发|实现|function|class|bug|fix|debug|算法|algorithm|sort|search|代码|code review/i,
+      /python|javascript|typescript|java|go|rust|sql|html|css|api|script|脚本/i,
+      /如何实现|how to implement|怎么写|怎么实现|帮我写|帮我实现/i,
+    ], 
+    intent: 'coding' 
+  },
+  // Reasoning - 推理和数学问题
+  { 
+    patterns: [
+      /推理|reasoning|证明|推导|逻辑|数学|math|计算|solve|证明题|思考题/i,
+      /step by step|逐步|推导|分析原因|why|为什么|解释/i,
+    ], 
+    intent: 'reasoning' 
+  },
+  // Analysis - 数据分析
+  { patterns: [/分析|analyze|数据|report|统计|比较|对比|研究|investigate/i], intent: 'analysis' },
+  // Translation - 翻译
+  { patterns: [/翻译|translate|翻译成|translate to|语言|language/i], intent: 'translation' },
+  // Creative - 创意写作（移除通用词 write）
+  { patterns: [/创意|creative|故事|story|小说|诗歌|诗歌|剧本|创作|编一个/i], intent: 'creative' },
+  // Long Context - 长文本处理
+  { patterns: [/长文本|long|文档|document|总结|summary|阅读|read|论文|paper/i], intent: 'long_context' },
+  // Casual Chat - 最后匹配，作为默认
+  { patterns: [/聊天|chat|问候|hi|hello|你好|帮忙|help me|谢谢|thanks|再见/i], intent: 'casual_chat' },
 ];
 
 function classifyIntent(message: string): IntentClassification {
