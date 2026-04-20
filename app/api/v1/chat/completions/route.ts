@@ -637,7 +637,14 @@ export async function POST(request: NextRequest) {
     route = routeModel(classification.intent, body.model, user?.providerKeys);
 
     // 7. 执行请求
-    const provider = getProvider(route.provider);
+    // 优先使用 getProviderWithUserKeys（支持自定义 Provider）
+    let provider = getProviderWithUserKeys(route.provider, user?.providerKeys);
+    
+    // 如果没有找到，回退到系统 Provider
+    if (!provider) {
+      provider = getProvider(route.provider);
+    }
+    
     if (!provider) {
       return NextResponse.json(
         {
