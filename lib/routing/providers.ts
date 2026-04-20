@@ -79,7 +79,27 @@ export const providers: ProviderConfig[] = [
     timeout: 45000,
     priority: 60,
     enabled: true,
-  },
+  }
+  {
+    name: 'infini-coding-plan',
+    baseUrl: 'https://cloud.infini-ai.com/maas/coding/v1',
+    apiKeyEnv: 'INFINI_API_KEY',
+    models: [
+      'glm-5',
+      'glm-5.1',
+      'glm-4.7',
+      'deepseek-v3.2',
+      'deepseek-v3.2-thinking',
+      'kimi-k2.5',
+      'minimax-m2.7',
+      'minimax-m2.5',
+      'minimax-m2.1',
+    ],
+    rateLimit: { rpm: 100 },
+    timeout: 45000,
+    priority: 75,
+    enabled: true,
+  },,
   {
     name: 'litellm',
     baseUrl: process.env.LITELLM_URL || 'http://23.94.236.146:3000/v1',
