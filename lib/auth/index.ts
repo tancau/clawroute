@@ -52,7 +52,7 @@ export interface SafeUser {
   credits: number;
   apiKey?: string;
   createdAt: number;
-  providerKeys?: Record<string, string>; // 用户配置的 Provider API Keys
+  providerKeys?: Record<string, unknown>; // 用户配置的 Provider API Keys（动态类型）
 }
 
 interface InternalUser extends SafeUser {
@@ -228,11 +228,12 @@ export async function findUserByApiKey(apiKey: string): Promise<InternalUser | n
  */
 export async function updateUserProviderKeys(
   userId: string,
-  providerKeys: Record<string, string>
+  providerKeys: Record<string, unknown>
 ): Promise<boolean> {
-  const { encryptProviderKeys } = await import('../encryption');
-  const encrypted = Object.keys(providerKeys).length > 0
-    ? encryptProviderKeys(providerKeys)
+  const { encryptProviderKeys, toProviderKeys } = await import('../encryption');
+  const strictKeys = toProviderKeys(providerKeys);
+  const encrypted = Object.keys(strictKeys).length > 0
+    ? encryptProviderKeys(strictKeys)
     : null;
 
   const sql = await getPostgres();
@@ -261,7 +262,7 @@ export async function updateUserProviderKeys(
 /**
  * 获取用户的 Provider Keys（解密后）
  */
-export async function getUserProviderKeys(userId: string): Promise<Record<string, string>> {
+export async function getUserProviderKeys(userId: string): Promise<Record<string, unknown>> {
   const sql = await getPostgres();
 
   if (sql) {

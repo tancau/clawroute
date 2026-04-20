@@ -18,11 +18,13 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  Settings,
+  Server
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// 支持的 Providers
+// 支持的预定义 Providers
 const SUPPORTED_PROVIDERS = [
   { id: 'openai', name: 'OpenAI', keyPrefix: 'sk-', website: 'https://platform.openai.com/api-keys' },
   { id: 'deepseek', name: 'DeepSeek', keyPrefix: 'sk-', website: 'https://platform.deepseek.com/api_keys' },
@@ -37,9 +39,12 @@ const SUPPORTED_PROVIDERS = [
 interface ProviderStatus {
   id: string;
   name: string;
+  type: 'predefined' | 'custom';
   configured: boolean;
   maskedKey: string | null;
-  keyPrefix: string;
+  keyPrefix?: string;
+  baseUrl?: string;
+  models?: string[];
   status: 'configured' | 'not_configured' | 'testing' | 'error';
   error?: string;
 }
@@ -54,6 +59,16 @@ export default function ProvidersPage() {
   const [showKey, setShowKey] = useState(false);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState<string | null>(null);
+
+  // 自定义 Provider 表单状态
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customForm, setCustomForm] = useState({
+    name: '',
+    baseUrl: '',
+    apiKey: '',
+    models: '',
+  });
+  const [customFormSaving, setCustomFormSaving] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -168,6 +183,83 @@ export default function ProvidersPage() {
     setShowKey(false);
   };
 
+  // 添加自定义 Provider
+  const handleAddCustomProvider = async () => {
+    if (!customForm.name.trim() || !customForm.baseUrl.trim() || !customForm.apiKey.trim()) {
+      alert('Name, Base URL and API Key are required');
+      return;
+    }
+
+    setCustomFormSaving(true);
+    try {
+      const response = await fetch('/api/user/providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          custom: true,
+          name: customForm.name,
+          baseUrl: customForm.baseUrl,
+          apiKey: customForm.apiKey,
+          models: customForm.models ? customForm.models.split(',').map(m => m.trim()).filter(Boolean) : [],
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || 'Failed to add custom provider');
+      }
+
+      // 重置表单
+      setCustomForm({ name: '', baseUrl: '', apiKey: '', models: '' });
+      setShowCustomForm(false);
+      await fetchProviders();
+    } catch (error) {
+      console.error('Failed to add custom provider:', error);
+      alert(error instanceof Error ? error.message : 'Failed to add custom provider');
+    } finally {
+      setCustomFormSaving(false);
+    }
+  };
+
+  // 测试自定义 Provider
+  const handleTestCustomProvider = async () => {
+    if (!customForm.baseUrl.trim() || !customForm.apiKey.trim()) {
+      alert('Base URL and API Key are required for testing');
+      return;
+    }
+
+    setCustomFormSaving(true);
+    try {
+      const response = await fetch('/api/user/providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          custom: true,
+          name: customForm.name || 'Test',
+          baseUrl: customForm.baseUrl,
+          apiKey: customForm.apiKey,
+          models: customForm.models ? customForm.models.split(',').map(m => m.trim()).filter(Boolean) : [],
+          action: 'test',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Connection successful!' + (data.models ? ` Found ${data.models.length} models.` : ''));
+      } else {
+        alert(data.error?.message || 'Connection test failed');
+      }
+    } catch (error) {
+      console.error('Test failed:', error);
+      alert('Connection test failed');
+    } finally {
+      setCustomFormSaving(false);
+    }
+  };
+
   if (isLoading || !isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -178,6 +270,9 @@ export default function ProvidersPage() {
       </div>
     );
   }
+
+  const predefinedProviders = providers.filter(p => p.type === 'predefined');
+  const customProviders = providers.filter(p => p.type === 'custom');
 
   return (
     <DashboardShell>
@@ -201,12 +296,12 @@ export default function ProvidersPage() {
           </div>
         </div>
 
-        {/* Providers List */}
+        {/* Predefined Providers */}
         <div className="bg-surface-raised border border-border-subtle rounded-xl overflow-hidden">
           <div className="p-4 border-b border-border-subtle">
             <div className="flex items-center gap-3">
               <Key className="w-5 h-5 text-brand-primary" />
-              <h2 className="text-xl font-semibold text-neutral-10">Configured Providers</h2>
+              <h2 className="text-xl font-semibold text-neutral-10">Predefined Providers</h2>
             </div>
           </div>
 
@@ -219,7 +314,7 @@ export default function ProvidersPage() {
           ) : (
             <div className="divide-y divide-border-subtle">
               {SUPPORTED_PROVIDERS.map((provider) => {
-                const status = providers.find(p => p.id === provider.id);
+                const status = predefinedProviders.find(p => p.id === provider.id);
                 const isConfigured = status?.configured;
                 const isEditing = editingProvider === provider.id;
                 const isTestingThis = testing === provider.id;
@@ -347,6 +442,165 @@ export default function ProvidersPage() {
           )}
         </div>
 
+        {/* Custom Providers */}
+        <div className="bg-surface-raised border border-border-subtle rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Server className="w-5 h-5 text-brand-primary" />
+              <h2 className="text-xl font-semibold text-neutral-10">Custom Providers</h2>
+            </div>
+            <Button
+              onClick={() => setShowCustomForm(!showCustomForm)}
+              variant="outline"
+              size="sm"
+            >
+              {showCustomForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4 mr-1" />}
+              {showCustomForm ? 'Cancel' : 'Add Custom'}
+            </Button>
+          </div>
+
+          {/* Add Custom Provider Form */}
+          {showCustomForm && (
+            <div className="p-4 border-b border-border-subtle bg-brand-primary/5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-10 mb-1">
+                    Provider Name *
+                  </label>
+                  <Input
+                    value={customForm.name}
+                    onChange={(e) => setCustomForm({ ...customForm, name: e.target.value })}
+                    placeholder="e.g., New-API, My LLM Gateway"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-10 mb-1">
+                    Base URL *
+                  </label>
+                  <Input
+                    value={customForm.baseUrl}
+                    onChange={(e) => setCustomForm({ ...customForm, baseUrl: e.target.value })}
+                    placeholder="e.g., http://localhost:3000/v1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-10 mb-1">
+                    API Key *
+                  </label>
+                  <Input
+                    type="password"
+                    value={customForm.apiKey}
+                    onChange={(e) => setCustomForm({ ...customForm, apiKey: e.target.value })}
+                    placeholder="Your API key"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-10 mb-1">
+                    Models (optional, comma-separated)
+                  </label>
+                  <Input
+                    value={customForm.models}
+                    onChange={(e) => setCustomForm({ ...customForm, models: e.target.value })}
+                    placeholder="e.g., qwen/qwen3-coder:free, deepseek-chat"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  onClick={handleAddCustomProvider}
+                  disabled={customFormSaving || !customForm.name || !customForm.baseUrl || !customForm.apiKey}
+                >
+                  {customFormSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Check className="w-4 h-4 mr-1" />}
+                  Save Provider
+                </Button>
+                <Button
+                  onClick={handleTestCustomProvider}
+                  variant="outline"
+                  disabled={customFormSaving || !customForm.baseUrl || !customForm.apiKey}
+                >
+                  Test Connection
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Custom Providers List */}
+          {customProviders.length > 0 ? (
+            <div className="divide-y divide-border-subtle">
+              {customProviders.map((provider) => {
+                const isTestingThis = testing === provider.id;
+
+                return (
+                  <div key={provider.id} className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold bg-purple-500/10 text-purple-500">
+                          <Settings className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-neutral-10">{provider.name}</span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-500">Custom</span>
+                            <span className="flex items-center gap-1 text-xs text-semantic-success">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Configured
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            <code className="text-xs text-neutral-7 font-mono">{provider.baseUrl}</code>
+                            {provider.maskedKey && (
+                              <code className="text-xs text-neutral-7 font-mono">{provider.maskedKey}</code>
+                            )}
+                          </div>
+                          {provider.models && provider.models.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {provider.models.slice(0, 5).map(model => (
+                                <span key={model} className="text-xs px-2 py-0.5 rounded bg-neutral-3 text-neutral-7">
+                                  {model}
+                                </span>
+                              ))}
+                              {provider.models.length > 5 && (
+                                <span className="text-xs text-neutral-7">+{provider.models.length - 5} more</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleTestKey(provider.id)}
+                          variant="outline"
+                          size="sm"
+                          disabled={isTestingThis}
+                        >
+                          {isTestingThis ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Test'}
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteKey(provider.id)}
+                          variant="outline"
+                          size="sm"
+                          className="text-semantic-error hover:bg-semantic-error/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            !showCustomForm && (
+              <div className="p-8 text-center text-neutral-7">
+                <Server className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No custom providers configured yet.</p>
+                <p className="text-sm mt-1">Click &quot;Add Custom&quot; to add your own LLM gateway or API endpoint.</p>
+              </div>
+            )
+          )}
+        </div>
+
         {/* How It Works */}
         <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
           <h2 className="text-xl font-semibold text-neutral-10 mb-4">How It Works</h2>
@@ -355,7 +609,7 @@ export default function ProvidersPage() {
               <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-sm">1</div>
               <div>
                 <p className="font-medium text-neutral-10">Configure Your Keys</p>
-                <p className="text-sm">Add your own API keys for the providers you want to use.</p>
+                <p className="text-sm">Add your own API keys for predefined providers, or add custom LLM gateways.</p>
               </div>
             </div>
             <div className="flex gap-3">

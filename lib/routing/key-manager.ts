@@ -26,17 +26,19 @@ class KeyManager {
       return [];
     }
 
-    // 从环境变量获取 key
-    const envKey = process.env[provider.apiKeyEnv];
-    if (!envKey) {
+    // 从环境变量获取 key（对于自定义 Provider，可能没有 apiKeyEnv）
+    const envKey = provider.apiKeyEnv ? process.env[provider.apiKeyEnv] : undefined;
+    if (!envKey && !provider.apiKey) {
       console.warn(`[KeyManager] No API key found for provider: ${providerName}`);
       return [];
     }
 
-    // 支持多个 key (用逗号分隔)
-    const keyStrings = envKey.split(',').map(k => k.trim()).filter(Boolean);
+    // 支持多个 key (用逗号分隔) 或直接使用 provider.apiKey
+    const keyStrings = envKey 
+      ? envKey.split(',').map((k: string) => k.trim()).filter(Boolean)
+      : (provider.apiKey ? [provider.apiKey] : []);
 
-    const keyStatuses: KeyStatus[] = keyStrings.map(key => ({
+    const keyStatuses: KeyStatus[] = keyStrings.map((key: string) => ({
       key,
       valid: true,
       lastUsed: 0,

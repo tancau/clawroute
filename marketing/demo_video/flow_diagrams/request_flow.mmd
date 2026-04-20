@@ -1,0 +1,18 @@
+graph LR
+    A[用户请求] --> B[HopLLM 代理]
+    B --> C{意图识别}
+    C -->|简单问答| D[GPT-3.5/Claude Instant]
+    C -->|代码生成| E[GPT-4/Claude Opus]
+    C -->|数据分析| F[Claude Sonnet]
+    C -->|翻译任务| G[GPT-3.5/DeepSeek]
+    D --> H[响应返回]
+    E --> H
+    F --> H
+    G --> H
+    H --> I[用户]
+    
+    style A fill:#4F46E5,color:#fff
+    style B fill:#7C3AED,color:#fff
+    style C fill:#EC4899,color:#fff
+    style H fill:#10B981,color:#fff
+    style I fill:#4F46E5,color:#fff

@@ -11,7 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities } from '@/lib/routing/providers';
+import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities, getProviderWithUserKeys, createProviderFromUserConfig } from '@/lib/routing/providers';
 import { keyManager } from '@/lib/routing/key-manager';
 import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth';
 import { logRequest } from '@/lib/db';
@@ -87,12 +87,12 @@ interface RouteResult {
   alternatives: Array<{ model: string; provider: string }>;
 }
 
-function routeModel(intent: string, requestedModel?: string): RouteResult {
+function routeModel(intent: string, requestedModel?: string, userProviderKeys?: Record<string, unknown>): RouteResult {
   // 如果用户指定了模型，直接使用
   if (requestedModel && requestedModel !== 'auto') {
     const capability = getModelCapability(requestedModel);
     if (capability) {
-      const provider = getProvider(capability.provider);
+      const provider = getProviderWithUserKeys(capability.provider, userProviderKeys);
       if (provider) {
         return {
           selectedModel: requestedModel,
@@ -103,6 +103,26 @@ function routeModel(intent: string, requestedModel?: string): RouteResult {
         };
       }
     }
+    
+    // 检查是否为自定义 Provider 的模型
+    if (userProviderKeys) {
+      for (const [providerId, value] of Object.entries(userProviderKeys)) {
+        if (typeof value === 'object' && value !== null && 'custom' in value) {
+          const customConfig = value as { name: string; baseUrl: string; apiKey: string; models?: string[]; custom: boolean };
+          if (customConfig.models && customConfig.models.includes(requestedModel)) {
+            const customProvider = createProviderFromUserConfig(providerId, customConfig);
+            return {
+              selectedModel: requestedModel,
+              provider: providerId,
+              baseUrl: customProvider.baseUrl,
+              reason: 'User model from custom provider',
+              alternatives: [],
+            };
+          }
+        }
+      }
+    }
+    
     // 尝试从模型名推断 provider
     if (requestedModel.includes('/')) {
       // OpenRouter 格式: provider/model
@@ -195,11 +215,17 @@ async function executeWithRetry(
   route: RouteResult,
   request: ChatCompletionRequest,
   requestId: string,
-  userProviderKeys?: Record<string, string>,
+  userProviderKeys?: Record<string, unknown>,
 ): Promise<{ response: Response; usedModel: string; usedProvider: string }> {
-  const provider = getProvider(route.provider);
+  // 优先使用 getProviderWithUserKeys（支持自定义 Provider）
+  let provider = getProviderWithUserKeys(route.provider, userProviderKeys);
+  
+  // 如果没有找到，回退到系统 Provider
   if (!provider) {
-    throw new Error(`Provider not found: ${route.provider}`);
+    provider = getProvider(route.provider);
+    if (!provider) {
+      throw new Error(`Provider not found: ${route.provider}`);
+    }
   }
 
   const url = `${provider.baseUrl}/chat/completions`;
@@ -243,10 +269,17 @@ async function executeWithRetry(
     let apiKey: string | null = null;
     
     if (userProviderKeys && userProviderKeys[attempt.provider]) {
-      // 使用用户配置的 API Key
-      apiKey = userProviderKeys[attempt.provider] || null;
-    } else {
-      // 使用系统配置的 API Key
+      const value = userProviderKeys[attempt.provider];
+      // 处理自定义 Provider（对象）和预定义 Provider（字符串）
+      if (typeof value === 'object' && value !== null && 'apiKey' in value) {
+        apiKey = (value as { apiKey: string }).apiKey;
+      } else if (typeof value === 'string') {
+        apiKey = value;
+      }
+    }
+    
+    // 如果没有用户的 Key，使用系统配置的 API Key
+    if (!apiKey) {
       apiKey = keyManager.getNextKey(attempt.provider);
     }
     
@@ -381,7 +414,7 @@ interface UserValidation {
   userId: string;
   tier: string;
   credits: number;
-  providerKeys?: Record<string, string>; // 用户配置的 Provider API Keys
+  providerKeys?: Record<string, unknown>; // 用户配置的 Provider API Keys（支持自定义）
 }
 
 async function validateApiKey(apiKey: string | null): Promise<UserValidation | null> {
@@ -551,7 +584,7 @@ export async function POST(request: NextRequest) {
     classification = classifyIntent(userMessage);
 
     // 6. 选择模型
-    route = routeModel(classification.intent, body.model);
+    route = routeModel(classification.intent, body.model, user?.providerKeys);
 
     // 7. 执行请求
     const provider = getProvider(route.provider);
@@ -578,8 +611,17 @@ export async function POST(request: NextRequest) {
       // 优先使用用户的 API Key
       let apiKeyForStream: string | null = null;
       if (user?.providerKeys && user.providerKeys[route.provider]) {
-        apiKeyForStream = user.providerKeys[route.provider] || null;
-      } else {
+        const value = user.providerKeys[route.provider];
+        // 处理自定义 Provider（对象）和预定义 Provider（字符串）
+        if (typeof value === 'object' && value !== null && 'apiKey' in value) {
+          apiKeyForStream = (value as { apiKey: string }).apiKey;
+        } else if (typeof value === 'string') {
+          apiKeyForStream = value;
+        }
+      }
+      
+      // 如果没有用户的 Key，使用系统配置的 API Key
+      if (!apiKeyForStream) {
         apiKeyForStream = keyManager.getNextKey(route.provider);
       }
       

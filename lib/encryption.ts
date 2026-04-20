@@ -116,10 +116,64 @@ export function isEncryptionAvailable(): boolean {
 }
 
 /**
- * Provider Keys 类型
+ * Provider Keys 类型（动态类型，支持未知值）
+ * 支持：
+ * - 预定义 Provider: string (API Key)
+ * - 自定义 Provider: CustomProviderConfig
+ * - 未知值: unknown (兼容动态类型)
  */
+export interface CustomProviderConfig {
+  apiKey: string;
+  baseUrl: string;
+  models?: string[];
+  name: string;
+  enabled?: boolean;
+  custom: true;
+}
+
+export type ProviderValue = string | CustomProviderConfig;
+
+// 动态类型存储（兼容 unknown）
+export type DynamicProviderKeys = Record<string, unknown>;
+
+// 严格类型（用于内部处理）
 export interface ProviderKeys {
-  [provider: string]: string;
+  [provider: string]: ProviderValue;
+}
+
+/**
+ * 检查是否为自定义 Provider
+ */
+export function isCustomProvider(value: unknown): value is CustomProviderConfig {
+  return typeof value === 'object' && value !== null && (value as Record<string, unknown>).custom === true;
+}
+
+/**
+ * 检查是否为字符串类型的 API Key
+ */
+export function isStringKey(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+/**
+ * 从 DynamicProviderKeys 中提取自定义 Provider 列表
+ */
+export function extractCustomProviders(keys: DynamicProviderKeys): CustomProviderConfig[] {
+  return Object.values(keys)
+    .filter(isCustomProvider);
+}
+
+/**
+ * 将 DynamicProviderKeys 转换为 ProviderKeys
+ */
+export function toProviderKeys(keys: DynamicProviderKeys): ProviderKeys {
+  const result: ProviderKeys = {};  
+  for (const [key, value] of Object.entries(keys)) {
+    if (isCustomProvider(value) || isStringKey(value)) {
+      result[key] = value;
+    }
+  }
+  return result;
 }
 
 /**

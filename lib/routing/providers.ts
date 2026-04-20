@@ -6,8 +6,10 @@
 export interface ProviderConfig {
   name: string;
   baseUrl: string;
-  apiKeyEnv: string;
+  apiKeyEnv?: string;  // 可选，用于系统配置的 API Key
+  apiKey?: string;      // 可选，用户提供的 API Key
   models: string[];
+  custom?: boolean;     // 标记为自定义 Provider
   rateLimit?: {
     rpm?: number;
     tpm?: number;
@@ -291,4 +293,87 @@ export function getModelsForIntent(intent: string): ModelCapability[] {
  */
 export function getFreeModels(): ModelCapability[] {
   return modelCapabilities.filter(m => m.features?.includes('free'));
+}
+
+/**
+ * 从用户配置创建动态 Provider 配置
+ * 用于支持自定义 Provider
+ */
+export function createProviderFromUserConfig(
+  providerId: string,
+  config: { name: string; baseUrl: string; apiKey: string; models?: string[]; custom?: boolean }
+): ProviderConfig {
+  return {
+    name: providerId,
+    baseUrl: config.baseUrl,
+    apiKey: config.apiKey,
+    models: config.models || [],
+    custom: true,
+    rateLimit: { rpm: 60 },
+    timeout: 60000,
+    priority: 70,
+    enabled: true,
+  };
+}
+
+/**
+ * 合并系统 Provider 和用户自定义 Provider
+ */
+export function getAllProviders(userProviderKeys?: Record<string, unknown>): ProviderConfig[] {
+  const allProviders = [...providers];
+  
+  if (userProviderKeys) {
+    for (const [providerId, value] of Object.entries(userProviderKeys)) {
+      // 检查是否为自定义 Provider
+      if (typeof value === 'object' && value !== null && 'custom' in value) {
+        const customConfig = value as { name: string; baseUrl: string; apiKey: string; models?: string[]; custom: boolean };
+        allProviders.push(createProviderFromUserConfig(providerId, customConfig));
+      }
+    }
+  }
+  
+  return allProviders;
+}
+
+/**
+ * 获取 Provider（支持用户自定义）
+ */
+export function getProviderWithUserKeys(
+  name: string,
+  userProviderKeys?: Record<string, unknown>
+): ProviderConfig | undefined {
+  // 首先检查系统 Provider
+  const systemProvider = providers.find(p => p.name === name && p.enabled);
+  if (systemProvider) return systemProvider;
+  
+  // 检查用户自定义 Provider
+  if (userProviderKeys && userProviderKeys[name]) {
+    const value = userProviderKeys[name];
+    if (typeof value === 'object' && value !== null && 'custom' in value) {
+      const customConfig = value as { name: string; baseUrl: string; apiKey: string; models?: string[]; custom: boolean };
+      return createProviderFromUserKeys(name, customConfig);
+    }
+  }
+  
+  return undefined;
+}
+
+/**
+ * 从用户配置创建 Provider（内部函数）
+ */
+function createProviderFromUserKeys(
+  providerId: string,
+  config: { name: string; baseUrl: string; apiKey: string; models?: string[]; custom: boolean }
+): ProviderConfig {
+  return {
+    name: providerId,
+    baseUrl: config.baseUrl,
+    apiKey: config.apiKey,
+    models: config.models || [],
+    custom: true,
+    rateLimit: { rpm: 60 },
+    timeout: 60000,
+    priority: 70,
+    enabled: true,
+  };
 }

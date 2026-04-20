@@ -1,0 +1,38 @@
+graph TB
+    subgraph 用户层
+        U[应用/API]
+    end
+    
+    subgraph HopLLM 代理层
+        R[智能路由] --> I[意图分类]
+        I --> S[模型评分]
+        S --> L[负载均衡]
+        L --> K[Key 池管理]
+    end
+    
+    subgraph 模型提供商
+        M1[OpenAI GPT-4]
+        M2[OpenAI GPT-3.5]
+        M3[Anthropic Claude]
+        M4[DeepSeek]
+        M5[其他模型...]
+    end
+    
+    U --> R
+    K --> M1
+    K --> M2
+    K --> M3
+    K --> M4
+    K --> M5
+    M1 --> R
+    M2 --> R
+    M3 --> R
+    M4 --> R
+    M5 --> R
+    R --> U
+    
+    style R fill:#4F46E5,color:#fff
+    style I fill:#7C3AED,color:#fff
+    style S fill:#EC4899,color:#fff
+    style L fill:#F59E0B,color:#fff
+    style K fill:#10B981,color:#fff

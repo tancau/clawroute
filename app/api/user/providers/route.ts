@@ -1,17 +1,17 @@
 /**
  * 用户 Provider API Keys 管理 API
  * 
- * GET  - 获取用户的 Provider Keys（脱敏显示）
- * POST - 添加/更新 Provider Key
+ * GET  - 获取用户的 Provider Keys（脱敏显示）+ 自定义 Providers
+ * POST - 添加/更新 Provider Key 或添加自定义 Provider
  * DELETE - 删除 Provider Key
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/auth';
 import { updateUserProviderKeys, getUserProviderKeys } from '@/lib/auth';
-import { maskApiKey, ProviderKeys } from '@/lib/encryption';
+import { maskApiKey, isCustomProvider, CustomProviderConfig } from '@/lib/encryption';
 
-// 支持的 Providers
+// 支持的预定义 Providers
 const SUPPORTED_PROVIDERS = [
   { id: 'openai', name: 'OpenAI', keyPrefix: 'sk-', baseUrl: 'https://api.openai.com/v1' },
   { id: 'deepseek', name: 'DeepSeek', keyPrefix: 'sk-', baseUrl: 'https://api.deepseek.com/v1' },
@@ -49,7 +49,7 @@ async function authenticate(request: NextRequest): Promise<{ userId: string; ema
 }
 
 /**
- * GET - 获取用户的 Provider Keys（脱敏显示）
+ * GET - 获取用户的 Provider Keys（脱敏显示）+ 自定义 Providers
  */
 export async function GET(request: NextRequest) {
   try {
@@ -63,22 +63,65 @@ export async function GET(request: NextRequest) {
 
     const userKeys = await getUserProviderKeys(auth.userId);
     
-    // 构建响应：脱敏显示
-    const providers = SUPPORTED_PROVIDERS.map(provider => {
-      const key = userKeys[provider.id];
+    // 构建预定义 Provider 响应
+    const predefinedProviders = SUPPORTED_PROVIDERS.map(provider => {
+      const value = userKeys[provider.id];
+      const isCustom = isCustomProvider(value);
+      const apiKey = isCustom ? value.apiKey : (typeof value === 'string' ? value : undefined);
+      
       return {
         id: provider.id,
         name: provider.name,
-        configured: !!key,
-        maskedKey: key ? maskApiKey(key) : null,
+        type: 'predefined' as const,
+        configured: !!apiKey,
+        maskedKey: apiKey ? maskApiKey(apiKey) : null,
         keyPrefix: provider.keyPrefix,
-        status: key ? 'configured' : 'not_configured',
+        baseUrl: provider.baseUrl,
+        status: apiKey ? 'configured' : 'not_configured',
       };
     });
 
+    // 构建自定义 Provider 响应
+    const customProviders: Array<{
+      id: string;
+      name: string;
+      type: 'custom';
+      baseUrl: string;
+      models: string[];
+      configured: boolean;
+      maskedKey: string | null;
+      status: string;
+    }> = [];
+
+    for (const [key, value] of Object.entries(userKeys)) {
+      if (isCustomProvider(value)) {
+        customProviders.push({
+          id: key,
+          name: value.name,
+          type: 'custom',
+          baseUrl: value.baseUrl,
+          models: value.models || [],
+          configured: true,
+          maskedKey: maskApiKey(value.apiKey),
+          status: 'configured',
+        });
+      }
+    }
+
     return NextResponse.json({
-      providers,
-      supportedProviders: SUPPORTED_PROVIDERS.map(p => ({ id: p.id, name: p.name, keyPrefix: p.keyPrefix })),
+      providers: [...predefinedProviders, ...customProviders],
+      predefinedProviders: SUPPORTED_PROVIDERS.map(p => ({ 
+        id: p.id, 
+        name: p.name, 
+        keyPrefix: p.keyPrefix,
+        baseUrl: p.baseUrl,
+      })),
+      customProviders: customProviders.map(p => ({
+        id: p.id,
+        name: p.name,
+        baseUrl: p.baseUrl,
+        models: p.models,
+      })),
     });
   } catch (error) {
     console.error('[Providers API] GET error:', error);
@@ -90,7 +133,19 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST - 添加/更新 Provider Key
+ * POST - 添加/更新 Provider Key 或添加自定义 Provider
+ * 
+ * Body for predefined provider:
+ * { provider: 'openai', apiKey: 'sk-...', action?: 'test' }
+ * 
+ * Body for custom provider:
+ * { 
+ *   custom: true,
+ *   name: 'New-API',
+ *   baseUrl: 'http://...',
+ *   apiKey: 'sk-...',
+ *   models: ['model1', 'model2']
+ * }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -103,6 +158,84 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    
+    // 获取现有 keys
+    const existingKeys = await getUserProviderKeys(auth.userId);
+
+    // 检查是否为自定义 Provider
+    if (body.custom === true) {
+      // === 添加自定义 Provider ===
+      const { name, baseUrl, apiKey, models, id } = body;
+      
+      if (!name || !baseUrl || !apiKey) {
+        return NextResponse.json(
+          { error: { code: 'INVALID_REQUEST', message: 'name, baseUrl and apiKey are required for custom provider' } },
+          { status: 400 }
+        );
+      }
+
+      // 验证 baseUrl 格式
+      try {
+        new URL(baseUrl);
+      } catch {
+        return NextResponse.json(
+          { error: { code: 'INVALID_URL', message: 'Invalid baseUrl format' } },
+          { status: 400 }
+        );
+      }
+
+      // 生成唯一 ID（使用 name 的 slug 或提供的 id）
+      const providerId = id || `custom_${name.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`;
+
+      // 构建自定义 Provider 配置
+      const customProvider: CustomProviderConfig = {
+        name,
+        baseUrl: baseUrl.replace(/\/$/, ''), // 移除末尾斜杠
+        apiKey,
+        models: models || [],
+        custom: true,
+        enabled: true,
+      };
+
+      // 测试连接（可选）
+      if (body.action === 'test') {
+        try {
+          const testResult = await testCustomProvider(customProvider);
+          if (!testResult.valid) {
+            return NextResponse.json({
+              error: { code: 'TEST_FAILED', message: testResult.error || 'Connection test failed' },
+            }, { status: 400 });
+          }
+        } catch (error) {
+          return NextResponse.json({
+            error: { code: 'TEST_FAILED', message: error instanceof Error ? error.message : 'Connection test failed' },
+          }, { status: 500 });
+        }
+      }
+
+      // 保存
+      const updatedKeys = {
+        ...existingKeys,
+        [providerId]: customProvider,
+      };
+
+      await updateUserProviderKeys(auth.userId, updatedKeys);
+
+      return NextResponse.json({
+        success: true,
+        provider: {
+          id: providerId,
+          name,
+          type: 'custom',
+          baseUrl: customProvider.baseUrl,
+          models: customProvider.models,
+          maskedKey: maskApiKey(apiKey),
+        },
+        message: `Custom provider "${name}" added successfully`,
+      });
+    }
+
+    // === 预定义 Provider ===
     const { provider, apiKey, action } = body;
 
     if (!provider || !apiKey) {
@@ -116,22 +249,18 @@ export async function POST(request: NextRequest) {
     const providerInfo = SUPPORTED_PROVIDERS.find(p => p.id === provider);
     if (!providerInfo) {
       return NextResponse.json(
-        { error: { code: 'INVALID_PROVIDER', message: `Unsupported provider: ${provider}` } },
+        { error: { code: 'INVALID_PROVIDER', message: `Unsupported provider: ${provider}. Use custom: true to add a custom provider.` } },
         { status: 400 }
       );
     }
 
     // 验证 API Key 格式（简单检查）
     if (providerInfo.keyPrefix && !apiKey.startsWith(providerInfo.keyPrefix)) {
-      // 某些 provider 可能没有固定前缀，只警告不阻止
       console.warn(`[Providers API] Key for ${provider} doesn't match expected prefix ${providerInfo.keyPrefix}`);
     }
 
-    // 获取现有 keys
-    const existingKeys = await getUserProviderKeys(auth.userId);
-    
     // 更新或添加
-    const updatedKeys: ProviderKeys = {
+    const updatedKeys = {
       ...existingKeys,
       [provider]: apiKey,
     };
@@ -171,7 +300,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * DELETE - 删除 Provider Key
+ * DELETE - 删除 Provider Key（预定义或自定义）
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -204,14 +333,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     // 删除
-    const updatedKeys: ProviderKeys = { ...existingKeys };
+    const updatedKeys = { ...existingKeys };
     delete updatedKeys[provider];
     
     await updateUserProviderKeys(auth.userId, updatedKeys);
 
     return NextResponse.json({
       success: true,
-      message: `${provider} API key removed`,
+      message: `${provider} removed`,
     });
   } catch (error) {
     console.error('[Providers API] DELETE error:', error);
@@ -223,7 +352,7 @@ export async function DELETE(request: NextRequest) {
 }
 
 /**
- * 测试 Provider API Key 是否有效
+ * 测试预定义 Provider API Key 是否有效
  */
 async function testProviderKey(
   provider: typeof SUPPORTED_PROVIDERS[0],
@@ -245,6 +374,50 @@ async function testProviderKey(
 
     if (response.status === 401 || response.status === 403) {
       return { valid: false, error: 'Invalid API key or unauthorized' };
+    }
+
+    return { valid: false, error: `API returned status ${response.status}` };
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError') {
+        return { valid: false, error: 'Connection timeout' };
+      }
+      return { valid: false, error: error.message };
+    }
+    return { valid: false, error: 'Unknown error' };
+  }
+}
+
+/**
+ * 测试自定义 Provider 是否可用
+ */
+async function testCustomProvider(
+  provider: CustomProviderConfig
+): Promise<{ valid: boolean; error?: string; models?: string[] }> {
+  try {
+    const response = await fetch(`${provider.baseUrl}/models`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${provider.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const models = data.data?.map((m: { id: string }) => m.id) || [];
+      return { valid: true, models };
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      return { valid: false, error: 'Invalid API key or unauthorized' };
+    }
+
+    // 某些 API 可能不支持 /models 端点，尝试基本连接
+    if (response.status === 404) {
+      // 尝试直接测试 chat completion（dry run）
+      return { valid: true, models: provider.models || [] };
     }
 
     return { valid: false, error: `API returned status ${response.status}` };

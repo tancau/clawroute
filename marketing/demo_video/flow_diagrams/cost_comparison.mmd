@@ -1,0 +1,18 @@
+graph TD
+    subgraph 不使用 HopLLM
+        A1[用户] --> B1[GPT-4 每次调用]
+        B1 --> C1[$500/月]
+    end
+    
+    subgraph 使用 HopLLM
+        A2[用户] --> B2[HopLLM 智能路由]
+        B2 --> C2{意图分类}
+        C2 -->|20% 复杂| D2[GPT-4/Claude Opus]
+        C2 -->|80% 简单| E2[GPT-3.5/DeepSeek]
+        D2 --> F2[$17.50/月]
+        E2 --> F2
+    end
+    
+    style C1 fill:#EF4444,color:#fff
+    style F2 fill:#10B981,color:#fff
+    style B2 fill:#4F46E5,color:#fff
