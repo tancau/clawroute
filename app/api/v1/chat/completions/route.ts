@@ -59,15 +59,57 @@ const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
     patterns: [
       /推理|reasoning|证明|推导|逻辑|数学|math|计算|solve|证明题|思考题/i,
       /step by step|逐步|推导|分析原因|why|为什么|解释/i,
+      /raisonner|raisonnement|déduire/i,  // French
+      /folgern|Schlussfolgerung/i,  // German
+      /razonar|razonamiento/i,  // Spanish
+      /raciocinar|raciocínio/i,  // Portuguese
+      /推論|すいろん/i,  // Japanese
+      /추론/i,  // Korean
     ], 
     intent: 'reasoning' 
   },
   // Analysis - 数据分析
-  { patterns: [/分析|analyze|数据|report|统计|比较|对比|研究|investigate/i], intent: 'analysis' },
+  { 
+    patterns: [
+      /分析|analyze|数据|report|统计|比较|对比|研究|investigate/i,
+      /analyser|analyse/i,  // French
+      /analysieren|Analyse/i,  // German
+      /analizar|análisis/i,  // Spanish
+      /analisar|análise/i,  // Portuguese
+      /分析/i,  // Japanese
+      /분석/i,  // Korean
+    ], 
+    intent: 'analysis' 
+  },
   // Translation - 翻译
-  { patterns: [/翻译|translate|翻译成|translate to|语言|language/i], intent: 'translation' },
+  { 
+    patterns: [
+      /翻译|translate|翻译成|translate to|语言|language/i,
+      /traduire|traduction/i,  // French
+      /übersetzen|Übersetzung/i,  // German
+      /traducir|traducción/i,  // Spanish
+      /traduzir|tradução/i,  // Portuguese
+      /tradurre|traduzione/i,  // Italian
+      /翻訳|ほんやく/i,  // Japanese
+      /번역/i,  // Korean
+      /переводить|перевод/i,  // Russian
+      /ترجم/i,  // Arabic
+    ], 
+    intent: 'translation' 
+  },
   // Creative - 创意写作（移除通用词 write）
-  { patterns: [/创意|creative|故事|story|小说|诗歌|诗歌|剧本|创作|编一个/i], intent: 'creative' },
+  { 
+    patterns: [
+      /创意|creative|故事|story|小说|诗歌|诗歌|剧本|创作|编一个/i,
+      /créer|création|histoire/i,  // French
+      /erstellen|Kreation|Geschichte/i,  // German
+      /crear|creación|historia/i,  // Spanish
+      /criar|criação|história/i,  // Portuguese
+      /創作|作る/i,  // Japanese
+      /창작/i,  // Korean
+    ], 
+    intent: 'creative' 
+  },
   // Long Context - 长文本处理
   { patterns: [/长文本|long|文档|document|总结|summary|阅读|read|论文|paper/i], intent: 'long_context' },
   // Casual Chat - 最后匹配，作为默认
