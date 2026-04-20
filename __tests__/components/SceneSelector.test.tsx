@@ -21,11 +21,22 @@ vi.mock('@/store/use-app-store', () => ({
 }));
 
 vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => {
-    const translations: Record<string, string> = {
-      'savingLabelShort': '节省',
+  useTranslations: (namespace: string) => (key: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      'home': {
+        'savingLabel': '节省',
+        'savingLabelShort': '节省',
+      },
+      'scenes': {
+        'trading-bot': '交易 Bot',
+        'customer-service': '客服助手',
+      },
+      'sceneDescriptions': {
+        'trading-bot': '交易自动化',
+        'customer-service': '智能客服',
+      },
     };
-    return translations[key] ?? key;
+    return translations[namespace]?.[key] ?? key;
   },
 }));
 
