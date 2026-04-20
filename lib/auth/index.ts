@@ -128,6 +128,39 @@ async function ensureTable() {
 
 // ===== User Operations =====
 
+export async function findUserById(id: string): Promise<InternalUser | null> {
+  const sql = await getPostgres();
+
+  if (sql) {
+    await ensureTable();
+    const result = await sql`
+      SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
+      FROM users WHERE id = ${id}
+    `;
+    if (result.rows.length === 0) return null;
+    const row = result.rows[0]!;
+    return {
+      id: row.id as string,
+      email: row.email as string,
+      passwordHash: row.password_hash as string,
+      name: (row.name as string) || undefined,
+      tier: row.tier as string,
+      credits: row.credits as number,
+      apiKey: (row.api_key as string) || undefined,
+      createdAt: row.created_at as number,
+      providerKeysEncrypted: (row.provider_keys as string) || undefined,
+    };
+  }
+
+  // Fallback: memory store
+  for (const user of Array.from(memoryUsers.values())) {
+    if (user.id === id) {
+      return user;
+    }
+  }
+  return null;
+}
+
 export async function findUserByEmail(email: string): Promise<InternalUser | null> {
   const sql = await getPostgres();
 

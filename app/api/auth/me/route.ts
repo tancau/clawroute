@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT, findUserByEmail } from '@/lib/auth';
+import { verifyJWT, findUserById } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Get user info
-    const user = await findUserByEmail(payload.email as string);
+    // Get user info by userId from JWT
+    const user = await findUserById(payload.userId as string);
     if (!user) {
       return NextResponse.json(
         { error: { code: 'USER_NOT_FOUND', message: 'User not found' } },
