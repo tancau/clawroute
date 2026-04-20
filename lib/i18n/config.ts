@@ -32,6 +32,9 @@ export const countryToLanguage: Record<string, LanguageCode> = {
   DE: 'de',
   BR: 'pt',
   PT: 'pt',
+  RU: 'ru',
+  BY: 'ru',
+  KZ: 'ru',
   SA: 'ar',
   AE: 'ar',
   EG: 'ar',
@@ -73,6 +76,8 @@ export function detectBrowserLanguage(acceptLanguage: string): LanguageCode | nu
     if (lang.startsWith('de')) return 'de';
     // Portuguese
     if (lang.startsWith('pt')) return 'pt';
+    // Russian
+    if (lang.startsWith('ru')) return 'ru';
     // Arabic
     if (lang.startsWith('ar')) return 'ar';
     // English
