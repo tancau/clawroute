@@ -51,6 +51,20 @@ const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
       /写代码|写一个|写个|编程|开发|实现|function|class|bug|fix|debug|算法|algorithm|sort|search|代码|code review/i,
       /python|javascript|typescript|java|go|rust|sql|html|css|api|script|脚本/i,
       /如何实现|how to implement|怎么写|怎么实现|帮我写|帮我实现/i,
+      // French
+      /programmer|programme|code|coder|développer|développement/i,
+      // German
+      /programmieren|Programm|Code|entwickeln|Entwicklung/i,
+      // Spanish
+      /programar|programa|código|desarrollar|desarrollo/i,
+      // Portuguese
+      /programar|programa|código|desenvolver|desenvolvimento/i,
+      // Italian
+      /programmare|programma|codice|sviluppare|sviluppo/i,
+      // Russian
+      /программировать|программа|код|разрабатывать|разработка/i,
+      // Arabic
+      /برمجة|كود|تطوير|مطور/i,
     ], 
     intent: 'coding' 
   },
@@ -63,8 +77,11 @@ const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
       /folgern|Schlussfolgerung/i,  // German
       /razonar|razonamiento/i,  // Spanish
       /raciocinar|raciocínio/i,  // Portuguese
+      /ragionare|ragionamento/i,  // Italian
       /推論|すいろん/i,  // Japanese
       /추론/i,  // Korean
+      /рассуждать|рассуждение|логика/i,  // Russian
+      /استنتاج|منطق/i,  // Arabic
     ], 
     intent: 'reasoning' 
   },
@@ -76,8 +93,11 @@ const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
       /analysieren|Analyse/i,  // German
       /analizar|análisis/i,  // Spanish
       /analisar|análise/i,  // Portuguese
+      /analizzare|analisi/i,  // Italian
       /分析/i,  // Japanese
       /분석/i,  // Korean
+      /анализировать|анализ/i,  // Russian
+      /تحليل/i,  // Arabic
     ], 
     intent: 'analysis' 
   },
@@ -105,15 +125,46 @@ const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
       /erstellen|Kreation|Geschichte/i,  // German
       /crear|creación|historia/i,  // Spanish
       /criar|criação|história/i,  // Portuguese
+      /creare|creatività|storia/i,  // Italian
       /創作|作る/i,  // Japanese
       /창작/i,  // Korean
+      /создавать|творчество|история/i,  // Russian
+      /إبداع|قصة/i,  // Arabic
     ], 
     intent: 'creative' 
   },
   // Long Context - 长文本处理
-  { patterns: [/长文本|long|文档|document|总结|summary|阅读|read|论文|paper/i], intent: 'long_context' },
+  { 
+    patterns: [
+      /长文本|long|文档|document|总结|summary|阅读|read|论文|paper/i,
+      /document|résumé|résumer|lire|thèse/i,  // French
+      /Dokument|zusammenfassen|Zusammenfassung|lesen|Arbeit/i,  // German
+      /documento|resumen|resumir|leer|tesis/i,  // Spanish
+      /documento|resumo|resumir|ler|tese/i,  // Portuguese
+      /documento|riassunto|riassumere|leggere|tesi/i,  // Italian
+      /文書|要約|読む|論文/i,  // Japanese
+      /문서|요약|읽다|논문/i,  // Korean
+      /документ|итог|читать|статья/i,  // Russian
+      /مستند|ملخص|قراءة|بحث/i,  // Arabic
+    ], 
+    intent: 'long_context' 
+  },
   // Casual Chat - 最后匹配，作为默认
-  { patterns: [/聊天|chat|问候|hi|hello|你好|帮忙|help me|谢谢|thanks|再见/i], intent: 'casual_chat' },
+  { 
+    patterns: [
+      /聊天|chat|问候|hi|hello|你好|帮忙|help me|谢谢|thanks|再见/i,
+      /salut|bonjour|merci|au revoir/i,  // French
+      /hallo|guten tag|danke|tschüss/i,  // German
+      /hola|buenos días|gracias|adiós/i,  // Spanish
+      /olá|bom dia|obrigado|tchau/i,  // Portuguese
+      /ciao|buongiorno|grazie|arrivederci/i,  // Italian
+      /こんにちは|ありがとう|さようなら/i,  // Japanese
+      /안녕|감사합니다|안녕히가세요/i,  // Korean
+      /привет|здравствуй|спасибо|пока/i,  // Russian
+      /مرحبا|شكرا|مع السلامة/i,  // Arabic
+    ], 
+    intent: 'casual_chat' 
+  },
 ];
 
 function classifyIntent(message: string): IntentClassification {
