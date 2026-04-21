@@ -329,6 +329,7 @@
     "lastUpdated": "최종 업데이트: 2026년 4월",
     "contactUs": "문의 사항이 있으시면 연락해 주세요"
   },
+  "providers": {
     "title": "Provider API Keys",
     "description": "Configure your own API keys for intelligent routing. Your keys are encrypted and stored securely.",
     "configured": "Configured",

@@ -342,6 +342,7 @@
     "lastUpdated": "最後更新：2026 年 4 月",
     "contactUs": "有問題？請聯繫"
   },
+  "providers": {
     "title": "Provider API Keys",
     "description": "Configure your own API keys for intelligent routing. Your keys are encrypted and stored securely.",
     "configured": "Configured",

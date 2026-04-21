@@ -271,6 +271,7 @@
     "lastUpdated": "Última atualização: Abril 2026",
     "contactUs": "Perguntas? Entre em contato"
   },
+  "providers": {
     "title": "Provider API Keys",
     "description": "Configure your own API keys for intelligent routing. Your keys are encrypted and stored securely.",
     "configured": "Configured",
