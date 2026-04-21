@@ -7,6 +7,7 @@ import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { 
   Key, 
   Plus, 
@@ -367,32 +368,52 @@ export default function ProvidersPage() {
                                 {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                               </button>
                             </div>
-                            <Button
-                              onClick={() => handleSaveKey(provider.id)}
-                              disabled={!newApiKey.trim() || saving}
-                              size="sm"
-                            >
-                              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                            </Button>
-                            <Button
-                              onClick={() => { setEditingProvider(null); setNewApiKey(''); }}
-                              variant="outline"
-                              size="sm"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    onClick={() => handleSaveKey(provider.id)}
+                                    disabled={!newApiKey.trim() || saving}
+                                    size="sm"
+                                  >
+                                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Save API Key</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    onClick={() => { setEditingProvider(null); setNewApiKey(''); }}
+                                    variant="outline"
+                                    size="sm"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Cancel</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </>
                         ) : (
                           <>
-                            <a
-                              href={provider.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-neutral-7 hover:text-neutral-10 p-2"
-                              title="Get API Key"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <a
+                                    href={provider.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-neutral-7 hover:text-neutral-10 p-2"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                  </a>
+                                </TooltipTrigger>
+                                <TooltipContent>Get API Key</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                             {isConfigured && (
                               <>
                                 <Button
@@ -407,21 +428,35 @@ export default function ProvidersPage() {
                                     'Test'
                                   )}
                                 </Button>
-                                <Button
-                                  onClick={() => startEditing(provider.id)}
-                                  variant="outline"
-                                  size="sm"
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  onClick={() => handleDeleteKey(provider.id)}
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-semantic-error hover:bg-semantic-error/10"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        onClick={() => startEditing(provider.id)}
+                                        variant="outline"
+                                        size="sm"
+                                      >
+                                        Edit
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Edit API Key</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        onClick={() => handleDeleteKey(provider.id)}
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-semantic-error hover:bg-semantic-error/10"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Delete API Key</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </>
                             )}
                             {!isConfigured && (
@@ -451,14 +486,21 @@ export default function ProvidersPage() {
               <Server className="w-5 h-5 text-brand-primary" />
               <h2 className="text-xl font-semibold text-neutral-10">Custom Providers</h2>
             </div>
-            <Button
-              onClick={() => setShowCustomForm(!showCustomForm)}
-              variant="outline"
-              size="sm"
-            >
-              {showCustomForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4 mr-1" />}
-              {showCustomForm ? 'Cancel' : 'Add Custom'}
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => setShowCustomForm(!showCustomForm)}
+                    variant="outline"
+                    size="sm"
+                  >
+                    {showCustomForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4 mr-1" />}
+                    {showCustomForm ? 'Cancel' : 'Add Custom'}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{showCustomForm ? 'Cancel adding custom provider' : 'Add a custom LLM gateway'}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           {/* Add Custom Provider Form */}

@@ -250,22 +250,27 @@ class ApiClient {
   }
 
   // ===== Analytics API =====
+  // All analytics methods use Next.js API Routes (same-origin) to avoid CORS/network issues
   async getAnalyticsUsage(userId: string, days: number = 30) {
+    // userId validated via JWT token in API route
     return this.request<{ userId: string; period: { days: number }; stats: Record<string, unknown> }>(
-      `/v1/analytics/usage/${userId}?days=${days}`
+      `/api/dashboard/usage?days=${days}`, {}, true
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getSavings(userId: string) {
+    // userId validated via JWT token in API route
     return this.request<{
       userId: string;
       totalSavedCents: number;
       totalSavedDollars: number;
       averageSavedPercent: number;
-      daily: Array<{ date: string; savedCents: number }>;
-    }>(`/v1/analytics/savings/${userId}`);
+      daily: Array<{ date: string; savedCents: number; requests: number; costCents: number }>;
+    }>(`/api/dashboard/savings`, {}, true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getRecentRequests(userId: string, limit: number = 10) {
     return this.request<{
       userId: string;
@@ -280,9 +285,10 @@ class ApiClient {
         costDollars: number;
         timestamp: number;
       }>;
-    }>(`/v1/analytics/recent/${userId}?limit=${limit}`);
+    }>(`/api/dashboard/recent?limit=${limit}`, {}, true);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getTopModels(userId: string, limit: number = 10) {
     return this.request<{
       userId: string;
@@ -293,7 +299,7 @@ class ApiClient {
         totalCostCents: number;
         totalCostDollars: number;
       }>;
-    }>(`/v1/analytics/top-models/${userId}?limit=${limit}`);
+    }>(`/api/dashboard/top-models?limit=${limit}`, {}, true);
   }
 }
 
