@@ -89,13 +89,20 @@ async function getPostgres() {
   }
   try {
     const { sql } = await import('@vercel/postgres');
+    
+    // Debug: check environment variables
+    const postgresUrl = process.env.POSTGRES_URL;
+    console.log('[getPostgres] POSTGRES_URL exists:', !!postgresUrl);
+    console.log('[getPostgres] POSTGRES_URL starts with:', postgresUrl?.substring(0, 30) + '...');
+    
     // Test connection
-    await sql`SELECT 1 as test`;
+    const result = await sql`SELECT 1 as test`;
     postgresAvailable = true;
-    console.log('[getPostgres] PostgreSQL connection successful');
+    console.log('[getPostgres] PostgreSQL connection successful, test result:', result.rows[0]);
     return sql;
   } catch (err) {
     console.error('[getPostgres] PostgreSQL connection failed:', err instanceof Error ? err.message : String(err));
+    console.error('[getPostgres] Full error:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
     console.error('[getPostgres] This will cause user data to be stored in memory only!');
     postgresAvailable = false;
     return null;
