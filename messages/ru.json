@@ -128,6 +128,7 @@
     "apiStatus": "Статус API",
     "network": "Сеть инференса",
     "docs": "Документация",
+    "github": "GitHub",
     "login": "Войти",
     "register": "Регистрация",
     "logout": "Выйти",

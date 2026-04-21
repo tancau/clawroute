@@ -105,6 +105,7 @@
     "apiStatus": "API 상태",
     "network": "추론 네트워크",
     "docs": "문서",
+    "github": "GitHub",
     "login": "로그인",
     "register": "회원가입",
     "logout": "로그아웃",

@@ -105,6 +105,7 @@
     "apiStatus": "APIステータス",
     "network": "推論ネットワーク",
     "docs": "ドキュメント",
+    "github": "GitHub",
     "login": "ログイン",
     "register": "登録",
     "logout": "ログアウト",
