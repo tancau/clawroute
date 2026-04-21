@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import postgres from 'postgres';
 
 // ===== Password Utilities =====
 
@@ -78,46 +79,38 @@ export function generateTokens(userId: string, tier: string) {
 }
 
 // ===== Storage Layer =====
-// Uses Vercel Postgres when available, falls back to in-memory store
+// Uses PostgreSQL (postgres package) when available, falls back to in-memory store
 
-// 连接状态追踪（带时间戳，允许自动重试）
-let lastConnectionAttempt = 0;
-let connectionError: string | null = null;
-const CONNECTION_RETRY_INTERVAL = 30000; // 30秒后自动重试
+// 连接池实例（单例模式）
+let sql: ReturnType<typeof postgres> | null = null;
 
 async function getPostgres() {
-  const now = Date.now();
+  // 复用连接池
+  if (sql) return sql;
   
-  // 如果最近失败过，检查是否应该重试
-  if (connectionError && now - lastConnectionAttempt < CONNECTION_RETRY_INTERVAL) {
-    console.warn('[getPostgres] PostgreSQL recently failed, using memory fallback. Error:', connectionError);
-    console.warn('[getPostgres] Will retry in', Math.ceil((CONNECTION_RETRY_INTERVAL - (now - lastConnectionAttempt)) / 1000), 'seconds');
+  const connectionString = process.env.POSTGRES_URL;
+  if (!connectionString) {
+    console.error('[getPostgres] POSTGRES_URL not configured');
     return null;
   }
-  
+
   try {
-    // Try different connection methods
-    const { sql } = await import('@vercel/postgres');
-    
-    // Debug: check all postgres env vars
-    console.log('[getPostgres] Environment variables check:');
-    console.log('[getPostgres] - POSTGRES_URL:', !!process.env.POSTGRES_URL);
-    console.log('[getPostgres] - POSTGRES_URL_NON_POOLING:', !!process.env.POSTGRES_URL_NON_POOLING);
-    console.log('[getPostgres] - POSTGRES_PRISMA_URL:', !!process.env.POSTGRES_PRISMA_URL);
-    
-    // Test connection with timeout
-    const result = await sql`SELECT 1 as test`;
-    connectionError = null; // 重置错误状态
-    console.log('[getPostgres] PostgreSQL connection successful, test result:', result.rows[0]);
+    // 使用 postgres 包，配置连接池
+    sql = postgres(connectionString, {
+      max: 10, // 最大连接数
+      idle_timeout: 30, // 空闲超时（秒）
+      connect_timeout: 10, // 连接超时（秒）
+      // Supabase transaction mode 不支持 prepared statements
+      prepare: false,
+    });
+
+    // 测试连接
+    await sql`SELECT 1 as test`;
+    console.log('[getPostgres] PostgreSQL connection successful');
     return sql;
   } catch (err) {
-    lastConnectionAttempt = now;
-    connectionError = err instanceof Error ? err.message : String(err);
-    console.error('[getPostgres] PostgreSQL connection failed:', connectionError);
-    if (err instanceof Error && 'cause' in err) {
-      console.error('[getPostgres] Error cause:', err.cause);
-    }
-    console.error('[getPostgres] This will cause user data to be stored in memory only!');
+    console.error('[getPostgres] PostgreSQL connection failed:', err);
+    sql = null;
     return null;
   }
 }
@@ -173,8 +166,8 @@ export async function findUserById(id: string): Promise<InternalUser | null> {
       SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
       FROM users WHERE id = ${id}
     `;
-    if (result.rows.length === 0) return null;
-    const row = result.rows[0]!;
+    if (result.length === 0) return null;
+    const row = result[0]!;
     return {
       id: row.id as string,
       email: row.email as string,
@@ -207,8 +200,8 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
       SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
       FROM users WHERE email = ${normalizedEmail}
     `;
-    if (result.rows.length === 0) return null;
-    const row = result.rows[0]!;
+    if (result.length === 0) return null;
+    const row = result[0]!;
     return {
       id: row.id as string,
       email: row.email as string,
@@ -267,7 +260,7 @@ export async function createUser(email: string, password: string, name?: string)
 }
 
 export function isUsingPostgres(): boolean {
-  return connectionError === null;
+  return sql !== null;
 }
 
 // ===== Provider Keys Operations =====
@@ -284,8 +277,8 @@ export async function findUserByApiKey(apiKey: string): Promise<InternalUser | n
       SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
       FROM users WHERE api_key = ${apiKey} AND status = 'active'
     `;
-    if (result.rows.length === 0) return null;
-    const row = result.rows[0]!;
+    if (result.length === 0) return null;
+    const row = result[0]!;
     return {
       id: row.id as string,
       email: row.email as string,
@@ -355,9 +348,9 @@ export async function getUserProviderKeys(userId: string): Promise<Record<string
     const result = await sql`
       SELECT provider_keys FROM users WHERE id = ${userId}
     `;
-    if (result.rows.length === 0) return {};
+    if (result.length === 0) return {};
     
-    const encrypted = result.rows[0]?.provider_keys as string | null;
+    const encrypted = result[0]?.provider_keys as string | null;
     if (!encrypted) return {};
     
     try {
@@ -397,8 +390,9 @@ export async function deductCredits(userId: string, amount: number): Promise<boo
       UPDATE users 
       SET credits = credits - ${amount}, updated_at = ${Date.now()}
       WHERE id = ${userId} AND credits >= ${amount}
+      RETURNING id
     `;
-    return (result.rowCount ?? 0) > 0;
+    return result.length > 0;
   }
 
   // Fallback: memory store
@@ -421,7 +415,7 @@ export async function getCredits(userId: string): Promise<number> {
     const result = await sql`
       SELECT credits FROM users WHERE id = ${userId}
     `;
-    return (result.rows[0]?.credits as number) ?? 0;
+    return (result[0]?.credits as number) ?? 0;
   }
 
   // Fallback: memory store
