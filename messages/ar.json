@@ -35,6 +35,21 @@
     "quickStartTitle": "البدء السريع",
     "savingLabelShort": "يوفر"
   },
+  "calculator": {
+    "title": "حاسبة التكاليف",
+    "monthlyCalls": "المكالمات الشهرية",
+    "avgTokens": "متوسط الرموز لكل مكالمة",
+    "withoutClawroute": "بدون HopLLM",
+    "withClawroute": "مع HopLLM",
+    "savings": "التوفير",
+    "month": "شهر",
+    "annualSavings": "التوفير السنوي",
+    "cta": "ابدأ الآن",
+    "presetPersonal": "شخصي",
+    "presetSmall": "مشروع صغير",
+    "presetMedium": "مشروع متوسط",
+    "presetLarge": "مشروع كبير"
+  },
   "scenes": {
     "trading-bot": "روبوت التداول",
     "customer-service": "خدمة العملاء",

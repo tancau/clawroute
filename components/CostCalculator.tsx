@@ -65,7 +65,7 @@ export function CostCalculator({
               setMonthlyCalls(preset.calls);
               setAvgTokens(preset.tokens);
             }}
-            className="px-3 py-1.5 text-sm rounded-lg bg-[#0a0a0a] text-[#94a3b8] hover:text-[#f8fafc] hover:border-[#00c9ff]/50 border border-[#2a2d3a] transition-colors"
+            className="px-3 py-1.5 text-sm rounded-lg bg-[#0a0a0a] text-[#94a3b8] hover:text-[#f8fafc] hover:border-[#00c9ff]/50 border border-[#2a2d3a] transition-colors whitespace-nowrap flex-shrink-0"
           >
             {preset.label}
           </button>
@@ -100,24 +100,24 @@ export function CostCalculator({
       
       {/* Results */}
       <div className="bg-[#0a0a0a] rounded-xl p-6">
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-[#94a3b8]">
               ${calculations.naiveMonthly.toFixed(2)}
             </div>
-            <div className="text-sm text-[#94a3b8]">{t('withoutClawroute')}</div>
+            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('withoutClawroute')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-[#00c9ff]">
               ${calculations.smartMonthly.toFixed(2)}
             </div>
-            <div className="text-sm text-[#94a3b8]">{t('withClawroute')}</div>
+            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('withClawroute')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] bg-clip-text text-transparent">
               {calculations.savingsPercent}%
             </div>
-            <div className="text-sm text-[#94a3b8]">{t('savings')}</div>
+            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('savings')}</div>
           </div>
         </div>
         
@@ -125,7 +125,7 @@ export function CostCalculator({
           <div className="text-4xl font-bold text-[#92fe9d] mb-2">
             ${calculations.savings.toFixed(2)}/{t('month')}
           </div>
-          <div className="text-[#94a3b8]">
+          <div className="text-[#94a3b8] whitespace-nowrap">
             {t('annualSavings')}: ${(calculations.savings * 12).toFixed(0)}
           </div>
         </div>

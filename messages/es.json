@@ -35,6 +35,21 @@
     "quickStartTitle": "Inicio Rápido",
     "savingLabelShort": "Ahorra"
   },
+  "calculator": {
+    "title": "Calculadora de Costos",
+    "monthlyCalls": "Llamadas Mensuales",
+    "avgTokens": "Promedio de Tokens por Llamada",
+    "withoutClawroute": "Sin HopLLM",
+    "withClawroute": "Con HopLLM",
+    "savings": "Ahorro",
+    "month": "mes",
+    "annualSavings": "Ahorro Anual",
+    "cta": "Comenzar",
+    "presetPersonal": "Personal",
+    "presetSmall": "Proyecto Pequeño",
+    "presetMedium": "Proyecto Mediano",
+    "presetLarge": "Proyecto Grande"
+  },
   "scenes": {
     "trading-bot": "Bot de Trading",
     "customer-service": "Servicio al Cliente",

@@ -35,6 +35,21 @@
     "quickStartTitle": "Schnellstart",
     "savingLabelShort": "Spart"
   },
+  "calculator": {
+    "title": "Kostenrechner",
+    "monthlyCalls": "Monatliche Anrufe",
+    "avgTokens": "Durchschn. Token pro Anruf",
+    "withoutClawroute": "Ohne HopLLM",
+    "withClawroute": "Mit HopLLM",
+    "savings": "Ersparnis",
+    "month": "Monat",
+    "annualSavings": "Jährliche Ersparnis",
+    "cta": "Jetzt starten",
+    "presetPersonal": "Persönlich",
+    "presetSmall": "Kleines Projekt",
+    "presetMedium": "Mittleres Projekt",
+    "presetLarge": "Großes Projekt"
+  },
   "scenes": {
     "trading-bot": "Trading-Bot",
     "customer-service": "Kundenservice",
