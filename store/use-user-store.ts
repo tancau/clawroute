@@ -64,7 +64,7 @@ export const useUserStore = create<UserStore>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      isLoading: true, // Start true to prevent premature redirects during hydration
+      isLoading: false, // Start false so login button is clickable; hydration handled by useEffect in components
       error: null,
       keys: [],
       data: null,
