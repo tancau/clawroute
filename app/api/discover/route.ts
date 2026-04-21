@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest, unauthorizedResponse } from '@/lib/middleware/api-auth';
 
 /**
  * Proxy endpoint to discover models from an OpenAI-compatible API.
@@ -8,9 +9,17 @@ import { NextRequest, NextResponse } from 'next/server';
  * 
  * This proxy is needed because browsers can't call arbitrary API endpoints
  * due to CORS restrictions.
+ * 
+ * Security: Requires authentication to prevent abuse
  */
 export async function POST(request: NextRequest) {
   try {
+    // 认证检查 - 防止未授权访问
+    const auth = await authenticateApiRequest(request);
+    if (!auth.authenticated) {
+      return unauthorizedResponse(auth.error);
+    }
+    
     const body = await request.json();
     const { baseUrl, apiKey } = body;
 

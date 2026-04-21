@@ -218,6 +218,91 @@ export function getTierRateLimitConfig(tier: string): RateLimitConfig {
   return TIER_LIMITS[tier] || TIER_LIMITS.free!;
 }
 
+// ==================== 特殊场景速率限制器 ====================
+
+/**
+ * 登录 API 速率限制器
+ * 每个IP每分钟最多 10 次登录尝试
+ * 防止暴力破解
+ */
+let loginRateLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
+
+export function getLoginRateLimiter(): (identifier: string) => Promise<RateLimitResult> {
+  if (!loginRateLimiter) {
+    loginRateLimiter = createCustomRateLimiter(10, 60, 'login');
+  }
+  return loginRateLimiter;
+}
+
+/**
+ * 注册 API 速率限制器
+ * 每个IP每小时最多 5 次注册尝试
+ */
+let registerRateLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
+
+export function getRegisterRateLimiter(): (identifier: string) => Promise<RateLimitResult> {
+  if (!registerRateLimiter) {
+    registerRateLimiter = createCustomRateLimiter(5, 3600, 'register');
+  }
+  return registerRateLimiter;
+}
+
+/**
+ * Chat Completions API 速率限制器
+ * 每用户每分钟: 60 次请求
+ * 每用户每天: 10,000 次请求
+ */
+let chatMinuteLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
+let chatDailyLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
+
+export interface ChatRateLimitResult {
+  allowed: boolean;
+  minuteLimit: RateLimitResult;
+  dailyLimit?: RateLimitResult;
+  error?: string;
+  retryAfter?: number;
+}
+
+export async function checkChatRateLimit(identifier: string): Promise<ChatRateLimitResult> {
+  if (!chatMinuteLimiter) {
+    chatMinuteLimiter = createCustomRateLimiter(60, 60, 'chat_minute');
+  }
+  if (!chatDailyLimiter) {
+    chatDailyLimiter = createCustomRateLimiter(10000, 86400, 'chat_daily');
+  }
+  
+  // Check minute limit
+  const minuteResult = await chatMinuteLimiter(identifier);
+  
+  if (!minuteResult.success) {
+    return {
+      allowed: false,
+      minuteLimit: minuteResult,
+      error: 'Rate limit exceeded: too many requests per minute',
+      retryAfter: minuteResult.reset,
+    };
+  }
+  
+  // Check daily limit
+  const dailyResult = await chatDailyLimiter(identifier);
+  
+  if (!dailyResult.success) {
+    return {
+      allowed: false,
+      minuteLimit: minuteResult,
+      dailyLimit: dailyResult,
+      error: 'Rate limit exceeded: daily quota reached',
+      retryAfter: dailyResult.reset,
+    };
+  }
+  
+  return {
+    allowed: true,
+    minuteLimit: minuteResult,
+    dailyLimit: dailyResult,
+  };
+}
+
 /**
  * 创建自定义速率限制器（用于特殊场景）
  */

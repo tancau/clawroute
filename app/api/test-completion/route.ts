@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest, unauthorizedResponse } from '@/lib/middleware/api-auth';
 
+/**
+ * POST /api/test-completion
+ * Test provider API connections by sending a minimal completion request
+ * 
+ * Security: Requires authentication to prevent abuse
+ */
 export async function POST(request: NextRequest) {
   try {
+    // 认证检查 - 防止未授权访问
+    const auth = await authenticateApiRequest(request);
+    if (!auth.authenticated) {
+      return unauthorizedResponse(auth.error);
+    }
+    
     const body = await request.json();
     const { providers } = body as {
       providers: Array<{
