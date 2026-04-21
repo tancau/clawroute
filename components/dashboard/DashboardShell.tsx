@@ -18,9 +18,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   const navItems = [
     { href: '/dashboard', label: t('overview'), icon: LayoutDashboard },
-    { href: '/dashboard/stats', label: 'Statistics', icon: BarChart3 },
+    { href: '/dashboard/stats', label: t('statistics'), icon: BarChart3 },
     { href: '/dashboard/api-key', label: t('apiKeyNav'), icon: Key },
-    { href: '/dashboard/providers', label: 'Providers', icon: Plug },
+    { href: '/dashboard/providers', label: t('providersNav'), icon: Plug },
     { href: '/dashboard/savings', label: t('savings'), icon: PiggyBank },
     { href: '/dashboard/preferences', label: t('preferences'), icon: Settings },
   ];
