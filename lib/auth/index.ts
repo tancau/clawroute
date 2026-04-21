@@ -88,21 +88,29 @@ async function getPostgres() {
     return null;
   }
   try {
+    // Try different connection methods
     const { sql } = await import('@vercel/postgres');
     
-    // Debug: check environment variables
-    const postgresUrl = process.env.POSTGRES_URL;
-    console.log('[getPostgres] POSTGRES_URL exists:', !!postgresUrl);
-    console.log('[getPostgres] POSTGRES_URL starts with:', postgresUrl?.substring(0, 30) + '...');
+    // Debug: check all postgres env vars
+    console.log('[getPostgres] Environment variables check:');
+    console.log('[getPostgres] - POSTGRES_URL:', !!process.env.POSTGRES_URL);
+    console.log('[getPostgres] - POSTGRES_URL_NON_POOLING:', !!process.env.POSTGRES_URL_NON_POOLING);
+    console.log('[getPostgres] - POSTGRES_PRISMA_URL:', !!process.env.POSTGRES_PRISMA_URL);
+    console.log('[getPostgres] - POSTGRES_HOST:', !!process.env.POSTGRES_HOST);
+    console.log('[getPostgres] - POSTGRES_USER:', !!process.env.POSTGRES_USER);
+    console.log('[getPostgres] - POSTGRES_PASSWORD:', !!process.env.POSTGRES_PASSWORD);
+    console.log('[getPostgres] - POSTGRES_DATABASE:', !!process.env.POSTGRES_DATABASE);
     
-    // Test connection
+    // Test connection with timeout
     const result = await sql`SELECT 1 as test`;
     postgresAvailable = true;
     console.log('[getPostgres] PostgreSQL connection successful, test result:', result.rows[0]);
     return sql;
   } catch (err) {
     console.error('[getPostgres] PostgreSQL connection failed:', err instanceof Error ? err.message : String(err));
-    console.error('[getPostgres] Full error:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+    if (err instanceof Error && 'cause' in err) {
+      console.error('[getPostgres] Error cause:', err.cause);
+    }
     console.error('[getPostgres] This will cause user data to be stored in memory only!');
     postgresAvailable = false;
     return null;
