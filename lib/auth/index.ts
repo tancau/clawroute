@@ -83,14 +83,20 @@ export function generateTokens(userId: string, tier: string) {
 let postgresAvailable: boolean | null = null;
 
 async function getPostgres() {
-  if (postgresAvailable === false) return null;
+  if (postgresAvailable === false) {
+    console.warn('[getPostgres] PostgreSQL previously failed, using memory fallback');
+    return null;
+  }
   try {
     const { sql } = await import('@vercel/postgres');
     // Test connection
-    await sql`SELECT 1`;
+    const result = await sql`SELECT 1 as test`;
     postgresAvailable = true;
+    console.log('[getPostgres] PostgreSQL connection successful');
     return sql;
-  } catch {
+  } catch (err) {
+    console.error('[getPostgres] PostgreSQL connection failed:', err instanceof Error ? err.message : String(err));
+    console.error('[getPostgres] This will cause user data to be stored in memory only!');
     postgresAvailable = false;
     return null;
   }
@@ -217,8 +223,10 @@ export async function createUser(email: string, password: string, name?: string)
       INSERT INTO users (id, email, password_hash, name, tier, credits, api_key, created_at, updated_at)
       VALUES (${id}, ${normalizedEmail}, ${passwordHash}, ${name || null}, 'free', ${defaultCredits}, ${apiKey}, ${now}, ${now})
     `;
+    console.log('[createUser] User saved to PostgreSQL');
   } else {
     // Fallback: memory store
+    console.warn('[createUser] WARNING: Using memory fallback - user data will be lost on restart!');
     const user: InternalUser = {
       id, email: normalizedEmail, passwordHash, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now,
     };
