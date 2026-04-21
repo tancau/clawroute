@@ -23,6 +23,7 @@ import {
   Server
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ModelPickerDialog } from '@/components/ModelPickerDialog';
 
 // 支持的预定义 Providers
 const SUPPORTED_PROVIDERS = [
@@ -69,6 +70,7 @@ export default function ProvidersPage() {
     models: '',
   });
   const [customFormSaving, setCustomFormSaving] = useState(false);
+  const [showModelPicker, setShowModelPicker] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -498,11 +500,33 @@ export default function ProvidersPage() {
                   <label className="block text-sm font-medium text-neutral-10 mb-1">
                     Models (optional, comma-separated)
                   </label>
-                  <Input
-                    value={customForm.models}
-                    onChange={(e) => setCustomForm({ ...customForm, models: e.target.value })}
-                    placeholder="e.g., qwen/qwen3-coder:free, deepseek-chat"
-                  />
+                  <div className="relative">
+                    <Input
+                      value={customForm.models}
+                      onChange={(e) => setCustomForm({ ...customForm, models: e.target.value })}
+                      placeholder="Click to select models or type manually"
+                      onClick={() => {
+                        if (customForm.baseUrl.trim() && customForm.apiKey.trim()) {
+                          setShowModelPicker(true);
+                        }
+                      }}
+                      className={cn(
+                        customForm.baseUrl.trim() && customForm.apiKey.trim()
+                          ? 'cursor-pointer hover:border-brand-primary focus:border-brand-primary'
+                          : ''
+                      )}
+                    />
+                    {customForm.baseUrl.trim() && customForm.apiKey.trim() && !customForm.models && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-primary pointer-events-none">
+                        Click to discover
+                      </span>
+                    )}
+                  </div>
+                  {!customForm.baseUrl.trim() || !customForm.apiKey.trim() ? (
+                    <p className="text-xs text-neutral-7 mt-1">
+                      Enter Base URL and API Key first to enable auto-discovery
+                    </p>
+                  ) : null}
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
@@ -628,6 +652,17 @@ export default function ProvidersPage() {
             </div>
           </div>
         </div>
+        {/* Model Picker Dialog */}
+        <ModelPickerDialog
+          open={showModelPicker}
+          onOpenChange={setShowModelPicker}
+          baseUrl={customForm.baseUrl}
+          apiKey={customForm.apiKey}
+          selectedModels={customForm.models ? customForm.models.split(',').map(m => m.trim()).filter(Boolean) : []}
+          onConfirm={(models) => {
+            setCustomForm({ ...customForm, models: models.join(', ') });
+          }}
+        />
       </div>
     </DashboardShell>
   );
