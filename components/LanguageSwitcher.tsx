@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { languages, LanguageCode, isValidLanguage } from '@/lib/i18n/config';
 import { useState, useRef, useEffect } from 'react';
@@ -8,7 +8,6 @@ import { ChevronDown, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function LanguageSwitcher() {
-  const router = useRouter();
   const pathname = usePathname();
   const currentLocale = useLocale() as LanguageCode;
   const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +34,8 @@ export function LanguageSwitcher() {
     const firstSegment = pathSegments[0];
     if (firstSegment && isValidLanguage(firstSegment)) {
       pathSegments[0] = lang;
-      router.push('/' + pathSegments.join('/'));
+      // Use window.location.href to force full page refresh for locale change
+      window.location.href = '/' + pathSegments.join('/');
     } else {
       // Reload to apply new locale
       window.location.reload();
@@ -72,7 +72,7 @@ export function LanguageSwitcher() {
               className={`w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2 transition-colors text-sm ${
                 code === currentLocale
                   ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                  : ''
+                  : 'text-gray-700 dark:text-gray-300'
               }`}
               role="option"
               aria-selected={code === currentLocale}
