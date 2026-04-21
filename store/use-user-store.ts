@@ -64,7 +64,7 @@ export const useUserStore = create<UserStore>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      isLoading: false, // Start false so login button is clickable
+      isLoading: true, // Start true to prevent premature redirects during hydration
       error: null,
       keys: [],
       data: null,

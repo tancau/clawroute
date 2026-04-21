@@ -1,7 +1,8 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
+import { useTransition } from 'react';
 import { languages, LanguageCode, isValidLanguage } from '@/lib/i18n/config';
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Globe } from 'lucide-react';
@@ -9,6 +10,8 @@ import { Button } from '@/components/ui/button';
 
 export function LanguageSwitcher() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const currentLocale = useLocale() as LanguageCode;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -25,21 +28,29 @@ export function LanguageSwitcher() {
   }, []);
 
   const changeLanguage = (lang: LanguageCode) => {
-    // Set cookie
+    // Set cookie before navigation
     document.cookie = `preferred-language=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-    document.cookie = `locale=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     
     // Update URL path if it contains a locale
     const pathSegments = pathname.split('/').filter(Boolean);
     const firstSegment = pathSegments[0];
-    if (firstSegment && isValidLanguage(firstSegment)) {
-      pathSegments[0] = lang;
-      // Use window.location.href to force full page refresh for locale change
-      window.location.href = '/' + pathSegments.join('/');
-    } else {
-      // Reload to apply new locale
-      window.location.reload();
-    }
+    
+    // Use startTransition to avoid blocking UI and preserve React state
+    startTransition(() => {
+      if (firstSegment && isValidLanguage(firstSegment)) {
+        pathSegments[0] = lang;
+        const newPath = '/' + pathSegments.join('/');
+        // Push to new path and refresh to get new translations
+        router.push(newPath);
+        // Small delay to ensure cookie is set before refresh
+        setTimeout(() => {
+          router.refresh();
+        }, 100);
+      } else {
+        // If no locale in path, just refresh to apply new locale
+        router.refresh();
+      }
+    });
     
     setIsOpen(false);
   };
@@ -50,6 +61,7 @@ export function LanguageSwitcher() {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
+        disabled={isPending}
         className="flex items-center gap-1.5 h-8 px-2"
         aria-expanded={isOpen}
         aria-haspopup="listbox"

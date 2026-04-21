@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useUserStore } from '@/store/use-user-store';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -53,6 +54,7 @@ interface ProviderStatus {
 
 export default function ProvidersPage() {
   const router = useRouter();
+  const t = useTranslations('providers');
   const { user, isAuthenticated, isLoading } = useUserStore();
   const [providers, setProviders] = useState<ProviderStatus[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
@@ -282,9 +284,9 @@ export default function ProvidersPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-neutral-10">Provider API Keys</h1>
+          <h1 className="text-3xl font-bold text-neutral-10">{t('title')}</h1>
           <p className="text-neutral-7 mt-1">
-            Configure your own API keys for intelligent routing. Your keys are encrypted and stored securely.
+            {t('description')}
           </p>
         </div>
 
@@ -293,8 +295,8 @@ export default function ProvidersPage() {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-brand-primary mt-0.5" />
             <div className="text-sm text-neutral-7">
-              <p className="font-medium text-neutral-10 mb-1">Security Note</p>
-              <p>Your API keys are encrypted using AES-256-GCM before storage. We never store keys in plain text.</p>
+              <p className="font-medium text-neutral-10 mb-1">{t('securityNote')}</p>
+              <p>{t('securityNoteDesc')}</p>
             </div>
           </div>
         </div>
@@ -304,7 +306,7 @@ export default function ProvidersPage() {
           <div className="p-4 border-b border-border-subtle">
             <div className="flex items-center gap-3">
               <Key className="w-5 h-5 text-brand-primary" />
-              <h2 className="text-xl font-semibold text-neutral-10">Predefined Providers</h2>
+              <h2 className="text-xl font-semibold text-neutral-10">{t('predefinedTitle')}</h2>
             </div>
           </div>
 
@@ -339,7 +341,7 @@ export default function ProvidersPage() {
                             {isConfigured && (
                               <span className="flex items-center gap-1 text-xs text-semantic-success">
                                 <CheckCircle2 className="w-3 h-3" />
-                                Configured
+                                {t('configured')}
                               </span>
                             )}
                           </div>
@@ -358,7 +360,7 @@ export default function ProvidersPage() {
                                 type={showKey ? 'text' : 'password'}
                                 value={newApiKey}
                                 onChange={(e) => setNewApiKey(e.target.value)}
-                                placeholder={`Enter ${provider.name} API key`}
+                                placeholder={t('enterApiKey')}
                                 className="w-64 pr-10"
                               />
                               <button
@@ -379,7 +381,7 @@ export default function ProvidersPage() {
                                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>Save API Key</TooltipContent>
+                                <TooltipContent>{t('saved')}</TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                             <TooltipProvider>
@@ -393,7 +395,7 @@ export default function ProvidersPage() {
                                     <X className="w-4 h-4" />
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>Cancel</TooltipContent>
+                                <TooltipContent>{t('cancel')}</TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                           </>
@@ -411,7 +413,7 @@ export default function ProvidersPage() {
                                     <ExternalLink className="w-4 h-4" />
                                   </a>
                                 </TooltipTrigger>
-                                <TooltipContent>Get API Key</TooltipContent>
+                                <TooltipContent>{t('getApiKey')}</TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                             {isConfigured && (
@@ -425,7 +427,7 @@ export default function ProvidersPage() {
                                   {isTestingThis ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
                                   ) : (
-                                    'Test'
+                                    t('testKey')
                                   )}
                                 </Button>
                                 <TooltipProvider>
@@ -436,10 +438,10 @@ export default function ProvidersPage() {
                                         variant="outline"
                                         size="sm"
                                       >
-                                        Edit
+                                        {t('editKey')}
                                       </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>Edit API Key</TooltipContent>
+                                    <TooltipContent>{t('editKey')}</TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
                                 <TooltipProvider>
@@ -454,7 +456,7 @@ export default function ProvidersPage() {
                                         <Trash2 className="w-4 h-4" />
                                       </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>Delete API Key</TooltipContent>
+                                    <TooltipContent>{t('deleteKey')}</TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
                               </>
@@ -465,7 +467,7 @@ export default function ProvidersPage() {
                                 size="sm"
                               >
                                 <Plus className="w-4 h-4 mr-1" />
-                                Add Key
+                                {t('addKey')}
                               </Button>
                             )}
                           </>
@@ -484,7 +486,7 @@ export default function ProvidersPage() {
           <div className="p-4 border-b border-border-subtle flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Server className="w-5 h-5 text-brand-primary" />
-              <h2 className="text-xl font-semibold text-neutral-10">Custom Providers</h2>
+              <h2 className="text-xl font-semibold text-neutral-10">{t('customTitle')}</h2>
             </div>
             <TooltipProvider>
               <Tooltip>
@@ -495,10 +497,10 @@ export default function ProvidersPage() {
                     size="sm"
                   >
                     {showCustomForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4 mr-1" />}
-                    {showCustomForm ? 'Cancel' : 'Add Custom'}
+                    {showCustomForm ? t('cancelAdd') : t('addCustom')}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>{showCustomForm ? 'Cancel adding custom provider' : 'Add a custom LLM gateway'}</TooltipContent>
+                <TooltipContent>{showCustomForm ? t('cancelAdd') : t('addCustomHint')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -509,7 +511,7 @@ export default function ProvidersPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-10 mb-1">
-                    Provider Name *
+                    {t('providerName')} *
                   </label>
                   <Input
                     value={customForm.name}
@@ -519,7 +521,7 @@ export default function ProvidersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-10 mb-1">
-                    Base URL *
+                    {t('baseUrl')} *
                   </label>
                   <Input
                     value={customForm.baseUrl}
@@ -529,7 +531,7 @@ export default function ProvidersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-10 mb-1">
-                    API Key *
+                    {t('apiKeyLabel')} *
                   </label>
                   <Input
                     type="password"
@@ -540,7 +542,7 @@ export default function ProvidersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-10 mb-1">
-                    Models (optional, comma-separated)
+                    {t('modelsOptional')}
                   </label>
                   <div className="relative">
                     <Input
@@ -560,13 +562,13 @@ export default function ProvidersPage() {
                     />
                     {customForm.baseUrl.trim() && customForm.apiKey.trim() && !customForm.models && (
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-primary pointer-events-none">
-                        Click to discover
+                      {t('clickToDiscover')}
                       </span>
                     )}
                   </div>
                   {!customForm.baseUrl.trim() || !customForm.apiKey.trim() ? (
                     <p className="text-xs text-neutral-7 mt-1">
-                      Enter Base URL and API Key first to enable auto-discovery
+                      {t('enterUrlKeyFirst')}
                     </p>
                   ) : null}
                 </div>
@@ -577,14 +579,14 @@ export default function ProvidersPage() {
                   disabled={customFormSaving || !customForm.name || !customForm.baseUrl || !customForm.apiKey}
                 >
                   {customFormSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Check className="w-4 h-4 mr-1" />}
-                  Save Provider
+                  {t('saveProvider')}
                 </Button>
                 <Button
                   onClick={handleTestCustomProvider}
                   variant="outline"
                   disabled={customFormSaving || !customForm.baseUrl || !customForm.apiKey}
                 >
-                  Test Connection
+                  {t('testConnection')}
                 </Button>
               </div>
             </div>
@@ -606,10 +608,10 @@ export default function ProvidersPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-neutral-10">{provider.name}</span>
-                            <span className="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-500">Custom</span>
+                            <span className="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-500">{t('customBadge')}</span>
                             <span className="flex items-center gap-1 text-xs text-semantic-success">
                               <CheckCircle2 className="w-3 h-3" />
-                              Configured
+                              {t('configured')}
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-2 mt-1">
@@ -640,7 +642,7 @@ export default function ProvidersPage() {
                           size="sm"
                           disabled={isTestingThis}
                         >
-                          {isTestingThis ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Test'}
+                          {isTestingThis ? <Loader2 className="w-4 h-4 animate-spin" /> : t('testKey')}
                         </Button>
                         <Button
                           onClick={() => handleDeleteKey(provider.id)}
@@ -660,8 +662,8 @@ export default function ProvidersPage() {
             !showCustomForm && (
               <div className="p-8 text-center text-neutral-7">
                 <Server className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No custom providers configured yet.</p>
-                <p className="text-sm mt-1">Click &quot;Add Custom&quot; to add your own LLM gateway or API endpoint.</p>
+                <p>{t('noCustomProviders')}</p>
+                <p className="text-sm mt-1">{t('noCustomProvidersHint')}</p>
               </div>
             )
           )}
@@ -669,27 +671,27 @@ export default function ProvidersPage() {
 
         {/* How It Works */}
         <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-neutral-10 mb-4">How It Works</h2>
+          <h2 className="text-xl font-semibold text-neutral-10 mb-4">{t('howItWorks')}</h2>
           <div className="space-y-4 text-neutral-7">
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-sm">1</div>
               <div>
-                <p className="font-medium text-neutral-10">Configure Your Keys</p>
-                <p className="text-sm">Add your own API keys for predefined providers, or add custom LLM gateways.</p>
+                <p className="font-medium text-neutral-10">{t('step1Title')}</p>
+                <p className="text-sm">{t('step1Desc')}</p>
               </div>
             </div>
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-sm">2</div>
               <div>
-                <p className="font-medium text-neutral-10">Smart Routing</p>
-                <p className="text-sm">ClawRouter will use your keys when making requests, giving you full control over costs.</p>
+                <p className="font-medium text-neutral-10">{t('step2Title')}</p>
+                <p className="text-sm">{t('step2Desc')}</p>
               </div>
             </div>
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-sm">3</div>
               <div>
-                <p className="font-medium text-neutral-10">Track Usage</p>
-                <p className="text-sm">Monitor usage directly on each provider&apos;s dashboard.</p>
+                <p className="font-medium text-neutral-10">{t('step3Title')}</p>
+                <p className="text-sm">{t('step3Desc')}</p>
               </div>
             </div>
           </div>
