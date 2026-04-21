@@ -8,7 +8,11 @@
     "configure": "프록시 설정",
     "templates": "플랜 마켓",
     "dashboard": "대시보드",
-    "docs": "문서"
+    "docs": "문서",
+    "login": "로그인",
+    "register": "회원가입",
+    "logout": "로그아웃",
+    "profile": "프로필"
   },
   "home": {
     "heading": "프록시 플랜 선택",
@@ -101,6 +105,10 @@
     "apiStatus": "API 상태",
     "network": "추론 네트워크",
     "docs": "문서",
+    "login": "로그인",
+    "register": "회원가입",
+    "logout": "로그아웃",
+    "profile": "프로필",
     "about": "소개",
     "privacy": "개인정보",
     "terms": "이용약관",

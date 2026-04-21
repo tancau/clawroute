@@ -1,8 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { User, LogOut, LogIn, UserPlus } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
+import { useUserStore } from '@/store/use-user-store';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +27,15 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ open, onOpenChange, navItems, isActive }: MobileNavProps) {
+  const tNav = useTranslations('nav');
+  const router = useRouter();
+  const { user, isAuthenticated, logout } = useUserStore();
+
+  const handleLogout = () => {
+    logout();
+    onOpenChange(false);
+    router.push('/');
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[320px]">
@@ -48,6 +61,47 @@ export function MobileNav({ open, onOpenChange, navItems, isActive }: MobileNavP
         <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border-subtle">
           <LanguageSwitcher />
           <ThemeToggle />
+          
+          {/* Auth buttons */}
+          {isAuthenticated && user ? (
+            <>
+              <Link
+                href="/dashboard"
+                onClick={() => onOpenChange(false)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 transition-all duration-fast text-sm"
+              >
+                <User className="h-4 w-4" />
+                <span>{user.name || user.email}</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border-subtle text-neutral-7 hover:text-neutral-10 transition-colors duration-fast text-sm"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>{tNav('logout')}</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                onClick={() => onOpenChange(false)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border-subtle text-neutral-7 hover:text-neutral-10 transition-colors duration-fast text-sm"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>{tNav('login')}</span>
+              </Link>
+              <Link
+                href="/auth/register"
+                onClick={() => onOpenChange(false)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90 transition-all duration-fast text-sm"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>{tNav('register')}</span>
+              </Link>
+            </>
+          )}
+          
           <a
             href="https://github.com/tancau/clawroute"
             target="_blank"

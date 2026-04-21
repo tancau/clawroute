@@ -8,7 +8,11 @@
     "configure": "إعدادات الوكيل",
     "templates": "السوق",
     "dashboard": "لوحة التحكم",
-    "docs": "الوثائق"
+    "docs": "Docs",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "profile": "الملف الشخصي"
   },
   "home": {
     "heading": "اختر خطة الوكيل الخاصة بك",
@@ -52,7 +56,11 @@
     "dataUpdated": "تم تحديث البيانات",
     "openSource": "مفتوح المصدر",
     "apiStatus": "حالة API",
-    "docs": "الوثائق",
+    "docs": "Docs",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "profile": "الملف الشخصي",
     "about": "حول",
     "privacy": "الخصوصية",
     "terms": "الشروط",

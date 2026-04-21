@@ -8,7 +8,11 @@
     "configure": "プロキシ設定",
     "templates": "プラン市場",
     "dashboard": "ダッシュボード",
-    "docs": "ドキュメント"
+    "docs": "ドキュメント",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "profile": "プロフィール"
   },
   "home": {
     "heading": "プロキシプランを選択",
@@ -101,6 +105,10 @@
     "apiStatus": "APIステータス",
     "network": "推論ネットワーク",
     "docs": "ドキュメント",
+    "login": "ログイン",
+    "register": "登録",
+    "logout": "ログアウト",
+    "profile": "プロフィール",
     "about": "概要",
     "privacy": "プライバシー",
     "terms": "利用規約",
@@ -141,7 +149,14 @@
     "forgotPassword": "パスワードをお忘れですか？",
     "login": "ログイン",
     "noAccount": "アカウントをお持ちでないですか？",
-    "registerNow": "今すぐ登録"
+    "registerNow": "今すぐ登録",
+    "createAccount": "アカウント作成",
+    "registerTo": "HopLLMに登録",
+    "name": "名前",
+    "confirmPassword": "パスワード確認",
+    "register": "登録",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "loginNow": "今すぐログイン"
   },
   "errorBoundary": {
     "title": "エラーが発生しました",

@@ -8,7 +8,11 @@
     "configure": "Config Proxy",
     "templates": "Mercado",
     "dashboard": "Painel",
-    "docs": "Docs"
+    "docs": "Docs",
+    "login": "Entrar",
+    "register": "Registrar",
+    "logout": "Sair",
+    "profile": "Perfil"
   },
   "home": {
     "heading": "Escolha seu Plano Proxy",
@@ -53,6 +57,10 @@
     "openSource": "Código Aberto",
     "apiStatus": "Status API",
     "docs": "Docs",
+    "login": "Entrar",
+    "register": "Registrar",
+    "logout": "Sair",
+    "profile": "Perfil",
     "about": "Sobre",
     "privacy": "Privacidade",
     "terms": "Termos",
