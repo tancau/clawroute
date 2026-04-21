@@ -80,6 +80,46 @@ const intlMiddleware = createMiddleware({
 });
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // Handle CORS for API routes
+  if (pathname.startsWith('/api')) {
+    // Handle OPTIONS preflight request
+    if (request.method === 'OPTIONS') {
+      const response = new NextResponse(null, { status: 204 });
+      const allowedOrigins = [
+        'https://hopllm.com',
+        'https://www.hopllm.com',
+        process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+      ].filter(Boolean) as string[];
+      
+      const origin = request.headers.get('origin');
+      if (origin && allowedOrigins.includes(origin)) {
+        response.headers.set('Access-Control-Allow-Origin', origin);
+        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+        response.headers.set('Access-Control-Max-Age', '86400');
+      }
+      return response;
+    }
+    
+    // For other API requests, add CORS headers to response
+    const response = NextResponse.next();
+    const allowedOrigins = [
+      'https://hopllm.com',
+      'https://www.hopllm.com',
+      process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+    ].filter(Boolean) as string[];
+    
+    const origin = request.headers.get('origin');
+    if (origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+    }
+    return response;
+  }
+  
   // Run language detection first
   const detectionResponse = languageDetectionMiddleware(request);
   
