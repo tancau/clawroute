@@ -4,6 +4,7 @@ import { useAppStore } from '@/store/use-app-store';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function ModelSelector() {
   const t = useTranslations('modelSelector');
@@ -42,18 +43,21 @@ export function ModelSelector() {
       <div className="space-y-2">
         <label className="text-sm font-medium text-neutral-10">{t('primaryLabel')}</label>
         <p className="text-xs text-neutral-7">{t('primaryExplanation')}</p>
-        <select
+        <Select
           value={selection.primaryModelId}
-          onChange={(e) => setPrimaryModel(e.target.value)}
-          className="w-full rounded-md border border-border-default bg-surface-overlay px-3 py-2.5 text-sm focus:border-brand-primary focus:ring-1 focus:ring-brand-primary outline-none"
+          onValueChange={(value) => setPrimaryModel(value)}
         >
-          <option value="">{t('selectPrimary')}</option>
-          {candidateModels.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name} — ${m.costPer1KToken.toFixed(4)}/1K tokens
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={t('selectPrimary')} />
+          </SelectTrigger>
+          <SelectContent>
+            {candidateModels.map((m) => (
+              <SelectItem key={m.id} value={m.id}>
+                {m.name} — ${m.costPer1KToken.toFixed(4)}/1K tokens
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <p className="text-xs text-neutral-7">{t('primaryHint')}</p>
       </div>
 
@@ -84,24 +88,25 @@ export function ModelSelector() {
         </div>
         {availableForFallback.length > 0 && (
           <div className="flex gap-2">
-            <select
-              id="fallback-add-select"
-              defaultValue=""
-              className="flex-1 rounded-md border border-border-default bg-surface-overlay px-3 py-2.5 text-sm focus:border-brand-primary focus:ring-1 focus:ring-brand-primary outline-none"
-              onChange={(e) => {
-                if (e.target.value) {
-                  addFallbackModel(e.target.value);
-                  e.target.value = '';
+            <Select
+              value=""
+              onValueChange={(value) => {
+                if (value) {
+                  addFallbackModel(value);
                 }
               }}
             >
-              <option value="">{t('addFallback')}</option>
-              {availableForFallback.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name} — ${m.costPer1KToken.toFixed(4)}/1K tokens
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder={t('addFallback')} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableForFallback.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name} — ${m.costPer1KToken.toFixed(4)}/1K tokens
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
         <p className="text-xs text-neutral-7">{t('fallbackHint')}</p>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useUserStore } from '@/store/use-user-store';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface KeyManagerProps {
   userId: string;
@@ -66,17 +67,21 @@ export function KeyManager({ userId }: KeyManagerProps) {
         <form onSubmit={handleSubmit} className="mb-6 p-4 bg-[#1e293b] rounded-lg space-y-4">
           <div>
             <label className="block text-sm font-medium text-[#94a3b8] mb-2">{t('selectProvider')}</label>
-            <select
+            <Select
               value={selectedProvider}
-              onChange={(e) => setSelectedProvider(e.target.value)}
-              className="w-full px-4 py-3 bg-[#0f172a] border border-[#334155] rounded-lg text-white focus:outline-none focus:border-[#00c9ff]"
+              onValueChange={(value) => setSelectedProvider(value)}
             >
-              {PROVIDERS.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full bg-[#0f172a] border-[#334155] text-white focus:border-[#00c9ff]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#0f172a] border-[#334155]">
+                {PROVIDERS.map((p) => (
+                  <SelectItem key={p.id} value={p.id} className="text-white focus:bg-[#1e293b]">
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <label className="block text-sm font-medium text-[#94a3b8] mb-2">{t('apiKey')}</label>
