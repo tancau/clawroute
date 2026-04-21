@@ -5,12 +5,92 @@
  * 
  * 安全措施：
  * 1. Cloudflare Turnstile 验证
- * 2. IP 速率限制（每小时最多 5 次）
- * 3. 输入验证
+ * 2. Honeypot 字段检测
+ * 3. Disposable email 过滤
+ * 4. IP 速率限制（每小时最多 5 次）
+ * 5. 输入验证
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { findUserByEmail, createUser, generateTokens } from '@/lib/auth';
+
+// ==================== Disposable Email 检测 ====================
+
+// 常见的临时邮箱域名黑名单
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  // 10 minute mail
+  '10minutemail.com', '10minutemail.net', '10minutemail.org',
+  'guerrillamail.com', 'guerrillamail.org', 'guerrillamail.net',
+  'mailinator.com', 'mailinator.net', 'mailinator.org',
+  'tempmail.com', 'temp-mail.org', 'tempmail.org',
+  'throwaway.email', 'throwawaymail.com',
+  'fakeinbox.com', 'fakeinbox.org',
+  'dispostable.com', 'dispostable.org',
+  'mailnesia.com', 'mailnesia.org',
+  'tempail.com', 'tempail.org',
+  'mohmal.com', 'mohmal.org',
+  'yopmail.com', 'yopmail.org',
+  'sharklasers.com', 'grr.la', 'pokemail.net', 'spam4.me',
+  'guerrillamailblock.com', 'spamfree24.org', 'spamfree24.com',
+  'maildrop.cc', 'maildrop.io',
+  'getnada.com', 'getnada.org',
+  'emailondeck.com', 'emailondeck.org',
+  'tmpmail.org', 'tmpmail.net',
+  'tm_mail.com', 'tm_mail.org',
+  'inboxbear.com', 'inboxbear.org',
+  'chitthu.com', 'chitthu.org',
+  'ketoblazepro.com', 'ketoblazepro.org',
+  'boxingtoday.us', 'boxingtoday.org',
+  'femailtor.com', 'femailtor.org',
+  'mytrendingstories.org', 'mytrendingstories.com',
+  'the-five-contessas.com', 'the-five-contessas.org',
+  'sordum.biz', 'sordum.org',
+  'naki-inc.com', 'naki-inc.org',
+  'radabg.com', 'radabg.org',
+  'anypng.com', 'anypng.org',
+  'bezverx.pp.ua', 'bezverx.org',
+  'i6.cloudns.cx', 'i6.cloudns.org',
+  'procrackers.com', 'procrackers.org',
+  'ksmtr.com', 'ksmtr.org',
+  'zain.site', 'zain.org',
+  'gamg.site', 'gamg.org',
+  'ppetopup.com', 'ppetopup.org',
+  'alocaljob.com', 'alocaljob.org',
+  'marrusite.com', 'marrusite.org',
+  'eco-05.shop', 'eco-05.org',
+  'bootie.club', 'bootie.org',
+  'pppxxx.com', 'pppxxx.org',
+  'bigprofessor.so', 'bigprofessor.org',
+  'mailer9.net', 'mailer9.org',
+  'workrow.team', 'workrow.org',
+  'foxja.com', 'foxja.org',
+  'goooogle.name', 'goooogle.org',
+  'disposable-emaill.com', 'disposable-emaill.org',
+  'zeroe.ml', 'zeroe.org',
+  'emailfake.com', 'emailfake.org',
+  'tempmail.io', 'tempmail.io.org',
+  'onet.pl', 'onet.org',
+  'p44.ru', 'p44.org',
+  'mail.tm', 'mail.tm.org',
+  'emailtemporal.org', 'emailtemporal.com',
+  'mytemp.email', 'mytemp.org',
+  '1secmail.com', '1secmail.org',
+]);
+
+function isDisposableEmail(email: string): boolean {
+  const domain = email.toLowerCase().split('@')[1];
+  if (!domain) return false;
+  
+  // 检查黑名单
+  if (DISPOSABLE_EMAIL_DOMAINS.has(domain)) return true;
+  
+  // 检查常见临时邮箱模式
+  if (domain.includes('temp') || domain.includes('disposable') || domain.includes('throwaway')) {
+    return true;
+  }
+  
+  return false;
+}
 
 // ==================== Cloudflare Turnstile 验证 ====================
 
@@ -180,6 +260,16 @@ export async function POST(request: NextRequest) {
     // 3. 解析请求
     const body = await request.json();
     
+    // 3. Honeypot 检查（如果填了隐藏字段，很可能是机器人）
+    if (body.honeypot || body.website) {
+      console.warn('[Register] Honeypot triggered, rejecting request from IP:', clientIp);
+      // 返回成功消息以避免暴露 honeypot 机制
+      return NextResponse.json(
+        { error: { code: 'INVALID_INPUT', message: 'Registration failed. Please try again.' } },
+        { status: 400 }
+      );
+    }
+    
     // 4. Turnstile 验证
     if (process.env.NODE_ENV === 'production' && process.env.TURNSTILE_SECRET_KEY) {
       if (!body.turnstileToken) {
@@ -226,6 +316,14 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // 6. Disposable email 检测
+    if (isDisposableEmail(body.email)) {
+      return NextResponse.json(
+        { error: { code: 'DISPOSABLE_EMAIL', message: 'Temporary email addresses are not allowed. Please use a permanent email.' } },
+        { status: 400 }
+      );
+    }
+    
     // 密码强度验证
     if (body.password.length < 6) {
       return NextResponse.json(
@@ -234,7 +332,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // 6. 检查邮箱是否已存在
+    // 7. 检查邮箱是否已存在
     const normalizedEmail = body.email.toLowerCase().trim();
     const existing = await findUserByEmail(normalizedEmail);
     if (existing) {
@@ -247,7 +345,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // 7. 创建用户
+    // 8. 创建用户
     console.log('[Register] ========== CREATING USER ==========');
     console.log('[Register] Email:', normalizedEmail);
     console.log('[Register] Has name:', !!body.name);
@@ -261,7 +359,7 @@ export async function POST(request: NextRequest) {
     
     const tokens = generateTokens(user.id, user.tier);
     
-    // 8. 记录成功注册
+    // 9. 记录成功注册
     recordIpAttempt(clientIp);
     
     return NextResponse.json(

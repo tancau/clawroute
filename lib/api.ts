@@ -135,11 +135,11 @@ class ApiClient {
   }
 
   // ===== Auth API =====
-  async register(email: string, password: string, name?: string) {
+  async register(email: string, password: string, name?: string, turnstileToken?: string, honeypot?: string) {
     // Use Next.js API Route proxy to avoid CORS/network issues on Vercel
     return this.request<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }>('/api/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, name, turnstileToken, honeypot }),
     }, true);
   }
 

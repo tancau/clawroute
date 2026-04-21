@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { Turnstile } from '@marsidev/react-turnstile';
 import { useUserStore } from '@/store/use-user-store';
+
+// Turnstile site key (uses placeholder if not configured)
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
 export function RegisterForm() {
   const router = useRouter();
@@ -15,6 +19,9 @@ export function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [localError, setLocalError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [honeypot, setHoneypot] = useState('');
+  const turnstileRef = useRef<import('@marsidev/react-turnstile').TurnstileInstance>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,9 +38,19 @@ export function RegisterForm() {
       return;
     }
 
-    const success = await register(email, password, name || undefined);
+    // Honeypot check (client-side as additional protection)
+    if (honeypot) {
+      console.warn('Honeypot field filled - likely bot');
+      return; // Silently fail
+    }
+
+    const success = await register(email, password, name || undefined, turnstileToken, honeypot);
     if (success) {
       router.push('/dashboard');
+    } else {
+      // Reset Turnstile on failure
+      turnstileRef.current?.reset();
+      setTurnstileToken('');
     }
   };
 
@@ -46,6 +63,18 @@ export function RegisterForm() {
         <p className="text-[#94a3b8] text-center mb-8">{t('registerTo')}</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Honeypot field - hidden from users, bots will fill it */}
+          <input
+            type="text"
+            name="website"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px' }}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+          />
+
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-[#94a3b8] mb-2">
               {t('name')} <span className="text-[#64748b]">(optional)</span>
@@ -111,9 +140,25 @@ export function RegisterForm() {
             </div>
           )}
 
+          {/* Cloudflare Turnstile CAPTCHA */}
+          {TURNSTILE_SITE_KEY && (
+            <div className="flex justify-center">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onError={() => setLocalError('CAPTCHA verification failed. Please try again.')}
+                options={{
+                  theme: 'dark',
+                  size: 'normal',
+                }}
+              />
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || (!!TURNSTILE_SITE_KEY && !turnstileToken)}
             className="w-full py-3 bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] text-[#0f172a] font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? `${t('register')}...` : t('register')}

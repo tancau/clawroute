@@ -36,7 +36,7 @@ interface UserStore {
 
   // Auth actions
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name?: string) => Promise<boolean>;
+  register: (email: string, password: string, name?: string, turnstileToken?: string, honeypot?: string) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
 
@@ -101,10 +101,10 @@ export const useUserStore = create<UserStore>()(
         }
       },
 
-      register: async (email: string, password: string, name?: string) => {
+      register: async (email: string, password: string, name?: string, turnstileToken?: string, honeypot?: string) => {
         set({ isLoading: true, error: null });
         try {
-          const result = await api.register(email, password, name);
+          const result = await api.register(email, password, name, turnstileToken, honeypot);
 
           if (result.error) {
             const msg = result.error.code === 'BACKEND_UNAVAILABLE'
