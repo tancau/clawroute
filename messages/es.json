@@ -39,6 +39,15 @@
     "research-assistant": "Asistente de Investigación",
     "dev-tools": "Herramientas Dev"
   },
+  "templates": {
+    "title": "Mercado de Planes",
+    "description": "Explorar planes de proxy de enrutamiento y plantillas de configuración",
+    "searchPlaceholder": "Buscar planes...",
+    "all": "Todos",
+    "noMatch": "No se encontraron planes coincidentes",
+    "goHome": "Ir al inicio para seleccionar escenario",
+    "previewConfig": "Vista previa de configuración"
+  },
   "footer": {
     "dataUpdated": "Datos actualizados",
     "openSource": "Código Abierto",

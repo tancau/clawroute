@@ -52,6 +52,15 @@
     "research-assistant": "學術研究、文獻分析，需要深度推理和長上下文",
     "dev-tools": "代碼生成、調試、重構，需要代碼理解和生成能力"
   },
+  "templates": {
+    "title": "方案市場",
+    "description": "瀏覽和搜索路由代理方案和配置模板",
+    "searchPlaceholder": "搜索方案...",
+    "all": "全部",
+    "noMatch": "沒有找到匹配的方案",
+    "goHome": "返回首頁選擇場景",
+    "previewConfig": "預覽配置"
+  },
   "calculator": {
     "title": "成本計算器",
     "monthlyCalls": "每月調用次數",

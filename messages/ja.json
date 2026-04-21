@@ -86,6 +86,15 @@
     "step4Title": "設定ファイルをエクスポート",
     "step4Desc": "clawroute.json設定ファイルをダウンロードして、プロジェクトのルートに配置します。"
   },
+  "templates": {
+    "title": "プランマーケット",
+    "description": "ルーティングプロキシプランとテンプレートの検索",
+    "searchPlaceholder": "プランを検索...",
+    "all": "すべて",
+    "noMatch": "一致するプランが見つかりません",
+    "goHome": "ホームに戻ってシーンを選択",
+    "previewConfig": "設定をプレビュー"
+  },
   "footer": {
     "dataUpdated": "データ更新",
     "openSource": "オープンソース",

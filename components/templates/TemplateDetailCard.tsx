@@ -18,6 +18,7 @@ interface TemplateDetailCardProps {
 export function TemplateDetailCard({ template, onApply }: TemplateDetailCardProps) {
   const tScenes = useTranslations('scenes');
   const tTemplate = useTranslations('template');
+  const tTemplates = useTranslations('templates');
   const [previewOpen, setPreviewOpen] = useState(false);
 
   return (
@@ -40,7 +41,7 @@ export function TemplateDetailCard({ template, onApply }: TemplateDetailCardProp
         <Collapsible open={previewOpen} onOpenChange={setPreviewOpen}>
           <CollapsibleTrigger className="flex items-center gap-1 text-xs text-neutral-7 hover:text-neutral-10 transition-colors duration-fast mb-2">
             <ChevronDown className={cn('h-3 w-3 transition-transform duration-normal', previewOpen && 'rotate-180')} />
-            Preview config
+            {tTemplates('previewConfig')}
           </CollapsibleTrigger>
           <CollapsibleContent>
             <pre className="text-xs bg-surface-base p-3 rounded-lg overflow-auto max-h-40 font-mono text-neutral-8 border border-border-subtle">

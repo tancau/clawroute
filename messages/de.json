@@ -39,6 +39,15 @@
     "research-assistant": "Forschungsassistent",
     "dev-tools": "Dev-Tools"
   },
+  "templates": {
+    "title": "Plan-Marktplatz",
+    "description": "Durchsuchen von Routing-Proxy-Plänen und Konfigurationsvorlagen",
+    "searchPlaceholder": "Pläne suchen...",
+    "all": "Alle",
+    "noMatch": "Keine passenden Pläne gefunden",
+    "goHome": "Zurück zur Szeneauswahl",
+    "previewConfig": "Konfiguration ansehen"
+  },
   "footer": {
     "dataUpdated": "Daten aktualisiert",
     "openSource": "Open Source",

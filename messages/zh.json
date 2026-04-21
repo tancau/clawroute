@@ -8,7 +8,11 @@
     "configure": "代理配置",
     "templates": "方案市场",
     "dashboard": "仪表盘",
-    "docs": "文档"
+    "docs": "文档",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "profile": "个人中心"
   },
   "home": {
     "heading": "选择你的代理方案",
@@ -165,7 +169,8 @@
     "searchPlaceholder": "搜索方案...",
     "all": "全部",
     "noMatch": "没有找到匹配的方案",
-    "goHome": "返回首页选择场景"
+    "goHome": "返回首页选择场景",
+    "previewConfig": "预览配置"
   },
   "footer": {
     "dataUpdated": "数据更新日期",

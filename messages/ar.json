@@ -39,6 +39,15 @@
     "research-assistant": "مساعد البحث",
     "dev-tools": "أدوات التطوير"
   },
+  "templates": {
+    "title": "سوق المخططات",
+    "description": "تصفح والبحث في مخططات توجيه الوكيل والقوالب",
+    "searchPlaceholder": "بحث المخططات...",
+    "all": "الكل",
+    "noMatch": "لم يتم العثور على مخططات مطابقة",
+    "goHome": "العودة للمنزل لاختيار المشهد",
+    "previewConfig": "معاينة الإعدادات"
+  },
   "footer": {
     "dataUpdated": "تم تحديث البيانات",
     "openSource": "مفتوح المصدر",

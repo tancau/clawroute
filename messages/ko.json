@@ -86,6 +86,15 @@
     "step4Title": "설정 파일 내보내기",
     "step4Desc": "clawroute.json 설정 파일을 다운로드하여 프로젝트 루트에 배치합니다."
   },
+  "templates": {
+    "title": "플랜 마켓",
+    "description": "라우팅 프록시 플랜과 설정 템플릿 검색",
+    "searchPlaceholder": "플랜 검색...",
+    "all": "전체",
+    "noMatch": "일치하는 플랜이 없습니다",
+    "goHome": "홈으로 돌아가서 장면 선택",
+    "previewConfig": "설정 미리보기"
+  },
   "footer": {
     "dataUpdated": "데이터 업데이트",
     "openSource": "오픈 소스",

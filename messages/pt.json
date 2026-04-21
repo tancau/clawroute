@@ -39,6 +39,15 @@
     "research-assistant": "Assistente de Pesquisa",
     "dev-tools": "Ferramentas Dev"
   },
+  "templates": {
+    "title": "Mercado de Planos",
+    "description": "Navegar e procurar planos de proxy de roteamento e modelos de configuração",
+    "searchPlaceholder": "Pesquisar planos...",
+    "all": "Todos",
+    "noMatch": "Nenhum plano correspondente encontrado",
+    "goHome": "Ir para o início para selecionar cenário",
+    "previewConfig": "Visualizar configuração"
+  },
   "footer": {
     "dataUpdated": "Dados atualizados",
     "openSource": "Código Aberto",

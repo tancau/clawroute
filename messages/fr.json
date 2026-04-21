@@ -39,6 +39,15 @@
     "research-assistant": "Assistant de Recherche",
     "dev-tools": "Outils Dev"
   },
+  "templates": {
+    "title": "Marché des Plans",
+    "description": "Parcourir les plans de proxy de routage et les modèles",
+    "searchPlaceholder": "Rechercher des plans...",
+    "all": "Tous",
+    "noMatch": "Aucun plan trouvé",
+    "goHome": "Retour à la sélection du scénario",
+    "previewConfig": "Prévisualiser"
+  },
   "footer": {
     "dataUpdated": "Données mises à jour",
     "openSource": "Open Source",
