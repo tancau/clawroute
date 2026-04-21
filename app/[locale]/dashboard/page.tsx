@@ -22,13 +22,19 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading, _hasHydrated } = useUserStore();
+  const { user, isAuthenticated, isLoading } = useUserStore();
   const t = useTranslations('dashboard');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Detect hydration completion
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     // Only redirect after hydration is complete
-    if (_hasHydrated && !isLoading && !isAuthenticated) {
+    if (isHydrated && !isLoading && !isAuthenticated) {
       router.push('/auth/login');
     }
     // Check if user needs onboarding
@@ -41,7 +47,7 @@ export default function DashboardPage() {
   }, [isAuthenticated, isLoading, router]);
 
   // Show loading skeleton until hydration completes
-  if (!_hasHydrated || isLoading || !isAuthenticated || !user) {
+  if (!isHydrated || isLoading || !isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="space-y-4 w-64">
