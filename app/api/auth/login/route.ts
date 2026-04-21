@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findUserByEmail, verifyPassword, generateTokens } from '@/lib/auth';
+import { findUserByEmail, verifyPassword, generateTokens, isUsingPostgres } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,11 +14,15 @@ export async function POST(request: NextRequest) {
 
     // Find user
     const normalizedEmail = body.email.toLowerCase().trim();
+    console.log('[Login] ========== LOGIN ATTEMPT ==========');
+    console.log('[Login] Email:', normalizedEmail);
+    console.log('[Login] Using PostgreSQL:', isUsingPostgres());
+    
     const user = await findUserByEmail(normalizedEmail);
-    console.log('[Login] Looking for email:', normalizedEmail);
     console.log('[Login] User found:', !!user);
     
     if (!user) {
+      console.log('[Login] User not found for email:', normalizedEmail);
       return NextResponse.json(
         { error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } },
         { status: 401 }
@@ -26,12 +30,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    console.log('[Login] Stored passwordHash format:', user.passwordHash.substring(0, 50) + '...');
-    console.log('[Login] PasswordHash parts count:', user.passwordHash.split(':').length);
+    console.log('[Login] User ID:', user.id);
+    console.log('[Login] Stored passwordHash length:', user.passwordHash.length);
+    console.log('[Login] Stored passwordHash format check (should have colon):', user.passwordHash.includes(':'));
+    
     const passwordValid = verifyPassword(body.password, user.passwordHash);
     console.log('[Login] Password valid:', passwordValid);
     
     if (!passwordValid) {
+      console.log('[Login] Password verification failed for user:', user.id);
       return NextResponse.json(
         { error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } },
         { status: 401 }
@@ -49,13 +56,17 @@ export async function POST(request: NextRequest) {
       createdAt: user.createdAt,
     };
     const tokens = generateTokens(safeUser.id, safeUser.tier);
+    
+    console.log('[Login] Login successful for user:', user.id);
+    console.log('[Login] ====================================');
 
     return NextResponse.json(
       { user: safeUser, ...tokens },
       { status: 200 }
     );
   } catch (err) {
-    console.error('Login error:', err);
+    console.error('[Login] Login error:', err);
+    console.error('[Login] Error stack:', err instanceof Error ? err.stack : 'No stack');
     return NextResponse.json(
       { error: { code: 'INTERNAL_ERROR', message: 'Login failed. Please try again.' } },
       { status: 500 }

@@ -80,13 +80,21 @@ export function generateTokens(userId: string, tier: string) {
 // ===== Storage Layer =====
 // Uses Vercel Postgres when available, falls back to in-memory store
 
-let postgresAvailable: boolean | null = null;
+// 连接状态追踪（带时间戳，允许自动重试）
+let lastConnectionAttempt = 0;
+let connectionError: string | null = null;
+const CONNECTION_RETRY_INTERVAL = 30000; // 30秒后自动重试
 
 async function getPostgres() {
-  if (postgresAvailable === false) {
-    console.warn('[getPostgres] PostgreSQL previously failed, using memory fallback');
+  const now = Date.now();
+  
+  // 如果最近失败过，检查是否应该重试
+  if (connectionError && now - lastConnectionAttempt < CONNECTION_RETRY_INTERVAL) {
+    console.warn('[getPostgres] PostgreSQL recently failed, using memory fallback. Error:', connectionError);
+    console.warn('[getPostgres] Will retry in', Math.ceil((CONNECTION_RETRY_INTERVAL - (now - lastConnectionAttempt)) / 1000), 'seconds');
     return null;
   }
+  
   try {
     // Try different connection methods
     const { sql } = await import('@vercel/postgres');
@@ -96,23 +104,20 @@ async function getPostgres() {
     console.log('[getPostgres] - POSTGRES_URL:', !!process.env.POSTGRES_URL);
     console.log('[getPostgres] - POSTGRES_URL_NON_POOLING:', !!process.env.POSTGRES_URL_NON_POOLING);
     console.log('[getPostgres] - POSTGRES_PRISMA_URL:', !!process.env.POSTGRES_PRISMA_URL);
-    console.log('[getPostgres] - POSTGRES_HOST:', !!process.env.POSTGRES_HOST);
-    console.log('[getPostgres] - POSTGRES_USER:', !!process.env.POSTGRES_USER);
-    console.log('[getPostgres] - POSTGRES_PASSWORD:', !!process.env.POSTGRES_PASSWORD);
-    console.log('[getPostgres] - POSTGRES_DATABASE:', !!process.env.POSTGRES_DATABASE);
     
     // Test connection with timeout
     const result = await sql`SELECT 1 as test`;
-    postgresAvailable = true;
+    connectionError = null; // 重置错误状态
     console.log('[getPostgres] PostgreSQL connection successful, test result:', result.rows[0]);
     return sql;
   } catch (err) {
-    console.error('[getPostgres] PostgreSQL connection failed:', err instanceof Error ? err.message : String(err));
+    lastConnectionAttempt = now;
+    connectionError = err instanceof Error ? err.message : String(err);
+    console.error('[getPostgres] PostgreSQL connection failed:', connectionError);
     if (err instanceof Error && 'cause' in err) {
       console.error('[getPostgres] Error cause:', err.cause);
     }
     console.error('[getPostgres] This will cause user data to be stored in memory only!');
-    postgresAvailable = false;
     return null;
   }
 }
@@ -120,30 +125,40 @@ async function getPostgres() {
 // In-memory fallback store
 const memoryUsers: Map<string, InternalUser> = new Map();
 
-// Ensure Postgres table exists
+// 确保 Postgres 表存在（只执行一次）
+let tableEnsured = false;
+
 async function ensureTable() {
+  if (tableEnsured) return;
   const sql = await getPostgres();
   if (!sql) return;
-  await sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      name TEXT,
-      tier TEXT NOT NULL DEFAULT 'free',
-      credits INTEGER NOT NULL DEFAULT 100,
-      status TEXT NOT NULL DEFAULT 'active',
-      api_key TEXT UNIQUE,
-      created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL,
-      metadata TEXT,
-      provider_keys TEXT
-    )
-  `;
+  
   try {
-    await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`;
-  } catch {
-    // Index may already exist
+    await sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        name TEXT,
+        tier TEXT NOT NULL DEFAULT 'free',
+        credits INTEGER NOT NULL DEFAULT 100,
+        status TEXT NOT NULL DEFAULT 'active',
+        api_key TEXT UNIQUE,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        metadata TEXT,
+        provider_keys TEXT
+      )
+    `;
+    try {
+      await sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`;
+    } catch {
+      // Index may already exist
+    }
+    tableEnsured = true;
+    console.log('[ensureTable] Users table verified');
+  } catch (err) {
+    console.error('[ensureTable] Failed to ensure table:', err);
   }
 }
 
@@ -252,7 +267,7 @@ export async function createUser(email: string, password: string, name?: string)
 }
 
 export function isUsingPostgres(): boolean {
-  return postgresAvailable === true;
+  return connectionError === null;
 }
 
 // ===== Provider Keys Operations =====

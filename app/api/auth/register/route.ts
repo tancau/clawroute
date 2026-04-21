@@ -248,7 +248,17 @@ export async function POST(request: NextRequest) {
     }
     
     // 7. 创建用户
+    console.log('[Register] ========== CREATING USER ==========');
+    console.log('[Register] Email:', normalizedEmail);
+    console.log('[Register] Has name:', !!body.name);
+    
     const user = await createUser(normalizedEmail, body.password, body.name);
+    
+    console.log('[Register] User created successfully');
+    console.log('[Register] User ID:', user.id);
+    console.log('[Register] User email:', user.email);
+    console.log('[Register] ======================================');
+    
     const tokens = generateTokens(user.id, user.tier);
     
     // 8. 记录成功注册
