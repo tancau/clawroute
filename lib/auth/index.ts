@@ -90,7 +90,7 @@ async function getPostgres() {
   try {
     const { sql } = await import('@vercel/postgres');
     // Test connection
-    const result = await sql`SELECT 1 as test`;
+    await sql`SELECT 1 as test`;
     postgresAvailable = true;
     console.log('[getPostgres] PostgreSQL connection successful');
     return sql;
