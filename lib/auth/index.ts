@@ -163,12 +163,13 @@ export async function findUserById(id: string): Promise<InternalUser | null> {
 
 export async function findUserByEmail(email: string): Promise<InternalUser | null> {
   const sql = await getPostgres();
+  const normalizedEmail = email.toLowerCase().trim();
 
   if (sql) {
     await ensureTable();
     const result = await sql`
       SELECT id, email, password_hash, name, tier, credits, api_key, created_at, provider_keys
-      FROM users WHERE email = ${email}
+      FROM users WHERE email = ${normalizedEmail}
     `;
     if (result.rows.length === 0) return null;
     const row = result.rows[0]!;
@@ -186,14 +187,18 @@ export async function findUserByEmail(email: string): Promise<InternalUser | nul
   }
 
   // Fallback: memory store
-  return memoryUsers.get(email) || null;
+  return memoryUsers.get(normalizedEmail) || null;
 }
 
 export async function createUser(email: string, password: string, name?: string): Promise<SafeUser> {
   const id = crypto.randomUUID();
+  const normalizedEmail = email.toLowerCase().trim();
   const passwordHash = hashPassword(password);
   const apiKey = `cr-${crypto.randomBytes(24).toString('hex')}`;
   const now = Date.now();
+  
+  console.log('[createUser] Creating user with email:', normalizedEmail);
+  console.log('[createUser] Password hash format:', passwordHash.substring(0, 50) + '...');
 
   // 获取动态配置的默认 credits
   let defaultCredits = 100;
@@ -210,17 +215,17 @@ export async function createUser(email: string, password: string, name?: string)
     await ensureTable();
     await sql`
       INSERT INTO users (id, email, password_hash, name, tier, credits, api_key, created_at, updated_at)
-      VALUES (${id}, ${email}, ${passwordHash}, ${name || null}, 'free', ${defaultCredits}, ${apiKey}, ${now}, ${now})
+      VALUES (${id}, ${normalizedEmail}, ${passwordHash}, ${name || null}, 'free', ${defaultCredits}, ${apiKey}, ${now}, ${now})
     `;
   } else {
     // Fallback: memory store
     const user: InternalUser = {
-      id, email, passwordHash, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now,
+      id, email: normalizedEmail, passwordHash, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now,
     };
-    memoryUsers.set(email, user);
+    memoryUsers.set(normalizedEmail, user);
   }
 
-  return { id, email, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now };
+  return { id, email: normalizedEmail, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now };
 }
 
 export function isUsingPostgres(): boolean {

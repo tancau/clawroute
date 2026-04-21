@@ -235,7 +235,8 @@ export async function POST(request: NextRequest) {
     }
     
     // 6. 检查邮箱是否已存在
-    const existing = await findUserByEmail(body.email);
+    const normalizedEmail = body.email.toLowerCase().trim();
+    const existing = await findUserByEmail(normalizedEmail);
     if (existing) {
       // 记录失败尝试（但不泄露邮箱是否存在的信息）
       recordIpAttempt(clientIp);
@@ -247,7 +248,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 7. 创建用户
-    const user = await createUser(body.email, body.password, body.name);
+    const user = await createUser(normalizedEmail, body.password, body.name);
     const tokens = generateTokens(user.id, user.tier);
     
     // 8. 记录成功注册

@@ -13,7 +13,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = await findUserByEmail(body.email);
+    const normalizedEmail = body.email.toLowerCase().trim();
+    const user = await findUserByEmail(normalizedEmail);
+    console.log('[Login] Looking for email:', normalizedEmail);
+    console.log('[Login] User found:', !!user);
+    
     if (!user) {
       return NextResponse.json(
         { error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } },
@@ -22,7 +26,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    if (!verifyPassword(body.password, user.passwordHash)) {
+    console.log('[Login] Stored passwordHash format:', user.passwordHash.substring(0, 50) + '...');
+    console.log('[Login] PasswordHash parts count:', user.passwordHash.split(':').length);
+    const passwordValid = verifyPassword(body.password, user.passwordHash);
+    console.log('[Login] Password valid:', passwordValid);
+    
+    if (!passwordValid) {
       return NextResponse.json(
         { error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' } },
         { status: 401 }
