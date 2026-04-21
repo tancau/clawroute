@@ -3,6 +3,9 @@ import { persist } from 'zustand/middleware';
 import { api, type User, type SharedKey, type DashboardData, type UsageStats, type Earnings } from '@/lib/api';
 
 interface UserStore {
+  // Hydration state
+  _hasHydrated: boolean;
+
   // Auth state
   user: User | null;
   token: string | null;
@@ -61,6 +64,7 @@ export const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
       // Initial state
+      _hasHydrated: false,
       user: null,
       token: null,
       isAuthenticated: false,
@@ -242,9 +246,11 @@ export const useUserStore = create<UserStore>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-      onRehydrateStorage: () => () => {
-        // Set isLoading to false after rehydration
-        useUserStore.setState({ isLoading: false });
+      onRehydrateStorage: () => (state) => {
+        // Set _hasHydrated to true after rehydration completes
+        if (state) {
+          useUserStore.setState({ _hasHydrated: true, isLoading: false });
+        }
       },
     }
   )
