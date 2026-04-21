@@ -144,8 +144,8 @@ async function ensureTable() {
         credits INTEGER NOT NULL DEFAULT 100,
         status TEXT NOT NULL DEFAULT 'active',
         api_key TEXT UNIQUE,
-        created_at INTEGER NOT NULL,
-        updated_at INTEGER NOT NULL,
+        created_at BIGINT NOT NULL,
+        updated_at BIGINT NOT NULL,
         metadata TEXT,
         provider_keys TEXT
       )
