@@ -18,7 +18,7 @@ export interface Model {
   id: string;           // e.g. "qwen/qwen3-coder"
   name: string;
   provider: string;
-  costPer1KToken: number;
+  costPer1MToken: number; // USD per 1M tokens
   speedRating: 1 | 2 | 3;
   qualityRating: 1 | 2 | 3;
   capabilityTags: string[];

@@ -53,7 +53,7 @@ export function ModelSelector() {
           <SelectContent>
             {candidateModels.map((m) => (
               <SelectItem key={m.id} value={m.id}>
-                {m.name} — ${m.costPer1KToken.toFixed(4)}/1K tokens
+                {m.name} — ${m.costPer1MToken.toFixed(2)}/1M tokens
               </SelectItem>
             ))}
           </SelectContent>
@@ -72,7 +72,7 @@ export function ModelSelector() {
               <div key={modelId} className="flex items-center gap-1 rounded-md border border-border-default bg-surface-overlay px-3 py-2 text-sm">
                 <span className="text-xs text-neutral-7 mr-1 font-mono">{index + 1}.</span>
                 <span className="flex-1">{model?.name ?? modelId}</span>
-                <span className="text-xs text-neutral-7">${model?.costPer1KToken.toFixed(4) ?? '?'}/1K</span>
+                <span className="text-xs text-neutral-7">${model?.costPer1MToken.toFixed(2) ?? '?'}/1M</span>
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleMoveFallbackUp(index)} disabled={index === 0}>
                   <ChevronUp className="h-3 w-3" />
                 </Button>
@@ -102,7 +102,7 @@ export function ModelSelector() {
               <SelectContent>
                 {availableForFallback.map((m) => (
                   <SelectItem key={m.id} value={m.id}>
-                    {m.name} — ${m.costPer1KToken.toFixed(4)}/1K tokens
+                    {m.name} — ${m.costPer1MToken.toFixed(2)}/1M tokens
                   </SelectItem>
                 ))}
               </SelectContent>

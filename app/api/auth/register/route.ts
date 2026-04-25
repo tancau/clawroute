@@ -325,7 +325,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 密码强度验证
-    if (body.password.length < 6) {
+    if (body.password.length < 8) {
       return NextResponse.json(
         { error: { code: 'INVALID_INPUT', message: 'Password must be at least 6 characters' } },
         { status: 400 }
@@ -381,7 +381,7 @@ export async function OPTIONS() {
   return NextResponse.json(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Access-Control-Max-Age': '86400',

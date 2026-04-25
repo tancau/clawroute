@@ -22,8 +22,13 @@ export function ModelComparePanel() {
   const sortMode = useAppStore((s) => s.sortMode);
   const setSortMode = useAppStore((s) => s.setSortMode);
   const getSortedModelsForSelectedScene = useAppStore((s) => s.getSortedModelsForSelectedScene);
+  const allModels = useAppStore((s) => s.allModels);
 
-  const models = getSortedModelsForSelectedScene();
+  const sceneModels = getSortedModelsForSelectedScene();
+  const models = sceneModels.length > 0 ? sceneModels : allModels.slice(0, 20);
+  
+  // Debug: log models length
+  console.log('ModelComparePanel models length:', models.length);
 
   const sortModeLabels: Record<SortMode, string> = {
     costFirst: t('sortCost'),
@@ -33,7 +38,14 @@ export function ModelComparePanel() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{t('title')}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{t('title')}</h3>
+        {sceneModels.length === 0 && (
+          <span className="text-xs text-muted-foreground">
+            {t('showingAllModels') || 'Showing all models - select a scene to filter'}
+          </span>
+        )}
+      </div>
 
       {/* Sort mode selector */}
       <div className="flex gap-2">
@@ -57,7 +69,7 @@ export function ModelComparePanel() {
               <th className="text-left py-2 px-2">{t('modelName')}</th>
               <th className="text-left py-2 px-2">{t('speed')}</th>
               <th className="text-left py-2 px-2">{t('quality')}</th>
-              <th className="text-left py-2 px-2">{t('costPer1K')}</th>
+              <th className="text-left py-2 px-2">{t('costPer1M')}</th>
               <th className="text-left py-2 px-2">{t('reason')}</th>
             </tr>
           </thead>
@@ -74,7 +86,7 @@ export function ModelComparePanel() {
                 <td className="py-2 px-2"><QualityRating rating={model.qualityRating} /></td>
                 <td className="py-2 px-2">
                   <Badge variant="secondary">
-                    ${model.costPer1KToken.toFixed(4)}
+                    ${model.costPer1MToken.toFixed(2)}
                   </Badge>
                 </td>
                 <td className="py-2 px-2 text-muted-foreground text-xs">

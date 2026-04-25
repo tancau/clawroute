@@ -240,7 +240,7 @@ export const useUserStore = create<UserStore>()(
       },
     }),
     {
-      name: 'clawroute-auth',
+      name: 'hopllm-auth',
       partialize: (state) => ({
         user: state.user,
         token: state.token,

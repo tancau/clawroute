@@ -70,12 +70,12 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 /**
- * 生成 ClawRouter API Key
- * 格式: cr- + 48 字符随机字符串
+ * 生成 HopLLM API Key
+ * 格式: hl- + 48 字符随机字符串
  */
 export function generateApiKey(): string {
   const randomBytes = crypto.randomBytes(24).toString('hex');
-  return `cr-${randomBytes}`;
+  return `hl-${randomBytes}`;
 }
 
 /**

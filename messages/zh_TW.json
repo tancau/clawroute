@@ -37,7 +37,7 @@
     "savingLabelShort": "節省",
     "codeComment": "# 替換 OpenAI SDK 的 base_url 即可接入",
     "codeLine1": "from openai import OpenAI",
-    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-hopllm/v1\")",
     "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
@@ -69,8 +69,6 @@
     "title": "成本計算器",
     "monthlyCalls": "每月調用次數",
     "avgTokens": "每次調用平均 Token 數",
-    "withoutClawroute": "不使用 HopLLM",
-    "withClawroute": "使用 HopLLM",
     "savings": "節省",
     "month": "月",
     "annualSavings": "年節省",
@@ -78,7 +76,9 @@
     "presetPersonal": "個人",
     "presetSmall": "小項目",
     "presetMedium": "中型項目",
-    "presetLarge": "大型項目"
+    "presetLarge": "大型項目",
+    "withoutHopllm": "不使用 HopLLM",
+    "withHopllm": "使用 HopLLM"
   },
   "configure": {
     "title": "代理配置",
@@ -97,7 +97,7 @@
     "step3Title": "配置路由策略",
     "step3Desc": "選擇一個主模型（日常使用）和備用模型（當主模型不可用時）。你也可以先應用模板，然後微調。",
     "step4Title": "導出配置文件",
-    "step4Desc": "這是你的 clawroute.json 配置文件。下載並將其放在你的 ClawRoute 項目根目錄即可生效。"
+    "step4Desc": "這是你的 hopllm.json 配置文件。下載並將其放在你的 HopLLM 項目根目錄即可生效。"
   },
   "modelCompare": {
     "title": "模型比較",
@@ -344,6 +344,34 @@
     "signUpDesc": "立即註立即註冊，獲取您的 API Key，開始使用智能路由",
     "getApiKey": "獲取 API Key",
     "configureProxy": "配置代理"
+  },
+  "apiKey": {
+    "title": "HopLLM API 密鑰",
+    "description": "您存取 HopLLM 智慧路由服務的個人 API 密鑰",
+    "yourApiKey": "您的 API 密鑰",
+    "copy": "複製",
+    "copied": "已複製",
+    "regenerate": "重新產生密鑰",
+    "regenerating": "重新產生中...",
+    "regenerateConfirm": "確認重新產生",
+    "regenerateFailed": "重新產生失敗，請稍後重試",
+    "cancel": "取消",
+    "regenerateWarning": "重新產生後，舊密鑰將失效。請更新您的應用程式設定。",
+    "noApiKey": "找不到 API 密鑰。請聯繫客服或嘗試登出後重新登入。",
+    "usageExample": "使用範例",
+    "usageDescription": "將您的 OpenAI base_url 替換為 HopLLM，並使用 model='auto' 進行智慧路由",
+    "python": "Python",
+    "javascript": "JavaScript",
+    "autoRouteComment": "智慧路由自動選擇最優模型",
+    "features": "主要功能",
+    "featureSmartRouting": "智慧路由",
+    "featureSmartRoutingDesc": "自動為您的請求選擇最佳模型",
+    "featureSaveCost": "節省 80% 成本",
+    "featureSaveCostDesc": "在不犧牲品質的情況下選擇更經濟的模型",
+    "featureCompatible": "OpenAI 相容",
+    "featureCompatibleDesc": "零遷移成本，只需更改 base_url",
+    "featureAutoIntent": "意圖分類",
+    "featureAutoIntentDesc": "分析請求的複雜度和需求"
   },
   "privacy": {
     "title": "隱私政策",

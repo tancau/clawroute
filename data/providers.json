@@ -6,9 +6,623 @@
       "apiKeyEnvVar": "OPENAI_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "gpt-4o-mini", "name": "GPT-4o Mini", "costPer1KToken": 0.00015, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "coding"], "recommendationReason": "Fast and cheap", "input": ["text", "image"], "contextWindow": 128000, "maxTokens": 16384 },
-        { "id": "gpt-4o", "name": "GPT-4o", "costPer1KToken": 0.005, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "coding", "multimodal"], "recommendationReason": "Strong all-around capability", "input": ["text", "image"], "contextWindow": 128000, "maxTokens": 16384 },
-        { "id": "gpt-4-turbo", "name": "GPT-4 Turbo", "costPer1KToken": 0.01, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks"], "recommendationReason": "Complex reasoning tasks", "input": ["text", "image"], "contextWindow": 128000, "maxTokens": 4096 }
+        {
+          "id": "gpt-4o-mini",
+          "name": "GPT-4o Mini",
+          "speedRating": 3,
+          "qualityRating": 2,
+          "capabilityTags": [
+            "general",
+            "fast",
+            "coding"
+          ],
+          "recommendationReason": "Fast and cheap",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "costPer1MToken": 0.15,
+          "outputCostPer1MToken": 0.6,
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.15,
+              "outputCost": 0.6,
+              "sourceName": "OpenAI"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "gpt-4o",
+          "name": "GPT-4o",
+          "speedRating": 2,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "general",
+            "reasoning",
+            "coding",
+            "multimodal"
+          ],
+          "recommendationReason": "Strong all-around capability",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 15,
+          "pricingSources": {
+            "official": {
+              "inputCost": 5,
+              "outputCost": 15,
+              "sourceName": "OpenAI"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "gpt-4-turbo",
+          "name": "GPT-4 Turbo",
+          "speedRating": 1,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "reasoning",
+            "complex-tasks"
+          ],
+          "recommendationReason": "Complex reasoning tasks",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 4096,
+          "costPer1MToken": 10,
+          "outputCostPer1MToken": 30,
+          "pricingSources": {
+            "official": {
+              "inputCost": 10,
+              "outputCost": 30,
+              "sourceName": "OpenAI"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "gpt-5.5-pro",
+          "name": "OpenAI: GPT-5.5 Pro",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 180,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 30,
+              "outputCost": 180,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.5",
+          "name": "OpenAI: GPT-5.5",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 30,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 5,
+              "outputCost": 30,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.4-image-2",
+          "name": "OpenAI: GPT-5.4 Image 2",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 8,
+          "outputCostPer1MToken": 15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 8,
+              "outputCost": 15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.4-nano",
+          "name": "OpenAI: GPT-5.4 Nano",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 1.25,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.19999999999999998,
+              "outputCost": 1.25,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.4-mini",
+          "name": "OpenAI: GPT-5.4 Mini",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.75,
+          "outputCostPer1MToken": 4.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.75,
+              "outputCost": 4.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.4-pro",
+          "name": "OpenAI: GPT-5.4 Pro",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 180,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 30,
+              "outputCost": 180,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.4",
+          "name": "OpenAI: GPT-5.4",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 2.5,
+          "outputCostPer1MToken": 15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 2.5,
+              "outputCost": 15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.3-chat",
+          "name": "OpenAI: GPT-5.3 Chat",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.75,
+              "outputCost": 14,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.3-codex",
+          "name": "OpenAI: GPT-5.3-Codex",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.75,
+              "outputCost": 14,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-audio",
+          "name": "OpenAI: GPT Audio",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 2.5,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 2.5,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-audio-mini",
+          "name": "OpenAI: GPT Audio Mini",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.6,
+          "outputCostPer1MToken": 2.4,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.6,
+              "outputCost": 2.4,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.2-codex",
+          "name": "OpenAI: GPT-5.2-Codex",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.75,
+              "outputCost": 14,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.2-chat",
+          "name": "OpenAI: GPT-5.2 Chat",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.75,
+              "outputCost": 14,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.2-pro",
+          "name": "OpenAI: GPT-5.2 Pro",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 21,
+          "outputCostPer1MToken": 168,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 21,
+              "outputCost": 168,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.2",
+          "name": "OpenAI: GPT-5.2",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.75,
+              "outputCost": 14,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.1-codex-max",
+          "name": "OpenAI: GPT-5.1-Codex-Max",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.25,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.1",
+          "name": "OpenAI: GPT-5.1",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.25,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.1-chat",
+          "name": "OpenAI: GPT-5.1 Chat",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.25,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.1-codex",
+          "name": "OpenAI: GPT-5.1-Codex",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.25,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5.1-codex-mini",
+          "name": "OpenAI: GPT-5.1-Codex-Mini",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.25,
+          "outputCostPer1MToken": 2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.25,
+              "outputCost": 2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-oss-safeguard-20b",
+          "name": "OpenAI: gpt-oss-safeguard-20b",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.075,
+          "outputCostPer1MToken": 0.3,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.075,
+              "outputCost": 0.3,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5-image-mini",
+          "name": "OpenAI: GPT-5 Image Mini",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 2.5,
+          "outputCostPer1MToken": 2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 2.5,
+              "outputCost": 2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5-image",
+          "name": "OpenAI: GPT-5 Image",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 10,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 10,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5-pro",
+          "name": "OpenAI: GPT-5 Pro",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 15,
+          "outputCostPer1MToken": 120,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 15,
+              "outputCost": 120,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5-codex",
+          "name": "OpenAI: GPT-5 Codex",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.25,
+              "outputCost": 10,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gpt-5-chat",
+          "name": "OpenAI: GPT-5 Chat",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 10
+        },
+        {
+          "id": "gpt-5",
+          "name": "OpenAI: GPT-5",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 10
+        },
+        {
+          "id": "gpt-5-mini",
+          "name": "OpenAI: GPT-5 Mini",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 2
+        },
+        {
+          "id": "gpt-5-nano",
+          "name": "OpenAI: GPT-5 Nano",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.39999999999999997
+        },
+        {
+          "id": "gpt-oss-120b:free",
+          "name": "OpenAI: gpt-oss-120b (free)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0
+        },
+        {
+          "id": "gpt-oss-120b",
+          "name": "OpenAI: gpt-oss-120b",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.19
+        },
+        {
+          "id": "gpt-oss-20b:free",
+          "name": "OpenAI: gpt-oss-20b (free)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0
+        },
+        {
+          "id": "gpt-oss-20b",
+          "name": "OpenAI: gpt-oss-20b",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.14
+        },
+        {
+          "id": "gpt-4",
+          "name": "OpenAI: gpt-4",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 60,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 30,
+              "outputCost": 60,
+              "sourceName": "OpenAI"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "gpt-3.5-turbo",
+          "name": "OpenAI: gpt-3.5-turbo",
+          "costPer1MToken": 0.5,
+          "outputCostPer1MToken": 1.5,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.5,
+              "outputCost": 1.5,
+              "sourceName": "OpenAI"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "anthropic": {
@@ -17,9 +631,282 @@
       "apiKeyEnvVar": "ANTHROPIC_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "costPer1KToken": 0.001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "coding"], "recommendationReason": "Fast and quality", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 8192 },
-        { "id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "coding", "writing"], "recommendationReason": "Balanced, strong all around", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 8192 },
-        { "id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "costPer1KToken": 0.015, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks", "writing"], "recommendationReason": "Best for complex tasks", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 4096 }
+        {
+          "id": "claude-3-5-haiku-20241022",
+          "name": "Claude 3.5 Haiku",
+          "speedRating": 3,
+          "qualityRating": 2,
+          "capabilityTags": [
+            "general",
+            "fast",
+            "coding"
+          ],
+          "recommendationReason": "Fast and quality",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 8192,
+          "costPer1MToken": 1
+        },
+        {
+          "id": "claude-3-5-sonnet-20241022",
+          "name": "Claude 3.5 Sonnet",
+          "speedRating": 2,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "general",
+            "reasoning",
+            "coding",
+            "writing"
+          ],
+          "recommendationReason": "Balanced, strong all around",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 8192,
+          "costPer1MToken": 3
+        },
+        {
+          "id": "claude-3-opus-20240229",
+          "name": "Claude 3 Opus",
+          "speedRating": 1,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "reasoning",
+            "complex-tasks",
+            "writing"
+          ],
+          "recommendationReason": "Best for complex tasks",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 4096,
+          "costPer1MToken": 15
+        },
+        {
+          "id": "claude-opus-4.7",
+          "name": "Anthropic: Claude Opus 4.7",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 5,
+              "outputCost": 25,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-opus-4.6-fast",
+          "name": "Anthropic: Claude Opus 4.6 (Fast)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 150,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 30,
+              "outputCost": 150,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-sonnet-4.6",
+          "name": "Anthropic: Claude Sonnet 4.6",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 3,
+              "outputCost": 15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-opus-4.6",
+          "name": "Anthropic: Claude Opus 4.6",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 5,
+              "outputCost": 25,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-opus-4.5",
+          "name": "Anthropic: Claude Opus 4.5",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 5,
+              "outputCost": 25,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-haiku-4.5",
+          "name": "Anthropic: Claude Haiku 4.5",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1,
+          "outputCostPer1MToken": 5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1,
+              "outputCost": 5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-sonnet-4.5",
+          "name": "Anthropic: Claude Sonnet 4.5",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 3,
+              "outputCost": 15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "claude-opus-4.1",
+          "name": "Anthropic: Claude Opus 4.1",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 75
+        },
+        {
+          "id": "claude-3-5-sonnet",
+          "name": "Anthropic: claude-3-5-sonnet",
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 3,
+              "outputCost": 15,
+              "sourceName": "Anthropic"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "claude-3-5-haiku",
+          "name": "Anthropic: claude-3-5-haiku",
+          "costPer1MToken": 0.25,
+          "outputCostPer1MToken": 1.25,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.25,
+              "outputCost": 1.25,
+              "sourceName": "Anthropic"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "claude-3-opus",
+          "name": "Anthropic: claude-3-opus",
+          "costPer1MToken": 15,
+          "outputCostPer1MToken": 75,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 15,
+              "outputCost": 75,
+              "sourceName": "Anthropic"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "claude-sonnet-4-6",
+          "name": "Anthropic: claude-sonnet-4-6",
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 3,
+              "outputCost": 15,
+              "sourceName": "Anthropic"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "claude-haiku-4-5",
+          "name": "Anthropic: claude-haiku-4-5",
+          "costPer1MToken": 1,
+          "outputCostPer1MToken": 5,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 1,
+              "outputCost": 5,
+              "sourceName": "Anthropic"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "google": {
@@ -28,8 +915,115 @@
       "apiKeyEnvVar": "GOOGLE_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "gemini-2.0-flash-exp", "name": "Gemini 2.0 Flash", "costPer1KToken": 0.0001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "multimodal"], "recommendationReason": "Very fast and cheap", "input": ["text", "image"], "contextWindow": 1048576, "maxTokens": 8192 },
-        { "id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "long-context"], "recommendationReason": "Long context, strong reasoning", "input": ["text", "image"], "contextWindow": 2097152, "maxTokens": 8192 }
+        {
+          "id": "gemini-2.0-flash-exp",
+          "name": "Gemini 2.0 Flash",
+          "speedRating": 3,
+          "qualityRating": 2,
+          "capabilityTags": [
+            "general",
+            "fast",
+            "multimodal"
+          ],
+          "recommendationReason": "Very fast and cheap",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 1048576,
+          "maxTokens": 8192,
+          "costPer1MToken": 0.1
+        },
+        {
+          "id": "gemini-1.5-pro",
+          "name": "Gemini 1.5 Pro",
+          "speedRating": 2,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "general",
+            "reasoning",
+            "long-context"
+          ],
+          "recommendationReason": "Long context, strong reasoning",
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 2097152,
+          "maxTokens": 8192,
+          "costPer1MToken": 3.5,
+          "outputCostPer1MToken": 10.5,
+          "pricingSources": {
+            "official": {
+              "inputCost": 3.5,
+              "outputCost": 10.5,
+              "sourceName": "Google"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "gemini-2.5-flash-image",
+          "name": "Google: Nano Banana (Gemini 2.5 Flash Image)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 2.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.3,
+              "outputCost": 2.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "gemini-2.5-flash-lite",
+          "name": "Google: Gemini 2.5 Flash Lite",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.39999999999999997
+        },
+        {
+          "id": "gemini-1.5-flash",
+          "name": "Google: gemini-1.5-flash",
+          "costPer1MToken": 0.075,
+          "outputCostPer1MToken": 0.3,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.075,
+              "outputCost": 0.3,
+              "sourceName": "Google"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "gemini-2.0-flash",
+          "name": "Google: gemini-2.0-flash",
+          "costPer1MToken": 0.1,
+          "outputCostPer1MToken": 0.4,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.1,
+              "outputCost": 0.4,
+              "sourceName": "Google"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "deepseek": {
@@ -38,8 +1032,189 @@
       "apiKeyEnvVar": "DEEPSEEK_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "deepseek-chat", "name": "DeepSeek V3", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "coding", "chinese"], "recommendationReason": "Balanced, great for Chinese", "input": ["text"], "contextWindow": 64000, "maxTokens": 8192 },
-        { "id": "deepseek-reasoner", "name": "DeepSeek R1", "costPer1KToken": 0.001, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "math", "coding"], "recommendationReason": "Strong reasoning, good price", "input": ["text"], "contextWindow": 64000, "maxTokens": 8192 }
+        {
+          "id": "deepseek-chat",
+          "name": "DeepSeek V3",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [
+            "general",
+            "coding",
+            "chinese"
+          ],
+          "recommendationReason": "Balanced, great for Chinese",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 64000,
+          "maxTokens": 8192,
+          "costPer1MToken": 0.5,
+          "outputCostPer1MToken": 0.5,
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.5,
+              "outputCost": 0.5,
+              "sourceName": "DeepSeek"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "deepseek-reasoner",
+          "name": "DeepSeek R1",
+          "speedRating": 1,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "reasoning",
+            "math",
+            "coding"
+          ],
+          "recommendationReason": "Strong reasoning, good price",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 64000,
+          "maxTokens": 8192,
+          "costPer1MToken": 1,
+          "outputCostPer1MToken": 1,
+          "pricingSources": {
+            "official": {
+              "inputCost": 1,
+              "outputCost": 1,
+              "sourceName": "DeepSeek"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek: DeepSeek V4 Pro",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.74,
+          "outputCostPer1MToken": 3.48,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.74,
+              "outputCost": 3.48,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "deepseek-v4-flash",
+          "name": "DeepSeek: DeepSeek V4 Flash",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.14,
+          "outputCostPer1MToken": 0.28,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.14,
+              "outputCost": 0.28,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "deepseek-v3.2-speciale",
+          "name": "DeepSeek: DeepSeek V3.2 Speciale",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.39999999999999997,
+          "outputCostPer1MToken": 1.2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.39999999999999997,
+              "outputCost": 1.2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "deepseek-v3.2",
+          "name": "DeepSeek: DeepSeek V3.2",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.252,
+          "outputCostPer1MToken": 0.378,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.252,
+              "outputCost": 0.378,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "deepseek-v3.2-exp",
+          "name": "DeepSeek: DeepSeek V3.2 Exp",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.27,
+          "outputCostPer1MToken": 0.41,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.27,
+              "outputCost": 0.41,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "deepseek-v3.1-terminus",
+          "name": "DeepSeek: DeepSeek V3.1 Terminus",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.21,
+          "outputCostPer1MToken": 0.7899999999999999,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.21,
+              "outputCost": 0.7899999999999999,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "deepseek-chat-v3.1",
+          "name": "DeepSeek: DeepSeek V3.1",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.75
+        },
+        {
+          "id": "deepseek-coder",
+          "name": "DeepSeek: deepseek-coder",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 0.3,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.3,
+              "outputCost": 0.3,
+              "sourceName": "DeepSeek"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "qwen": {
@@ -48,9 +1223,568 @@
       "apiKeyEnvVar": "DASHSCOPE_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "qwen3-coder-32b", "name": "Qwen3 Coder 32B (Free)", "costPer1KToken": 0.0, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["coding", "simple-tasks"], "recommendationReason": "Free, good for simple tasks", "input": ["text"], "contextWindow": 131072, "maxTokens": 8192 },
-        { "id": "qwen-plus", "name": "Qwen Plus", "costPer1KToken": 0.0008, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "chinese"], "recommendationReason": "Strong general, excellent Chinese", "input": ["text"], "contextWindow": 131072, "maxTokens": 8192 },
-        { "id": "qwen-max", "name": "Qwen Max", "costPer1KToken": 0.002, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "complex-tasks"], "recommendationReason": "Most powerful Qwen, complex tasks", "input": ["text"], "contextWindow": 32768, "maxTokens": 8192 }
+        {
+          "id": "qwen3-coder-32b",
+          "name": "Qwen3 Coder 32B (Free)",
+          "speedRating": 3,
+          "qualityRating": 1,
+          "capabilityTags": [
+            "coding",
+            "simple-tasks"
+          ],
+          "recommendationReason": "Free, good for simple tasks",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 131072,
+          "maxTokens": 8192,
+          "costPer1MToken": 0
+        },
+        {
+          "id": "qwen-plus",
+          "name": "Qwen Plus",
+          "speedRating": 2,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "general",
+            "reasoning",
+            "chinese"
+          ],
+          "recommendationReason": "Strong general, excellent Chinese",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 131072,
+          "maxTokens": 8192,
+          "costPer1MToken": 0.8,
+          "outputCostPer1MToken": 2,
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.8,
+              "outputCost": 2,
+              "sourceName": "Qwen (Alibaba)"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "qwen-max",
+          "name": "Qwen Max",
+          "speedRating": 1,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "general",
+            "reasoning",
+            "complex-tasks"
+          ],
+          "recommendationReason": "Most powerful Qwen, complex tasks",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "costPer1MToken": 2,
+          "outputCostPer1MToken": 6,
+          "pricingSources": {
+            "official": {
+              "inputCost": 2,
+              "outputCost": 6,
+              "sourceName": "Qwen (Alibaba)"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "qwen3.6-plus",
+          "name": "Qwen: Qwen3.6 Plus",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.325,
+          "outputCostPer1MToken": 1.95,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.325,
+              "outputCost": 1.95,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-9b",
+          "name": "Qwen: Qwen3.5-9B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09999999999999999,
+              "outputCost": 0.15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-35b-a3b",
+          "name": "Qwen: Qwen3.5-35B-A3B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.1625,
+          "outputCostPer1MToken": 1.3,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.1625,
+              "outputCost": 1.3,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-27b",
+          "name": "Qwen: Qwen3.5-27B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.195,
+          "outputCostPer1MToken": 1.56,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.195,
+              "outputCost": 1.56,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-122b-a10b",
+          "name": "Qwen: Qwen3.5-122B-A10B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.26,
+          "outputCostPer1MToken": 2.08,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.26,
+              "outputCost": 2.08,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-flash-02-23",
+          "name": "Qwen: Qwen3.5-Flash",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.065,
+          "outputCostPer1MToken": 0.26,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.065,
+              "outputCost": 0.26,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-plus-02-15",
+          "name": "Qwen: Qwen3.5 Plus 2026-02-15",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.26,
+          "outputCostPer1MToken": 1.56,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.26,
+              "outputCost": 1.56,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3.5-397b-a17b",
+          "name": "Qwen: Qwen3.5 397B A17B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.39,
+          "outputCostPer1MToken": 2.34,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.39,
+              "outputCost": 2.34,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-max-thinking",
+          "name": "Qwen: Qwen3 Max Thinking",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.78,
+          "outputCostPer1MToken": 3.9,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.78,
+              "outputCost": 3.9,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-coder-next",
+          "name": "Qwen: Qwen3 Coder Next",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.14,
+          "outputCostPer1MToken": 0.7999999999999999,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.14,
+              "outputCost": 0.7999999999999999,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-32b-instruct",
+          "name": "Qwen: Qwen3 VL 32B Instruct",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.10400000000000001,
+          "outputCostPer1MToken": 0.41600000000000004,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.10400000000000001,
+              "outputCost": 0.41600000000000004,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-8b-thinking",
+          "name": "Qwen: Qwen3 VL 8B Thinking",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.117,
+          "outputCostPer1MToken": 1.365,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.117,
+              "outputCost": 1.365,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-8b-instruct",
+          "name": "Qwen: Qwen3 VL 8B Instruct",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.08,
+          "outputCostPer1MToken": 0.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.08,
+              "outputCost": 0.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-30b-a3b-thinking",
+          "name": "Qwen: Qwen3 VL 30B A3B Thinking",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.13,
+          "outputCostPer1MToken": 1.56,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.13,
+              "outputCost": 1.56,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-30b-a3b-instruct",
+          "name": "Qwen: Qwen3 VL 30B A3B Instruct",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.13,
+          "outputCostPer1MToken": 0.52,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.13,
+              "outputCost": 0.52,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-235b-a22b-thinking",
+          "name": "Qwen: Qwen3 VL 235B A22B Thinking",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.26,
+          "outputCostPer1MToken": 2.6,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.26,
+              "outputCost": 2.6,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-vl-235b-a22b-instruct",
+          "name": "Qwen: Qwen3 VL 235B A22B Instruct",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.88,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.19999999999999998,
+              "outputCost": 0.88,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-max",
+          "name": "Qwen: Qwen3 Max",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.78,
+          "outputCostPer1MToken": 3.9,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.78,
+              "outputCost": 3.9,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-coder-plus",
+          "name": "Qwen: Qwen3 Coder Plus",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.65,
+          "outputCostPer1MToken": 3.25,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.65,
+              "outputCost": 3.25,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-coder-flash",
+          "name": "Qwen: Qwen3 Coder Flash",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.195,
+          "outputCostPer1MToken": 0.975,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.195,
+              "outputCost": 0.975,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-next-80b-a3b-thinking",
+          "name": "Qwen: Qwen3 Next 80B A3B Thinking",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.0975,
+          "outputCostPer1MToken": 0.78,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.0975,
+              "outputCost": 0.78,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen3-next-80b-a3b-instruct:free",
+          "name": "Qwen: Qwen3 Next 80B A3B Instruct (free)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0
+        },
+        {
+          "id": "qwen3-next-80b-a3b-instruct",
+          "name": "Qwen: Qwen3 Next 80B A3B Instruct",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.1
+        },
+        {
+          "id": "qwen-plus-2025-07-28:thinking",
+          "name": "Qwen: Qwen Plus 0728 (thinking)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.7800000000000001
+        },
+        {
+          "id": "qwen-plus-2025-07-28",
+          "name": "Qwen: Qwen Plus 0728",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.7800000000000001
+        },
+        {
+          "id": "qwen3-30b-a3b-thinking-2507",
+          "name": "Qwen: Qwen3 30B A3B Thinking 2507",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.39999999999999997
+        },
+        {
+          "id": "qwen3-coder-30b-a3b-instruct",
+          "name": "Qwen: Qwen3 Coder 30B A3B Instruct",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.27
+        },
+        {
+          "id": "qwen3-30b-a3b-instruct-2507",
+          "name": "Qwen: Qwen3 30B A3B Instruct 2507",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.3
+        },
+        {
+          "id": "qwen3-235b-a22b-thinking-2507",
+          "name": "Qwen: Qwen3 235B A22B Thinking 2507",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1.495
+        },
+        {
+          "id": "qwen3-coder:free",
+          "name": "Qwen: Qwen3 Coder 480B A35B (free)",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0
+        },
+        {
+          "id": "qwen3-coder",
+          "name": "Qwen: Qwen3 Coder 480B A35B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 1
+        },
+        {
+          "id": "qwen3-235b-a22b-2507",
+          "name": "Qwen: Qwen3 235B A22B Instruct 2507",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.09999999999999999
+        },
+        {
+          "id": "tongyi-deepresearch-30b-a3b",
+          "name": "Tongyi DeepResearch 30B A3B",
+          "costPer1MToken": 0.09,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.44999999999999996,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09,
+              "outputCost": 0.44999999999999996,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "qwen-turbo",
+          "name": "Qwen (Alibaba): qwen-turbo",
+          "costPer1MToken": 0.8,
+          "outputCostPer1MToken": 0.8,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.8,
+              "outputCost": 0.8,
+              "sourceName": "Qwen (Alibaba)"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "mistral": {
@@ -59,8 +1793,276 @@
       "apiKeyEnvVar": "MISTRAL_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "mistral-small-latest", "name": "Mistral Small", "costPer1KToken": 0.0002, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["general", "fast"], "recommendationReason": "Lightweight and fast", "input": ["text"], "contextWindow": 32000, "maxTokens": 8192 },
-        { "id": "mistral-large-latest", "name": "Mistral Large", "costPer1KToken": 0.004, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks", "coding"], "recommendationReason": "Strong reasoning", "input": ["text"], "contextWindow": 128000, "maxTokens": 8192 }
+        {
+          "id": "mistral-small-latest",
+          "name": "Mistral Small",
+          "speedRating": 3,
+          "qualityRating": 1,
+          "capabilityTags": [
+            "general",
+            "fast"
+          ],
+          "recommendationReason": "Lightweight and fast",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32000,
+          "maxTokens": 8192,
+          "costPer1MToken": 0.2
+        },
+        {
+          "id": "mistral-large-latest",
+          "name": "Mistral Large",
+          "speedRating": 1,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "reasoning",
+            "complex-tasks",
+            "coding"
+          ],
+          "recommendationReason": "Strong reasoning",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 8192,
+          "costPer1MToken": 4
+        },
+        {
+          "id": "mistral-small-2603",
+          "name": "Mistral: Mistral Small 4",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.15,
+          "outputCostPer1MToken": 0.6,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.15,
+              "outputCost": 0.6,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "mistral-small-creative",
+          "name": "Mistral: Mistral Small Creative",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.3,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09999999999999999,
+              "outputCost": 0.3,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "devstral-2512",
+          "name": "Mistral: Devstral 2 2512",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.39999999999999997,
+          "outputCostPer1MToken": 2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.39999999999999997,
+              "outputCost": 2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "ministral-14b-2512",
+          "name": "Mistral: Ministral 3 14B 2512",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.19999999999999998,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.19999999999999998,
+              "outputCost": 0.19999999999999998,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "ministral-8b-2512",
+          "name": "Mistral: Ministral 3 8B 2512",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.15,
+          "outputCostPer1MToken": 0.15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.15,
+              "outputCost": 0.15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "ministral-3b-2512",
+          "name": "Mistral: Ministral 3 3B 2512",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.09999999999999999,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09999999999999999,
+              "outputCost": 0.09999999999999999,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "mistral-large-2512",
+          "name": "Mistral: Mistral Large 3 2512",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.5,
+          "outputCostPer1MToken": 1.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.5,
+              "outputCost": 1.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "voxtral-small-24b-2507",
+          "name": "Mistral: Voxtral Small 24B 2507",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.3,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09999999999999999,
+              "outputCost": 0.3,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "mistral-medium-3.1",
+          "name": "Mistral: Mistral Medium 3.1",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 2
+        },
+        {
+          "id": "codestral-2508",
+          "name": "Mistral: Codestral 2508",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.9
+        },
+        {
+          "id": "devstral-medium",
+          "name": "Mistral: Devstral Medium",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 2
+        },
+        {
+          "id": "devstral-small",
+          "name": "Mistral: Devstral Small 1.1",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.3
+        },
+        {
+          "id": "mistral-small-3.2-24b-instruct",
+          "name": "Mistral: Mistral Small 3.2 24B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "costPer1MToken": 0.19999999999999998
+        },
+        {
+          "id": "mistral-small",
+          "name": "Mistral: mistral-small",
+          "costPer1MToken": 0.2,
+          "outputCostPer1MToken": 0.6,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.2,
+              "outputCost": 0.6,
+              "sourceName": "Mistral"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "mistral-medium",
+          "name": "Mistral: mistral-medium",
+          "costPer1MToken": 1,
+          "outputCostPer1MToken": 3,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 1,
+              "outputCost": 3,
+              "sourceName": "Mistral"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "mistral-large",
+          "name": "Mistral: mistral-large",
+          "costPer1MToken": 2,
+          "outputCostPer1MToken": 6,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 2,
+              "outputCost": 6,
+              "sourceName": "Mistral"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "meta": {
@@ -69,8 +2071,41 @@
       "apiKeyEnvVar": "OPENROUTER_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "meta-llama/llama-3.1-8b-instruct", "name": "Llama 3.1 8B (Free)", "costPer1KToken": 0.0, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["general", "simple-tasks"], "recommendationReason": "Free open source, simple tasks", "input": ["text"], "contextWindow": 131072, "maxTokens": 4096 },
-        { "id": "meta-llama/llama-3.1-70b-instruct", "name": "Llama 3.1 70B", "costPer1KToken": 0.0006, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "reasoning", "coding"], "recommendationReason": "Most powerful open source, great value", "input": ["text"], "contextWindow": 131072, "maxTokens": 4096 }
+        {
+          "id": "meta-llama/llama-3.1-8b-instruct",
+          "name": "Llama 3.1 8B (Free)",
+          "speedRating": 3,
+          "qualityRating": 1,
+          "capabilityTags": [
+            "general",
+            "simple-tasks"
+          ],
+          "recommendationReason": "Free open source, simple tasks",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 131072,
+          "maxTokens": 4096,
+          "costPer1MToken": 0
+        },
+        {
+          "id": "meta-llama/llama-3.1-70b-instruct",
+          "name": "Llama 3.1 70B",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [
+            "general",
+            "reasoning",
+            "coding"
+          ],
+          "recommendationReason": "Most powerful open source, great value",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 131072,
+          "maxTokens": 4096,
+          "costPer1MToken": 0.6
+        }
       ]
     },
     "cohere": {
@@ -79,8 +2114,59 @@
       "apiKeyEnvVar": "COHERE_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "command-r", "name": "Command R", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["rag", "general"], "recommendationReason": "RAG specialized", "input": ["text"], "contextWindow": 128000, "maxTokens": 4096 },
-        { "id": "command-r-plus", "name": "Command R+", "costPer1KToken": 0.002, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["rag", "reasoning", "complex-tasks"], "recommendationReason": "RAG + reasoning, enterprise", "input": ["text"], "contextWindow": 128000, "maxTokens": 4096 }
+        {
+          "id": "command-r",
+          "name": "Command R",
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [
+            "rag",
+            "general"
+          ],
+          "recommendationReason": "RAG specialized",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 4096,
+          "costPer1MToken": 0.5,
+          "outputCostPer1MToken": 1.5,
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.5,
+              "outputCost": 1.5,
+              "sourceName": "Cohere"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "command-r-plus",
+          "name": "Command R+",
+          "speedRating": 1,
+          "qualityRating": 3,
+          "capabilityTags": [
+            "rag",
+            "reasoning",
+            "complex-tasks"
+          ],
+          "recommendationReason": "RAG + reasoning, enterprise",
+          "input": [
+            "text"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 4096,
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "pricingSources": {
+            "official": {
+              "inputCost": 3,
+              "outputCost": 15,
+              "sourceName": "Cohere"
+            }
+          },
+          "pricingSource": "official"
+        }
       ]
     },
     "openrouter": {
@@ -89,12 +2175,2053 @@
       "apiKeyEnvVar": "OPENROUTER_API_KEY",
       "api": "openai-completions",
       "models": [
-        { "id": "openrouter/openai/gpt-4o-mini", "name": "GPT-4o Mini (OR)", "costPer1KToken": 0.00015, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast"], "recommendationReason": "Fast and cheap", "input": ["text"], "contextWindow": 128000, "maxTokens": 16384 },
-        { "id": "openrouter/anthropic/claude-3.5-sonnet", "name": "Claude 3.5 Sonnet (OR)", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning"], "recommendationReason": "Balanced", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 8192 },
-        { "id": "openrouter/google/gemini-pro-1.5", "name": "Gemini Pro 1.5 (OR)", "costPer1KToken": 0.002, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "long-context"], "recommendationReason": "Long context", "input": ["text", "image"], "contextWindow": 2097152, "maxTokens": 8192 }
+        {
+          "id": "gpt-5.5-pro",
+          "name": "OpenAI: GPT-5.5 Pro",
+          "provider": "openai",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 180,
+          "contextWindow": 1050000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.5",
+          "name": "OpenAI: GPT-5.5",
+          "provider": "openai",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 30,
+          "contextWindow": 1050000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek: DeepSeek V4 Pro",
+          "provider": "deepseek",
+          "costPer1MToken": 1.74,
+          "outputCostPer1MToken": 3.48,
+          "contextWindow": 1048576,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v4-flash",
+          "name": "DeepSeek: DeepSeek V4 Flash",
+          "provider": "deepseek",
+          "costPer1MToken": 0.14,
+          "outputCostPer1MToken": 0.28,
+          "contextWindow": 1048576,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.4-image-2",
+          "name": "OpenAI: GPT-5.4 Image 2",
+          "provider": "openai",
+          "costPer1MToken": 8,
+          "outputCostPer1MToken": 15,
+          "contextWindow": 272000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-opus-latest",
+          "name": "Anthropic: Claude Opus Latest",
+          "provider": "~anthropic",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "kimi-k2.6",
+          "name": "MoonshotAI: Kimi K2.6",
+          "provider": "moonshot",
+          "costPer1MToken": 0.7448,
+          "outputCostPer1MToken": 4.655,
+          "contextWindow": 256000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-opus-4.7",
+          "name": "Anthropic: Claude Opus 4.7",
+          "provider": "anthropic",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-opus-4.6-fast",
+          "name": "Anthropic: Claude Opus 4.6 (Fast)",
+          "provider": "anthropic",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 150,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-5.1",
+          "name": "Z.ai: GLM 5.1",
+          "provider": "z-ai",
+          "costPer1MToken": 1.0499999999999998,
+          "outputCostPer1MToken": 3.5,
+          "contextWindow": 202752,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.6-plus",
+          "name": "Qwen: Qwen3.6 Plus",
+          "provider": "qwen",
+          "costPer1MToken": 0.325,
+          "outputCostPer1MToken": 1.95,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-5v-turbo",
+          "name": "Z.ai: GLM 5V Turbo",
+          "provider": "z-ai",
+          "costPer1MToken": 1.2,
+          "outputCostPer1MToken": 4,
+          "contextWindow": 202752,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "grok-4.20-multi-agent",
+          "name": "xAI: Grok 4.20 Multi-Agent",
+          "provider": "grok",
+          "costPer1MToken": 2,
+          "outputCostPer1MToken": 6,
+          "contextWindow": 2000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "grok-4.20",
+          "name": "xAI: Grok 4.20",
+          "provider": "grok",
+          "costPer1MToken": 2,
+          "outputCostPer1MToken": 6,
+          "contextWindow": 2000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "minimax-m2.7",
+          "name": "MiniMax: MiniMax M2.7",
+          "provider": "minimax",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 1.2,
+          "contextWindow": 196608,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.4-nano",
+          "name": "OpenAI: GPT-5.4 Nano",
+          "provider": "openai",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 1.25,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.4-mini",
+          "name": "OpenAI: GPT-5.4 Mini",
+          "provider": "openai",
+          "costPer1MToken": 0.75,
+          "outputCostPer1MToken": 4.5,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "mistral-small-2603",
+          "name": "Mistral: Mistral Small 4",
+          "provider": "mistral",
+          "costPer1MToken": 0.15,
+          "outputCostPer1MToken": 0.6,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-5-turbo",
+          "name": "Z.ai: GLM 5 Turbo",
+          "provider": "z-ai",
+          "costPer1MToken": 1.2,
+          "outputCostPer1MToken": 4,
+          "contextWindow": 202752,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "nemotron-3-super-120b-a12b:free",
+          "name": "NVIDIA: Nemotron 3 Super (free)",
+          "provider": "nvidia",
+          "costPer1MToken": 0,
+          "outputCostPer1MToken": 0,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "nemotron-3-super-120b-a12b",
+          "name": "NVIDIA: Nemotron 3 Super",
+          "provider": "nvidia",
+          "costPer1MToken": 0.09,
+          "outputCostPer1MToken": 0.44999999999999996,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-9b",
+          "name": "Qwen: Qwen3.5-9B",
+          "provider": "qwen",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.15,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.4-pro",
+          "name": "OpenAI: GPT-5.4 Pro",
+          "provider": "openai",
+          "costPer1MToken": 30,
+          "outputCostPer1MToken": 180,
+          "contextWindow": 1050000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.4",
+          "name": "OpenAI: GPT-5.4",
+          "provider": "openai",
+          "costPer1MToken": 2.5,
+          "outputCostPer1MToken": 15,
+          "contextWindow": 1050000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.3-chat",
+          "name": "OpenAI: GPT-5.3 Chat",
+          "provider": "openai",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "contextWindow": 128000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-35b-a3b",
+          "name": "Qwen: Qwen3.5-35B-A3B",
+          "provider": "qwen",
+          "costPer1MToken": 0.1625,
+          "outputCostPer1MToken": 1.3,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-27b",
+          "name": "Qwen: Qwen3.5-27B",
+          "provider": "qwen",
+          "costPer1MToken": 0.195,
+          "outputCostPer1MToken": 1.56,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-122b-a10b",
+          "name": "Qwen: Qwen3.5-122B-A10B",
+          "provider": "qwen",
+          "costPer1MToken": 0.26,
+          "outputCostPer1MToken": 2.08,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-flash-02-23",
+          "name": "Qwen: Qwen3.5-Flash",
+          "provider": "qwen",
+          "costPer1MToken": 0.065,
+          "outputCostPer1MToken": 0.26,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.3-codex",
+          "name": "OpenAI: GPT-5.3-Codex",
+          "provider": "openai",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-sonnet-4.6",
+          "name": "Anthropic: Claude Sonnet 4.6",
+          "provider": "anthropic",
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-plus-02-15",
+          "name": "Qwen: Qwen3.5 Plus 2026-02-15",
+          "provider": "qwen",
+          "costPer1MToken": 0.26,
+          "outputCostPer1MToken": 1.56,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3.5-397b-a17b",
+          "name": "Qwen: Qwen3.5 397B A17B",
+          "provider": "qwen",
+          "costPer1MToken": 0.39,
+          "outputCostPer1MToken": 2.34,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "minimax-m2.5:free",
+          "name": "MiniMax: MiniMax M2.5 (free)",
+          "provider": "minimax",
+          "costPer1MToken": 0,
+          "outputCostPer1MToken": 0,
+          "contextWindow": 196608,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "minimax-m2.5",
+          "name": "MiniMax: MiniMax M2.5",
+          "provider": "minimax",
+          "costPer1MToken": 0.15,
+          "outputCostPer1MToken": 1.15,
+          "contextWindow": 196608,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-5",
+          "name": "Z.ai: GLM 5",
+          "provider": "z-ai",
+          "costPer1MToken": 0.6,
+          "outputCostPer1MToken": 2.08,
+          "contextWindow": 202752,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-max-thinking",
+          "name": "Qwen: Qwen3 Max Thinking",
+          "provider": "qwen",
+          "costPer1MToken": 0.78,
+          "outputCostPer1MToken": 3.9,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-opus-4.6",
+          "name": "Anthropic: Claude Opus 4.6",
+          "provider": "anthropic",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-coder-next",
+          "name": "Qwen: Qwen3 Coder Next",
+          "provider": "qwen",
+          "costPer1MToken": 0.14,
+          "outputCostPer1MToken": 0.7999999999999999,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "step-3.5-flash",
+          "name": "StepFun: Step 3.5 Flash",
+          "provider": "stepfun",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.3,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "kimi-k2.5",
+          "name": "MoonshotAI: Kimi K2.5",
+          "provider": "moonshot",
+          "costPer1MToken": 0.44,
+          "outputCostPer1MToken": 2,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "minimax-m2-her",
+          "name": "MiniMax: MiniMax M2-her",
+          "provider": "minimax",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 1.2,
+          "contextWindow": 65536,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-audio",
+          "name": "OpenAI: GPT Audio",
+          "provider": "openai",
+          "costPer1MToken": 2.5,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 128000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-audio-mini",
+          "name": "OpenAI: GPT Audio Mini",
+          "provider": "openai",
+          "costPer1MToken": 0.6,
+          "outputCostPer1MToken": 2.4,
+          "contextWindow": 128000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-4.7-flash",
+          "name": "Z.ai: GLM 4.7 Flash",
+          "provider": "z-ai",
+          "costPer1MToken": 0.06,
+          "outputCostPer1MToken": 0.39999999999999997,
+          "contextWindow": 202752,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.2-codex",
+          "name": "OpenAI: GPT-5.2-Codex",
+          "provider": "openai",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "minimax-m2.1",
+          "name": "MiniMax: MiniMax M2.1",
+          "provider": "minimax",
+          "costPer1MToken": 0.29,
+          "outputCostPer1MToken": 0.95,
+          "contextWindow": 196608,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-4.7",
+          "name": "Z.ai: GLM 4.7",
+          "provider": "z-ai",
+          "costPer1MToken": 0.38,
+          "outputCostPer1MToken": 1.74,
+          "contextWindow": 202752,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "mistral-small-creative",
+          "name": "Mistral: Mistral Small Creative",
+          "provider": "mistral",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.3,
+          "contextWindow": 32768,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "nemotron-3-nano-30b-a3b:free",
+          "name": "NVIDIA: Nemotron 3 Nano 30B A3B (free)",
+          "provider": "nvidia",
+          "costPer1MToken": 0,
+          "outputCostPer1MToken": 0,
+          "contextWindow": 256000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "nemotron-3-nano-30b-a3b",
+          "name": "NVIDIA: Nemotron 3 Nano 30B A3B",
+          "provider": "nvidia",
+          "costPer1MToken": 0.049999999999999996,
+          "outputCostPer1MToken": 0.19999999999999998,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.2-chat",
+          "name": "OpenAI: GPT-5.2 Chat",
+          "provider": "openai",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "contextWindow": 128000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.2-pro",
+          "name": "OpenAI: GPT-5.2 Pro",
+          "provider": "openai",
+          "costPer1MToken": 21,
+          "outputCostPer1MToken": 168,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.2",
+          "name": "OpenAI: GPT-5.2",
+          "provider": "openai",
+          "costPer1MToken": 1.75,
+          "outputCostPer1MToken": 14,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "devstral-2512",
+          "name": "Mistral: Devstral 2 2512",
+          "provider": "mistral",
+          "costPer1MToken": 0.39999999999999997,
+          "outputCostPer1MToken": 2,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-4.6v",
+          "name": "Z.ai: GLM 4.6V",
+          "provider": "z-ai",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 0.8999999999999999,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v3.1-nex-n1",
+          "name": "Nex AGI: DeepSeek V3.1 Nex N1",
+          "provider": "nex-agi",
+          "costPer1MToken": 0.135,
+          "outputCostPer1MToken": 0.5,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.1-codex-max",
+          "name": "OpenAI: GPT-5.1-Codex-Max",
+          "provider": "openai",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "ministral-14b-2512",
+          "name": "Mistral: Ministral 3 14B 2512",
+          "provider": "mistral",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.19999999999999998,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "ministral-8b-2512",
+          "name": "Mistral: Ministral 3 8B 2512",
+          "provider": "mistral",
+          "costPer1MToken": 0.15,
+          "outputCostPer1MToken": 0.15,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "ministral-3b-2512",
+          "name": "Mistral: Ministral 3 3B 2512",
+          "provider": "mistral",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.09999999999999999,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "mistral-large-2512",
+          "name": "Mistral: Mistral Large 3 2512",
+          "provider": "mistral",
+          "costPer1MToken": 0.5,
+          "outputCostPer1MToken": 1.5,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v3.2-speciale",
+          "name": "DeepSeek: DeepSeek V3.2 Speciale",
+          "provider": "deepseek",
+          "costPer1MToken": 0.39999999999999997,
+          "outputCostPer1MToken": 1.2,
+          "contextWindow": 163840,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v3.2",
+          "name": "DeepSeek: DeepSeek V3.2",
+          "provider": "deepseek",
+          "costPer1MToken": 0.252,
+          "outputCostPer1MToken": 0.378,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-opus-4.5",
+          "name": "Anthropic: Claude Opus 4.5",
+          "provider": "anthropic",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "contextWindow": 200000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "grok-4.1-fast",
+          "name": "xAI: Grok 4.1 Fast",
+          "provider": "grok",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.5,
+          "contextWindow": 2000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.1",
+          "name": "OpenAI: GPT-5.1",
+          "provider": "openai",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.1-chat",
+          "name": "OpenAI: GPT-5.1 Chat",
+          "provider": "openai",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 128000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.1-codex",
+          "name": "OpenAI: GPT-5.1-Codex",
+          "provider": "openai",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5.1-codex-mini",
+          "name": "OpenAI: GPT-5.1-Codex-Mini",
+          "provider": "openai",
+          "costPer1MToken": 0.25,
+          "outputCostPer1MToken": 2,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "kimi-k2-thinking",
+          "name": "MoonshotAI: Kimi K2 Thinking",
+          "provider": "moonshot",
+          "costPer1MToken": 0.6,
+          "outputCostPer1MToken": 2.5,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "voxtral-small-24b-2507",
+          "name": "Mistral: Voxtral Small 24B 2507",
+          "provider": "mistral",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.3,
+          "contextWindow": 32000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-oss-safeguard-20b",
+          "name": "OpenAI: gpt-oss-safeguard-20b",
+          "provider": "openai",
+          "costPer1MToken": 0.075,
+          "outputCostPer1MToken": 0.3,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "nemotron-nano-12b-v2-vl:free",
+          "name": "NVIDIA: Nemotron Nano 12B 2 VL (free)",
+          "provider": "nvidia",
+          "costPer1MToken": 0,
+          "outputCostPer1MToken": 0,
+          "contextWindow": 128000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "nemotron-nano-12b-v2-vl",
+          "name": "NVIDIA: Nemotron Nano 12B 2 VL",
+          "provider": "nvidia",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.6,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "minimax-m2",
+          "name": "MiniMax: MiniMax M2",
+          "provider": "minimax",
+          "costPer1MToken": 0.255,
+          "outputCostPer1MToken": 1,
+          "contextWindow": 196608,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-32b-instruct",
+          "name": "Qwen: Qwen3 VL 32B Instruct",
+          "provider": "qwen",
+          "costPer1MToken": 0.10400000000000001,
+          "outputCostPer1MToken": 0.41600000000000004,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5-image-mini",
+          "name": "OpenAI: GPT-5 Image Mini",
+          "provider": "openai",
+          "costPer1MToken": 2.5,
+          "outputCostPer1MToken": 2,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-haiku-4.5",
+          "name": "Anthropic: Claude Haiku 4.5",
+          "provider": "anthropic",
+          "costPer1MToken": 1,
+          "outputCostPer1MToken": 5,
+          "contextWindow": 200000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-8b-thinking",
+          "name": "Qwen: Qwen3 VL 8B Thinking",
+          "provider": "qwen",
+          "costPer1MToken": 0.117,
+          "outputCostPer1MToken": 1.365,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-8b-instruct",
+          "name": "Qwen: Qwen3 VL 8B Instruct",
+          "provider": "qwen",
+          "costPer1MToken": 0.08,
+          "outputCostPer1MToken": 0.5,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5-image",
+          "name": "OpenAI: GPT-5 Image",
+          "provider": "openai",
+          "costPer1MToken": 10,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "llama-3.3-nemotron-super-49b-v1.5",
+          "name": "NVIDIA: Llama 3.3 Nemotron Super 49B V1.5",
+          "provider": "nvidia",
+          "costPer1MToken": 0.09999999999999999,
+          "outputCostPer1MToken": 0.39999999999999997,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gemini-2.5-flash-image",
+          "name": "Google: Nano Banana (Gemini 2.5 Flash Image)",
+          "provider": "google",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 2.5,
+          "contextWindow": 32768,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-30b-a3b-thinking",
+          "name": "Qwen: Qwen3 VL 30B A3B Thinking",
+          "provider": "qwen",
+          "costPer1MToken": 0.13,
+          "outputCostPer1MToken": 1.56,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-30b-a3b-instruct",
+          "name": "Qwen: Qwen3 VL 30B A3B Instruct",
+          "provider": "qwen",
+          "costPer1MToken": 0.13,
+          "outputCostPer1MToken": 0.52,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5-pro",
+          "name": "OpenAI: GPT-5 Pro",
+          "provider": "openai",
+          "costPer1MToken": 15,
+          "outputCostPer1MToken": 120,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "glm-4.6",
+          "name": "Z.ai: GLM 4.6",
+          "provider": "z-ai",
+          "costPer1MToken": 0.39,
+          "outputCostPer1MToken": 1.9,
+          "contextWindow": 204800,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "claude-sonnet-4.5",
+          "name": "Anthropic: Claude Sonnet 4.5",
+          "provider": "anthropic",
+          "costPer1MToken": 3,
+          "outputCostPer1MToken": 15,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v3.2-exp",
+          "name": "DeepSeek: DeepSeek V3.2 Exp",
+          "provider": "deepseek",
+          "costPer1MToken": 0.27,
+          "outputCostPer1MToken": 0.41,
+          "contextWindow": 163840,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-235b-a22b-thinking",
+          "name": "Qwen: Qwen3 VL 235B A22B Thinking",
+          "provider": "qwen",
+          "costPer1MToken": 0.26,
+          "outputCostPer1MToken": 2.6,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-vl-235b-a22b-instruct",
+          "name": "Qwen: Qwen3 VL 235B A22B Instruct",
+          "provider": "qwen",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.88,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-max",
+          "name": "Qwen: Qwen3 Max",
+          "provider": "qwen",
+          "costPer1MToken": 0.78,
+          "outputCostPer1MToken": 3.9,
+          "contextWindow": 262144,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-coder-plus",
+          "name": "Qwen: Qwen3 Coder Plus",
+          "provider": "qwen",
+          "costPer1MToken": 0.65,
+          "outputCostPer1MToken": 3.25,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "gpt-5-codex",
+          "name": "OpenAI: GPT-5 Codex",
+          "provider": "openai",
+          "costPer1MToken": 1.25,
+          "outputCostPer1MToken": 10,
+          "contextWindow": 400000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "deepseek-v3.1-terminus",
+          "name": "DeepSeek: DeepSeek V3.1 Terminus",
+          "provider": "deepseek",
+          "costPer1MToken": 0.21,
+          "outputCostPer1MToken": 0.7899999999999999,
+          "contextWindow": 163840,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "grok-4-fast",
+          "name": "xAI: Grok 4 Fast",
+          "provider": "grok",
+          "costPer1MToken": 0.19999999999999998,
+          "outputCostPer1MToken": 0.5,
+          "contextWindow": 2000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "tongyi-deepresearch-30b-a3b",
+          "name": "Tongyi DeepResearch 30B A3B",
+          "provider": "qwen",
+          "costPer1MToken": 0.09,
+          "outputCostPer1MToken": 0.44999999999999996,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-coder-flash",
+          "name": "Qwen: Qwen3 Coder Flash",
+          "provider": "qwen",
+          "costPer1MToken": 0.195,
+          "outputCostPer1MToken": 0.975,
+          "contextWindow": 1000000,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        },
+        {
+          "id": "qwen3-next-80b-a3b-thinking",
+          "name": "Qwen: Qwen3 Next 80B A3B Thinking",
+          "provider": "qwen",
+          "costPer1MToken": 0.0975,
+          "outputCostPer1MToken": 0.78,
+          "contextWindow": 131072,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "OpenRouter aggregator",
+          "pricingSource": "openrouter"
+        }
+      ]
+    },
+    "grok": {
+      "name": "Grok (xAI)",
+      "baseUrl": "https://api.x.ai/v1",
+      "apiKeyEnvVar": "XAI_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "grok-4.20-multi-agent",
+          "name": "xAI: Grok 4.20 Multi-Agent",
+          "costPer1MToken": 2,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 6,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 2,
+              "outputCost": 6,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "grok-4.20",
+          "name": "xAI: Grok 4.20",
+          "costPer1MToken": 2,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 6,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 2,
+              "outputCost": 6,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "grok-4.1-fast",
+          "name": "xAI: Grok 4.1 Fast",
+          "costPer1MToken": 0.19999999999999998,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.19999999999999998,
+              "outputCost": 0.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "grok-4-fast",
+          "name": "xAI: Grok 4 Fast",
+          "costPer1MToken": 0.19999999999999998,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.19999999999999998,
+              "outputCost": 0.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "grok-2",
+          "name": "Grok (xAI): grok-2",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 15,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 5,
+              "outputCost": 15,
+              "sourceName": "Grok (xAI)"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "grok-2-mini",
+          "name": "Grok (xAI): grok-2-mini",
+          "costPer1MToken": 0.5,
+          "outputCostPer1MToken": 1.5,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 0.5,
+              "outputCost": 1.5,
+              "sourceName": "Grok (xAI)"
+            }
+          },
+          "pricingSource": "official"
+        }
+      ]
+    },
+    "perplexity": {
+      "name": "Perplexity",
+      "baseUrl": "https://api.perplexity.ai",
+      "apiKeyEnvVar": "PERPLEXITY_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "nvidia": {
+      "name": "NVIDIA (NIM)",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "apiKeyEnvVar": "NVIDIA_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "nemotron-3-super-120b-a12b:free",
+          "name": "NVIDIA: Nemotron 3 Super (free)",
+          "costPer1MToken": 0,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0,
+              "outputCost": 0,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "nemotron-3-super-120b-a12b",
+          "name": "NVIDIA: Nemotron 3 Super",
+          "costPer1MToken": 0.09,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.44999999999999996,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09,
+              "outputCost": 0.44999999999999996,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "nemotron-3-nano-30b-a3b:free",
+          "name": "NVIDIA: Nemotron 3 Nano 30B A3B (free)",
+          "costPer1MToken": 0,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0,
+              "outputCost": 0,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "nemotron-3-nano-30b-a3b",
+          "name": "NVIDIA: Nemotron 3 Nano 30B A3B",
+          "costPer1MToken": 0.049999999999999996,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.19999999999999998,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.049999999999999996,
+              "outputCost": 0.19999999999999998,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "nemotron-nano-12b-v2-vl:free",
+          "name": "NVIDIA: Nemotron Nano 12B 2 VL (free)",
+          "costPer1MToken": 0,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0,
+              "outputCost": 0,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "nemotron-nano-12b-v2-vl",
+          "name": "NVIDIA: Nemotron Nano 12B 2 VL",
+          "costPer1MToken": 0.19999999999999998,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.6,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.19999999999999998,
+              "outputCost": 0.6,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "llama-3.3-nemotron-super-49b-v1.5",
+          "name": "NVIDIA: Llama 3.3 Nemotron Super 49B V1.5",
+          "costPer1MToken": 0.09999999999999999,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.39999999999999997,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09999999999999999,
+              "outputCost": 0.39999999999999997,
+              "sourceName": "OpenRouter"
+            }
+          }
+        }
+      ]
+    },
+    "microsoft": {
+      "name": "Microsoft Azure",
+      "baseUrl": "https://api.openai.azure.com",
+      "apiKeyEnvVar": "AZURE_OPENAI_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "yi": {
+      "name": "01.AI (零一万物)",
+      "baseUrl": "https://api.01.ai/v1",
+      "apiKeyEnvVar": "YI_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "moonshot": {
+      "name": "Moonshot (月之暗面)",
+      "baseUrl": "https://api.moonshot.cn/v1",
+      "apiKeyEnvVar": "MOONSHOT_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "kimi-k2.6",
+          "name": "MoonshotAI: Kimi K2.6",
+          "costPer1MToken": 0.7448,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 4.655,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.7448,
+              "outputCost": 4.655,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "kimi-k2.5",
+          "name": "MoonshotAI: Kimi K2.5",
+          "costPer1MToken": 0.44,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.44,
+              "outputCost": 2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "kimi-k2-thinking",
+          "name": "MoonshotAI: Kimi K2 Thinking",
+          "costPer1MToken": 0.6,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 2.5,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.6,
+              "outputCost": 2.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "moonshot-v1-8k",
+          "name": "Moonshot: moonshot-v1-8k",
+          "costPer1MToken": 1,
+          "outputCostPer1MToken": 1,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 1,
+              "outputCost": 1,
+              "sourceName": "Moonshot"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "moonshot-v1-32k",
+          "name": "Moonshot: moonshot-v1-32k",
+          "costPer1MToken": 2,
+          "outputCostPer1MToken": 2,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 2,
+              "outputCost": 2,
+              "sourceName": "Moonshot"
+            }
+          },
+          "pricingSource": "official"
+        },
+        {
+          "id": "moonshot-v1-128k",
+          "name": "Moonshot: moonshot-v1-128k",
+          "costPer1MToken": 4,
+          "outputCostPer1MToken": 4,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "official": {
+              "inputCost": 4,
+              "outputCost": 4,
+              "sourceName": "Moonshot"
+            }
+          },
+          "pricingSource": "official"
+        }
+      ]
+    },
+    "baichuan": {
+      "name": "Baichuan (百川智能)",
+      "baseUrl": "https://api.baichuan-ai.com/v1",
+      "apiKeyEnvVar": "BAICHUAN_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "zhipu": {
+      "name": "Zhipu AI (智谱)",
+      "baseUrl": "https://open.bigmodel.cn/api/paas/v4",
+      "apiKeyEnvVar": "ZHIPU_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "stepfun": {
+      "name": "Stepfun (阶跃星辰)",
+      "baseUrl": "https://api.stepfun.com/v1",
+      "apiKeyEnvVar": "STEPFUN_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "step-3.5-flash",
+          "name": "StepFun: Step 3.5 Flash",
+          "costPer1MToken": 0.09999999999999999,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.3,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.09999999999999999,
+              "outputCost": 0.3,
+              "sourceName": "OpenRouter"
+            }
+          }
+        }
+      ]
+    },
+    "minimax": {
+      "name": "MiniMax",
+      "baseUrl": "https://api.minimax.chat/v1",
+      "apiKeyEnvVar": "MINIMAX_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "minimax-m2.7",
+          "name": "MiniMax: MiniMax M2.7",
+          "costPer1MToken": 0.3,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 1.2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.3,
+              "outputCost": 1.2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "minimax-m2.5:free",
+          "name": "MiniMax: MiniMax M2.5 (free)",
+          "costPer1MToken": 0,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0,
+              "outputCost": 0,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "minimax-m2.5",
+          "name": "MiniMax: MiniMax M2.5",
+          "costPer1MToken": 0.15,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 1.15,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.15,
+              "outputCost": 1.15,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "minimax-m2-her",
+          "name": "MiniMax: MiniMax M2-her",
+          "costPer1MToken": 0.3,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 1.2,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.3,
+              "outputCost": 1.2,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "minimax-m2.1",
+          "name": "MiniMax: MiniMax M2.1",
+          "costPer1MToken": 0.29,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 0.95,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.29,
+              "outputCost": 0.95,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "minimax-m2",
+          "name": "MiniMax: MiniMax M2",
+          "costPer1MToken": 0.255,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from OpenRouter",
+          "outputCostPer1MToken": 1,
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.255,
+              "outputCost": 1,
+              "sourceName": "OpenRouter"
+            }
+          }
+        }
+      ]
+    },
+    "bytedance": {
+      "name": "ByteDance (豆包)",
+      "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
+      "apiKeyEnvVar": "BYTEDANCE_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "tencent": {
+      "name": "Tencent (混元)",
+      "baseUrl": "https://hunyuan.tencentcloudapi.com",
+      "apiKeyEnvVar": "TENCENT_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "internlm": {
+      "name": "InternLM (书生浦语)",
+      "baseUrl": "https://api.internlm.com/v1",
+      "apiKeyEnvVar": "INTERNLM_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "siliconflow": {
+      "name": "SiliconFlow",
+      "baseUrl": "https://api.siliconflow.cn/v1",
+      "apiKeyEnvVar": "SILICONFLOW_API_KEY",
+      "api": "openai-completions",
+      "models": []
+    },
+    "~anthropic": {
+      "name": "~anthropic",
+      "baseUrl": "",
+      "apiKeyEnvVar": "",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "claude-opus-latest",
+          "name": "Anthropic: Claude Opus Latest",
+          "costPer1MToken": 5,
+          "outputCostPer1MToken": 25,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 5,
+              "outputCost": 25,
+              "sourceName": "OpenRouter"
+            }
+          }
+        }
+      ]
+    },
+    "z-ai": {
+      "name": "z-ai",
+      "baseUrl": "",
+      "apiKeyEnvVar": "",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "glm-5.1",
+          "name": "Z.ai: GLM 5.1",
+          "costPer1MToken": 1.0499999999999998,
+          "outputCostPer1MToken": 3.5,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.0499999999999998,
+              "outputCost": 3.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-5v-turbo",
+          "name": "Z.ai: GLM 5V Turbo",
+          "costPer1MToken": 1.2,
+          "outputCostPer1MToken": 4,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.2,
+              "outputCost": 4,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-5-turbo",
+          "name": "Z.ai: GLM 5 Turbo",
+          "costPer1MToken": 1.2,
+          "outputCostPer1MToken": 4,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 1.2,
+              "outputCost": 4,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-5",
+          "name": "Z.ai: GLM 5",
+          "costPer1MToken": 0.6,
+          "outputCostPer1MToken": 2.08,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.6,
+              "outputCost": 2.08,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-4.7-flash",
+          "name": "Z.ai: GLM 4.7 Flash",
+          "costPer1MToken": 0.06,
+          "outputCostPer1MToken": 0.39999999999999997,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.06,
+              "outputCost": 0.39999999999999997,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-4.7",
+          "name": "Z.ai: GLM 4.7",
+          "costPer1MToken": 0.38,
+          "outputCostPer1MToken": 1.74,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.38,
+              "outputCost": 1.74,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-4.6v",
+          "name": "Z.ai: GLM 4.6V",
+          "costPer1MToken": 0.3,
+          "outputCostPer1MToken": 0.8999999999999999,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.3,
+              "outputCost": 0.8999999999999999,
+              "sourceName": "OpenRouter"
+            }
+          }
+        },
+        {
+          "id": "glm-4.6",
+          "name": "Z.ai: GLM 4.6",
+          "costPer1MToken": 0.39,
+          "outputCostPer1MToken": 1.9,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.39,
+              "outputCost": 1.9,
+              "sourceName": "OpenRouter"
+            }
+          }
+        }
+      ]
+    },
+    "nex-agi": {
+      "name": "nex-agi",
+      "baseUrl": "",
+      "apiKeyEnvVar": "",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "deepseek-v3.1-nex-n1",
+          "name": "Nex AGI: DeepSeek V3.1 Nex N1",
+          "costPer1MToken": 0.135,
+          "outputCostPer1MToken": 0.5,
+          "speedRating": 2,
+          "qualityRating": 2,
+          "capabilityTags": [],
+          "recommendationReason": "Updated from multi-source",
+          "pricingSources": {
+            "openrouter": {
+              "inputCost": 0.135,
+              "outputCost": 0.5,
+              "sourceName": "OpenRouter"
+            }
+          }
+        }
       ]
     }
   },
-  "lastUpdated": "2026-04-16",
+  "lastUpdated": "2026-04-24",
   "updateIntervalHours": 24
 }

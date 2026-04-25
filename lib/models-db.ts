@@ -2,7 +2,10 @@ import type { Model, SortMode } from './types';
 import modelsDataRaw from '@/data/models.json';
 
 // 编译时静态数据作为 fallback
-const staticModels: Model[] = modelsDataRaw as Model[];
+const staticModels: Model[] = (modelsDataRaw || []) as Model[];
+
+// Debug: log static models length
+console.log('Static models length:', staticModels.length);
 
 // 运行时动态数据缓存
 let dynamicModels: Model[] | null = null;
@@ -80,18 +83,18 @@ export function sortModels(models: Model[], mode: SortMode): Model[] {
   const sorted = [...models];
   switch (mode) {
     case 'costFirst':
-      sorted.sort((a, b) => a.costPer1KToken - b.costPer1KToken);
+      sorted.sort((a, b) => a.costPer1MToken - b.costPer1MToken);
       break;
     case 'qualityFirst':
       sorted.sort((a, b) => {
         if (b.qualityRating !== a.qualityRating) return b.qualityRating - a.qualityRating;
-        return a.costPer1KToken - b.costPer1KToken;
+        return a.costPer1MToken - b.costPer1MToken;
       });
       break;
     case 'speedFirst':
       sorted.sort((a, b) => {
         if (b.speedRating !== a.speedRating) return b.speedRating - a.speedRating;
-        return a.costPer1KToken - b.costPer1KToken;
+        return a.costPer1MToken - b.costPer1MToken;
       });
       break;
   }

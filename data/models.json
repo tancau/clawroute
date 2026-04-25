@@ -1,25 +1,440 @@
 [
-  { "id": "qwen/qwen3-coder-free", "name": "Qwen3 Coder (Free)", "provider": "qwen", "costPer1KToken": 0.0, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["coding", "simple-tasks"], "recommendationReason": "免费，适合简单任务", "input": ["text"], "contextWindow": 131072, "maxTokens": 8192 },
-  { "id": "qwen/qwen3-coder", "name": "Qwen3 Coder", "provider": "qwen", "costPer1KToken": 0.0001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["coding", "general"], "recommendationReason": "性价比极高，代码任务首选", "input": ["text"], "contextWindow": 131072, "maxTokens": 8192 },
-  { "id": "qwen/qwen3.5-coder-plus", "name": "Qwen3.5 Coder Plus", "provider": "qwen", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["coding", "complex-code"], "recommendationReason": "代码能力强，价格适中", "input": ["text"], "contextWindow": 131072, "maxTokens": 8192 },
-  { "id": "qwen/qwen3.6-plus", "name": "Qwen3.6 Plus", "provider": "qwen", "costPer1KToken": 0.0008, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "chinese"], "recommendationReason": "通用能力强，中文优秀", "input": ["text"], "contextWindow": 131072, "maxTokens": 8192 },
-  { "id": "qwen/qwen3.6-max", "name": "Qwen3.6 Max", "provider": "qwen", "costPer1KToken": 0.002, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "complex-tasks"], "recommendationReason": "最强通义模型，复杂任务", "input": ["text"], "contextWindow": 32768, "maxTokens": 8192 },
-  { "id": "deepseek/deepseek-r1", "name": "DeepSeek R1", "provider": "deepseek", "costPer1KToken": 0.001, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "math", "coding"], "recommendationReason": "推理能力强，价格合理", "input": ["text"], "contextWindow": 64000, "maxTokens": 8192 },
-  { "id": "deepseek/deepseek-v3", "name": "DeepSeek V3", "provider": "deepseek", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "coding", "chinese"], "recommendationReason": "均衡之选，中文好", "input": ["text"], "contextWindow": 64000, "maxTokens": 8192 },
-  { "id": "deepseek/deepseek-coder", "name": "DeepSeek Coder", "provider": "deepseek", "costPer1KToken": 0.0003, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["coding", "code-completion"], "recommendationReason": "代码专精，价格低", "input": ["text"], "contextWindow": 64000, "maxTokens": 8192 },
-  { "id": "anthropic/claude-3.5-haiku", "name": "Claude 3.5 Haiku", "provider": "anthropic", "costPer1KToken": 0.001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "coding"], "recommendationReason": "速度快，质量好", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 8192 },
-  { "id": "anthropic/claude-3.5-sonnet", "name": "Claude 3.5 Sonnet", "provider": "anthropic", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "coding", "writing"], "recommendationReason": "平衡之选，综合能力强", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 8192 },
-  { "id": "anthropic/claude-3-opus", "name": "Claude 3 Opus", "provider": "anthropic", "costPer1KToken": 0.015, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks", "writing"], "recommendationReason": "最强推理，适合复杂任务", "input": ["text", "image"], "contextWindow": 200000, "maxTokens": 4096 },
-  { "id": "openai/gpt-4o-mini", "name": "GPT-4o Mini", "provider": "openai", "costPer1KToken": 0.00015, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "coding"], "recommendationReason": "快速且便宜", "input": ["text", "image"], "contextWindow": 128000, "maxTokens": 16384 },
-  { "id": "openai/gpt-4o", "name": "GPT-4o", "provider": "openai", "costPer1KToken": 0.005, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "coding", "multimodal"], "recommendationReason": "综合能力强", "input": ["text", "image"], "contextWindow": 128000, "maxTokens": 16384 },
-  { "id": "openai/gpt-4-turbo", "name": "GPT-4 Turbo", "provider": "openai", "costPer1KToken": 0.01, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks"], "recommendationReason": "复杂推理任务", "input": ["text", "image"], "contextWindow": 128000, "maxTokens": 4096 },
-  { "id": "google/gemini-2.0-flash", "name": "Gemini 2.0 Flash", "provider": "google", "costPer1KToken": 0.0001, "speedRating": 3, "qualityRating": 2, "capabilityTags": ["general", "fast", "multimodal"], "recommendationReason": "极快且便宜", "input": ["text", "image"], "contextWindow": 1048576, "maxTokens": 8192 },
-  { "id": "google/gemini-1.5-pro", "name": "Gemini 1.5 Pro", "provider": "google", "costPer1KToken": 0.003, "speedRating": 2, "qualityRating": 3, "capabilityTags": ["general", "reasoning", "long-context"], "recommendationReason": "长上下文，推理强", "input": ["text", "image"], "contextWindow": 2097152, "maxTokens": 8192 },
-  { "id": "mistral/mistral-small", "name": "Mistral Small", "provider": "mistral", "costPer1KToken": 0.0002, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["general", "fast"], "recommendationReason": "轻量快速", "input": ["text"], "contextWindow": 32000, "maxTokens": 8192 },
-  { "id": "mistral/mistral-medium", "name": "Mistral Medium", "provider": "mistral", "costPer1KToken": 0.001, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "coding"], "recommendationReason": "均衡选择", "input": ["text"], "contextWindow": 32000, "maxTokens": 8192 },
-  { "id": "mistral/mistral-large", "name": "Mistral Large", "provider": "mistral", "costPer1KToken": 0.004, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["reasoning", "complex-tasks", "coding"], "recommendationReason": "强推理能力", "input": ["text"], "contextWindow": 128000, "maxTokens": 8192 },
-  { "id": "meta/llama-3.1-8b", "name": "Llama 3.1 8B", "provider": "meta", "costPer1KToken": 0.0, "speedRating": 3, "qualityRating": 1, "capabilityTags": ["general", "simple-tasks"], "recommendationReason": "免费开源，简单任务", "input": ["text"], "contextWindow": 131072, "maxTokens": 4096 },
-  { "id": "meta/llama-3.1-70b", "name": "Llama 3.1 70B", "provider": "meta", "costPer1KToken": 0.0006, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["general", "reasoning", "coding"], "recommendationReason": "开源最强，性价比高", "input": ["text"], "contextWindow": 131072, "maxTokens": 4096 },
-  { "id": "cohere/command-r", "name": "Command R", "provider": "cohere", "costPer1KToken": 0.0005, "speedRating": 2, "qualityRating": 2, "capabilityTags": ["rag", "general"], "recommendationReason": "RAG 场景专精", "input": ["text"], "contextWindow": 128000, "maxTokens": 4096 },
-  { "id": "cohere/command-r-plus", "name": "Command R+", "provider": "cohere", "costPer1KToken": 0.002, "speedRating": 1, "qualityRating": 3, "capabilityTags": ["rag", "reasoning", "complex-tasks"], "recommendationReason": "RAG + 推理，企业级", "input": ["text"], "contextWindow": 128000, "maxTokens": 4096 }
+  {
+    "id": "qwen/qwen3-coder-free",
+    "name": "Qwen3 Coder (Free)",
+    "provider": "qwen",
+    "speedRating": 3,
+    "qualityRating": 1,
+    "capabilityTags": [
+      "coding",
+      "simple-tasks"
+    ],
+    "recommendationReason": "免费，适合简单任务",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 131072,
+    "maxTokens": 8192,
+    "costPer1MToken": 0
+  },
+  {
+    "id": "qwen/qwen3-coder",
+    "name": "Qwen3 Coder",
+    "provider": "qwen",
+    "speedRating": 3,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "coding",
+      "general"
+    ],
+    "recommendationReason": "性价比极高，代码任务首选",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 131072,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.1
+  },
+  {
+    "id": "qwen/qwen3.5-coder-plus",
+    "name": "Qwen3.5 Coder Plus",
+    "provider": "qwen",
+    "speedRating": 2,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "coding",
+      "complex-code"
+    ],
+    "recommendationReason": "代码能力强，价格适中",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 131072,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.5
+  },
+  {
+    "id": "qwen/qwen3.6-plus",
+    "name": "Qwen3.6 Plus",
+    "provider": "qwen",
+    "speedRating": 2,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "general",
+      "reasoning",
+      "chinese"
+    ],
+    "recommendationReason": "通用能力强，中文优秀",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 131072,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.8
+  },
+  {
+    "id": "qwen/qwen3.6-max",
+    "name": "Qwen3.6 Max",
+    "provider": "qwen",
+    "speedRating": 1,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "general",
+      "reasoning",
+      "complex-tasks"
+    ],
+    "recommendationReason": "最强通义模型，复杂任务",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 32768,
+    "maxTokens": 8192,
+    "costPer1MToken": 2
+  },
+  {
+    "id": "deepseek/deepseek-r1",
+    "name": "DeepSeek R1",
+    "provider": "deepseek",
+    "speedRating": 1,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "reasoning",
+      "math",
+      "coding"
+    ],
+    "recommendationReason": "推理能力强，价格合理",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 64000,
+    "maxTokens": 8192,
+    "costPer1MToken": 1
+  },
+  {
+    "id": "deepseek/deepseek-v3",
+    "name": "DeepSeek V3",
+    "provider": "deepseek",
+    "speedRating": 2,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "general",
+      "coding",
+      "chinese"
+    ],
+    "recommendationReason": "均衡之选，中文好",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 64000,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.5
+  },
+  {
+    "id": "deepseek/deepseek-coder",
+    "name": "DeepSeek Coder",
+    "provider": "deepseek",
+    "speedRating": 2,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "coding",
+      "code-completion"
+    ],
+    "recommendationReason": "代码专精，价格低",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 64000,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.3
+  },
+  {
+    "id": "anthropic/claude-3.5-haiku",
+    "name": "Claude 3.5 Haiku",
+    "provider": "anthropic",
+    "speedRating": 3,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "general",
+      "fast",
+      "coding"
+    ],
+    "recommendationReason": "速度快，质量好",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 200000,
+    "maxTokens": 8192,
+    "costPer1MToken": 1
+  },
+  {
+    "id": "anthropic/claude-3.5-sonnet",
+    "name": "Claude 3.5 Sonnet",
+    "provider": "anthropic",
+    "speedRating": 2,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "general",
+      "reasoning",
+      "coding",
+      "writing"
+    ],
+    "recommendationReason": "平衡之选，综合能力强",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 200000,
+    "maxTokens": 8192,
+    "costPer1MToken": 3
+  },
+  {
+    "id": "anthropic/claude-3-opus",
+    "name": "Claude 3 Opus",
+    "provider": "anthropic",
+    "speedRating": 1,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "reasoning",
+      "complex-tasks",
+      "writing"
+    ],
+    "recommendationReason": "最强推理，适合复杂任务",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 200000,
+    "maxTokens": 4096,
+    "costPer1MToken": 15
+  },
+  {
+    "id": "openai/gpt-4o-mini",
+    "name": "GPT-4o Mini",
+    "provider": "openai",
+    "speedRating": 3,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "general",
+      "fast",
+      "coding"
+    ],
+    "recommendationReason": "快速且便宜",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 128000,
+    "maxTokens": 16384,
+    "costPer1MToken": 0.15
+  },
+  {
+    "id": "openai/gpt-4o",
+    "name": "GPT-4o",
+    "provider": "openai",
+    "speedRating": 2,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "general",
+      "reasoning",
+      "coding",
+      "multimodal"
+    ],
+    "recommendationReason": "综合能力强",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 128000,
+    "maxTokens": 16384,
+    "costPer1MToken": 5
+  },
+  {
+    "id": "openai/gpt-4-turbo",
+    "name": "GPT-4 Turbo",
+    "provider": "openai",
+    "speedRating": 1,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "reasoning",
+      "complex-tasks"
+    ],
+    "recommendationReason": "复杂推理任务",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 128000,
+    "maxTokens": 4096,
+    "costPer1MToken": 10
+  },
+  {
+    "id": "google/gemini-2.0-flash",
+    "name": "Gemini 2.0 Flash",
+    "provider": "google",
+    "speedRating": 3,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "general",
+      "fast",
+      "multimodal"
+    ],
+    "recommendationReason": "极快且便宜",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 1048576,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.1
+  },
+  {
+    "id": "google/gemini-1.5-pro",
+    "name": "Gemini 1.5 Pro",
+    "provider": "google",
+    "speedRating": 2,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "general",
+      "reasoning",
+      "long-context"
+    ],
+    "recommendationReason": "长上下文，推理强",
+    "input": [
+      "text",
+      "image"
+    ],
+    "contextWindow": 2097152,
+    "maxTokens": 8192,
+    "costPer1MToken": 3
+  },
+  {
+    "id": "mistral/mistral-small",
+    "name": "Mistral Small",
+    "provider": "mistral",
+    "speedRating": 3,
+    "qualityRating": 1,
+    "capabilityTags": [
+      "general",
+      "fast"
+    ],
+    "recommendationReason": "轻量快速",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 32000,
+    "maxTokens": 8192,
+    "costPer1MToken": 0.2
+  },
+  {
+    "id": "mistral/mistral-medium",
+    "name": "Mistral Medium",
+    "provider": "mistral",
+    "speedRating": 2,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "general",
+      "coding"
+    ],
+    "recommendationReason": "均衡选择",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 32000,
+    "maxTokens": 8192,
+    "costPer1MToken": 1
+  },
+  {
+    "id": "mistral/mistral-large",
+    "name": "Mistral Large",
+    "provider": "mistral",
+    "speedRating": 1,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "reasoning",
+      "complex-tasks",
+      "coding"
+    ],
+    "recommendationReason": "强推理能力",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 128000,
+    "maxTokens": 8192,
+    "costPer1MToken": 4
+  },
+  {
+    "id": "meta/llama-3.1-8b",
+    "name": "Llama 3.1 8B",
+    "provider": "meta",
+    "speedRating": 3,
+    "qualityRating": 1,
+    "capabilityTags": [
+      "general",
+      "simple-tasks"
+    ],
+    "recommendationReason": "免费开源，简单任务",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 131072,
+    "maxTokens": 4096,
+    "costPer1MToken": 0
+  },
+  {
+    "id": "meta/llama-3.1-70b",
+    "name": "Llama 3.1 70B",
+    "provider": "meta",
+    "speedRating": 2,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "general",
+      "reasoning",
+      "coding"
+    ],
+    "recommendationReason": "开源最强，性价比高",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 131072,
+    "maxTokens": 4096,
+    "costPer1MToken": 0.6
+  },
+  {
+    "id": "cohere/command-r",
+    "name": "Command R",
+    "provider": "cohere",
+    "speedRating": 2,
+    "qualityRating": 2,
+    "capabilityTags": [
+      "rag",
+      "general"
+    ],
+    "recommendationReason": "RAG 场景专精",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 128000,
+    "maxTokens": 4096,
+    "costPer1MToken": 0.5
+  },
+  {
+    "id": "cohere/command-r-plus",
+    "name": "Command R+",
+    "provider": "cohere",
+    "speedRating": 1,
+    "qualityRating": 3,
+    "capabilityTags": [
+      "rag",
+      "reasoning",
+      "complex-tasks"
+    ],
+    "recommendationReason": "RAG + 推理，企业级",
+    "input": [
+      "text"
+    ],
+    "contextWindow": 128000,
+    "maxTokens": 4096,
+    "costPer1MToken": 2
+  }
 ]

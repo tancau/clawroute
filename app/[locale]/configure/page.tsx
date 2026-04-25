@@ -40,8 +40,11 @@ function ConfigureContent() {
       selectScene(sceneId);
       // If scene is pre-selected from homepage, skip to step 2
       setConfigStep(2);
+    } else if (!sceneId && configStep === 1) {
+      // If no scene selected, default to step 2 (Compare) to show all models
+      setConfigStep(2);
     }
-  }, [sceneId, selectedSceneId, selectScene, setConfigStep]);
+  }, [sceneId, selectedSceneId, selectScene, setConfigStep, configStep]);
 
   const currentScene = scenes.find((s) => s.id === (selectedSceneId ?? sceneId));
 
@@ -52,16 +55,17 @@ function ConfigureContent() {
     }
   };
 
-  if (!currentScene) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-neutral-7">{t('noScene')}</p>
-        <Link href="/">
-          <Button variant="outline">{t('goHome')}</Button>
-        </Link>
-      </div>
-    );
-  }
+  // Allow access without scene selection - show all models
+  // if (!currentScene) {
+  //   return (
+  //     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+  //       <p className="text-neutral-7">{t('noScene')}</p>
+  //       <Link href="/">
+  //         <Button variant="outline">{t('goHome')}</Button>
+  //       </Link>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen p-4 md:p-6">

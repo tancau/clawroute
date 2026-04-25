@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT, deductCredits, getCredits } from '@/lib/auth';
+import { verifyJWT, deductCredits, getCredits, getJWTSecret } from '@/lib/auth';
 
 interface DeductRequest {
   amount: number;
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },

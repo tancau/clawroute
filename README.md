@@ -7,7 +7,7 @@ English | [简体中文](./README.zh.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/tancau/hopllm?style=flat-square)](https://github.com/tancau/hopllm)
 
-**Live Demo**: [https://clawroute.vercel.app](https://clawroute.vercel.app)
+**Live Demo**: [https://hopllm.com](https://hopllm.com)
 
 ---
 
@@ -26,7 +26,7 @@ Watch how HopLLM helps you save 60-80% on API costs in under 30 seconds:
 HopLLM is a **smart routing API proxy** that helps you:
 1. Select your use case
 2. Drag-and-drop to adjust routing rules
-3. Export OpenClaw-compatible YAML config with one click
+3. Export HopLLM-compatible YAML config with one click
 
 **Simply put**: Tell HopLLM what you need, and it generates the optimal model routing configuration.
 
@@ -145,7 +145,7 @@ MIT License — Free for commercial use, but please keep attribution.
 
 - 🌐 **Live Demo**: [https://hopllm.com](https://hopllm.com)
 - 📂 **GitHub**: [github.com/tancau/hopllm](https://github.com/tancau/hopllm)
-- 📖 **OpenClaw Docs**: [docs.openclaw.ai](https://docs.openclaw.ai)
+- 📖 **HopLLM Docs**: [docs.openclaw.ai](https://docs.openclaw.ai)
 - 🤖 **OpenRouter**: [openrouter.ai](https://openrouter.ai) — Model aggregation platform
 
 ## 📸 Screenshots

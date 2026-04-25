@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/middleware/api-auth';
 
 export async function POST(request: NextRequest) {
+  // Authenticate request
+  const authResult = await authenticateApiRequest(request);
+  if (!authResult.authenticated) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { providers } = body as {

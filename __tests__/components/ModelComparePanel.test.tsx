@@ -11,8 +11,8 @@ vi.mock('@/store/use-app-store', () => ({
       sortMode: 'costFirst',
       setSortMode: mockSetSortMode,
       getSortedModelsForSelectedScene: () => [
-        { id: 'model-1', name: 'Qwen3 Coder', provider: 'Qwen', costPer1KToken: 0.0001, speedRating: 3, qualityRating: 2, capabilityTags: ['code'], recommendationReason: 'Fast and cheap' },
-        { id: 'model-2', name: 'DeepSeek V3', provider: 'DeepSeek', costPer1KToken: 0.0005, speedRating: 2, qualityRating: 3, capabilityTags: ['reasoning'], recommendationReason: 'Good quality' },
+        { id: 'model-1', name: 'Qwen3 Coder', provider: 'Qwen', costPer1MToken: 0.1, speedRating: 3, qualityRating: 2, capabilityTags: ['code'], recommendationReason: 'Fast and cheap' },
+        { id: 'model-2', name: 'DeepSeek V3', provider: 'DeepSeek', costPer1MToken: 0.5, speedRating: 2, qualityRating: 3, capabilityTags: ['reasoning'], recommendationReason: 'Good quality' },
       ],
     };
     return selector(store);
@@ -29,7 +29,7 @@ vi.mock('next-intl', () => ({
       'modelName': '模型',
       'speed': '速度',
       'quality': '质量',
-      'costPer1K': '成本/1K token',
+      'costPer1M': '成本/1M token',
       'reason': '推荐理由',
     };
     return translations[key] ?? key;

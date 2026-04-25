@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/middleware/api-auth';
 import { sql } from '@vercel/postgres';
 import { ensureAllFeedbackTables } from '@/lib/db/feedback-tables';
 import modelCapabilitiesData from '@/data/model-capabilities.json';
@@ -31,6 +32,13 @@ interface ModelWithFeedback extends ModelCapability {
 // ===== GET: Get Models with Feedback =====
 
 export async function GET(request: NextRequest) {
+  // Authenticate request
+  const authResult = await authenticateApiRequest(request);
+  if (!authResult.authenticated) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
+
   try {
     await ensureAllFeedbackTables();
     

@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT, findUserById } from '@/lib/auth';
+import { verifyJWT, findUserById, getJWTSecret } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Verify token
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { error: { code: 'INVALID_TOKEN', message: 'Invalid or expired token' } },

@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT, getCredits } from '@/lib/auth';
+import { verifyJWT, getCredits, getJWTSecret } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },

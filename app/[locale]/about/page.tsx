@@ -124,7 +124,7 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold mb-6 text-center gradient-text">{t('linksTitle')}</h2>
           <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="https://github.com/tancau/clawroute"
+              href="https://github.com/tancau/hopllm"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border-subtle hover:border-brand-primary/50 hover:bg-surface-overlay transition-all"

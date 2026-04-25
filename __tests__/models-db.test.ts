@@ -35,7 +35,7 @@ describe('models-db', () => {
     const models = getAllModels();
     const sorted = sortModels(models, 'costFirst');
     for (let i = 1; i < sorted.length; i++) {
-      expect(sorted[i]!.costPer1KToken).toBeGreaterThanOrEqual(sorted[i - 1]!.costPer1KToken);
+      expect(sorted[i]!.costPer1MToken).toBeGreaterThanOrEqual(sorted[i - 1]!.costPer1MToken);
     }
   });
 
@@ -46,7 +46,7 @@ describe('models-db', () => {
       if (sorted[i]!.qualityRating !== sorted[i - 1]!.qualityRating) {
         expect(sorted[i - 1]!.qualityRating).toBeGreaterThanOrEqual(sorted[i]!.qualityRating);
       } else {
-        expect(sorted[i]!.costPer1KToken).toBeGreaterThanOrEqual(sorted[i - 1]!.costPer1KToken);
+        expect(sorted[i]!.costPer1MToken).toBeGreaterThanOrEqual(sorted[i - 1]!.costPer1MToken);
       }
     }
   });
@@ -58,7 +58,7 @@ describe('models-db', () => {
       if (sorted[i]!.speedRating !== sorted[i - 1]!.speedRating) {
         expect(sorted[i - 1]!.speedRating).toBeGreaterThanOrEqual(sorted[i]!.speedRating);
       } else {
-        expect(sorted[i]!.costPer1KToken).toBeGreaterThanOrEqual(sorted[i - 1]!.costPer1KToken);
+        expect(sorted[i]!.costPer1MToken).toBeGreaterThanOrEqual(sorted[i - 1]!.costPer1MToken);
       }
     }
   });

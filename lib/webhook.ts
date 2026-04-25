@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 /**
  * Webhook 触发工具
  */
@@ -88,13 +89,18 @@ export async function triggerWebhooks(
 }
 
 /**
- * 验证 Webhook Secret
+ * 验证 Webhook Secret（使用 timing-safe 比较防止时序攻击）
  */
 export function verifyWebhookSecret(
   receivedSecret: string,
   storedSecret: string
 ): boolean {
-  return receivedSecret === storedSecret;
+  if (receivedSecret.length !== storedSecret.length) {
+    return false;
+  }
+  const a = Buffer.from(receivedSecret, 'utf8');
+  const b = Buffer.from(storedSecret, 'utf8');
+  return crypto.timingSafeEqual(a, b);
 }
 
 /**

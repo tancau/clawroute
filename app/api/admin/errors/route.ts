@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
-import { verifyJWT } from '@/lib/auth';
+import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureErrorTrackingTable } from '@/lib/db-tables';
 import crypto from 'crypto';
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     // 验证 JWT 和 Admin 权限
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
-    
+
     if (!token) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       );
     }
 
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },
@@ -138,8 +138,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
 
     // 按错误类型统计
     const errorsByTypeResult = await sql`
-      SELECT 
-        CASE 
+      SELECT
+        CASE
           WHEN error_message LIKE '%timeout%' THEN 'Timeout'
           WHEN error_message LIKE '%rate limit%' THEN 'Rate Limit'
           WHEN error_message LIKE '%auth%' OR error_message LIKE '%unauthorized%' THEN 'Auth'
@@ -162,7 +162,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
 
     // 按模型统计错误
     const errorsByModelResult = await sql`
-      SELECT 
+      SELECT
         rl.model,
         COUNT(CASE WHEN rl.success = false THEN 1 END) as errors,
         COUNT(*) as total
@@ -177,14 +177,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const errorsByModel = errorsByModelResult.rows.map(row => ({
       model: row.model as string,
       count: parseInt(row.errors as string) || 0,
-      errorRate: parseInt(row.total as string) > 0 
-        ? (parseInt(row.errors as string) / parseInt(row.total as string) * 100) 
+      errorRate: parseInt(row.total as string) > 0
+        ? (parseInt(row.errors as string) / parseInt(row.total as string) * 100)
         : 0,
     }));
 
     // 按提供商统计错误
     const errorsByProviderResult = await sql`
-      SELECT 
+      SELECT
         rl.provider,
         COUNT(CASE WHEN rl.success = false THEN 1 END) as errors,
         COUNT(*) as total
@@ -198,15 +198,15 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const errorsByProvider = errorsByProviderResult.rows.map(row => ({
       provider: row.provider as string,
       count: parseInt(row.errors as string) || 0,
-      errorRate: parseInt(row.total as string) > 0 
-        ? (parseInt(row.errors as string) / parseInt(row.total as string) * 100) 
+      errorRate: parseInt(row.total as string) > 0
+        ? (parseInt(row.errors as string) / parseInt(row.total as string) * 100)
         : 0,
     }));
 
     // 最近错误列表
     const recentErrorsResult = await sql`
-      SELECT 
-        id, user_id, model, provider, error_message, 
+      SELECT
+        id, user_id, model, provider, error_message,
         created_at, latency_ms, intent
       FROM request_logs
       WHERE success = false AND created_at >= ${sevenDaysAgo}
@@ -218,6 +218,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       id: row.id as string,
       errorType: classifyError(row.error_message as string),
       errorMessage: (row.error_message as string) || 'Unknown error',
+      errorStack: undefined,
       requestId: row.id as string,
       model: (row.model as string) || undefined,
       provider: (row.provider as string) || undefined,
@@ -230,7 +231,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
 
     // 错误时间线（按天）
     const errorTimelineResult = await sql`
-      SELECT 
+      SELECT
         DATE(TO_TIMESTAMP(created_at / 1000)) as date,
         COUNT(*) as errors
       FROM request_logs
@@ -257,7 +258,6 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     };
 
     return NextResponse.json({ success: true, data: stats });
-
   } catch (error) {
     console.error('[Admin Errors] Error:', error);
     return NextResponse.json(
@@ -272,7 +272,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
   try {
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
-    
+
     if (!token) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -280,7 +280,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
       );
     }
 
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },
@@ -347,7 +347,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
   try {
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
-    
+
     if (!token) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -355,7 +355,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
       );
     }
 
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },
@@ -407,15 +407,15 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
 // 分类错误类型
 function classifyError(errorMessage: string): string {
   if (!errorMessage) return 'Unknown';
-  
+
   const lowerMessage = errorMessage.toLowerCase();
-  
+
   if (lowerMessage.includes('timeout')) return 'Timeout';
   if (lowerMessage.includes('rate limit')) return 'Rate Limit';
   if (lowerMessage.includes('auth') || lowerMessage.includes('unauthorized')) return 'Auth';
   if (lowerMessage.includes('invalid') || lowerMessage.includes('bad request')) return 'Invalid Input';
   if (lowerMessage.includes('network') || lowerMessage.includes('connection')) return 'Network';
   if (lowerMessage.includes('insufficient') || lowerMessage.includes('credits')) return 'Credits';
-  
+
   return 'Other';
 }

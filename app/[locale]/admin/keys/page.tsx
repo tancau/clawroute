@@ -30,7 +30,7 @@ export default function AdminKeysPage() {
       return;
     }
 
-    if (user && user.tier !== 'admin' && user.email !== 'admin@hopllm.com') {
+    if (user && user.tier !== 'admin' && user.email !== (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@hopllm.com')) {
       router.push('/dashboard');
       return;
     }
@@ -41,9 +41,9 @@ export default function AdminKeysPage() {
   const loadKeys = async () => {
     setLoading(true);
     setKeys([
-      { id: '1', userId: '1', userEmail: 'user1@example.com', keyPreview: 'cr-abc123...', provider: 'deepseek', isActive: true, createdAt: Date.now() - 86400000, lastUsed: Date.now() },
-      { id: '2', userId: '2', userEmail: 'user2@example.com', keyPreview: 'cr-def456...', provider: 'openai', isActive: true, createdAt: Date.now() - 172800000, lastUsed: Date.now() - 3600000 },
-      { id: '3', userId: '3', userEmail: 'user3@example.com', keyPreview: 'cr-ghi789...', provider: 'anthropic', isActive: false, createdAt: Date.now() - 259200000, lastUsed: Date.now() - 7200000 },
+      { id: '1', userId: '1', userEmail: 'user1@example.com', keyPreview: 'hl-abc123...', provider: 'deepseek', isActive: true, createdAt: Date.now() - 86400000, lastUsed: Date.now() },
+      { id: '2', userId: '2', userEmail: 'user2@example.com', keyPreview: 'hl-def456...', provider: 'openai', isActive: true, createdAt: Date.now() - 172800000, lastUsed: Date.now() - 3600000 },
+      { id: '3', userId: '3', userEmail: 'user3@example.com', keyPreview: 'hl-ghi789...', provider: 'anthropic', isActive: false, createdAt: Date.now() - 259200000, lastUsed: Date.now() - 7200000 },
     ]);
     setLoading(false);
   };

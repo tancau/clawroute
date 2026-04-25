@@ -13,14 +13,9 @@ const IV_LENGTH = 16;
  */
 function getEncryptionKey(): Buffer {
   const key = process.env.ENCRYPTION_KEY;
-  
+
   if (!key) {
-    // 开发环境：使用默认密钥（生产环境必须设置）
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[Encryption] Using development encryption key. Set ENCRYPTION_KEY in production!');
-      return crypto.scryptSync('clawrouter-dev-key', 'salt', 32);
-    }
-    throw new Error('ENCRYPTION_KEY environment variable is required in production');
+    throw new Error('ENCRYPTION_KEY environment variable is required');
   }
   
   // 如果 key 是 hex 格式
@@ -29,7 +24,7 @@ function getEncryptionKey(): Buffer {
   }
   
   // 否则使用 scrypt 派生密钥
-  return crypto.scryptSync(key, 'clawrouter-salt', 32);
+  return crypto.scryptSync(key, 'hopllm-salt', 32);
 }
 
 /**

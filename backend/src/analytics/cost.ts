@@ -1,39 +1,40 @@
 /**
  * 成本追踪模块
+ * 价格单位：美元/1M tokens (与 providers.ts 统一)
  */
 
-// 模型定价（每 1K tokens，单位：cents）
+// 模型定价（每 1M tokens，单位：美元）
 export const MODEL_PRICING: Record<string, { input: number; output: number }> = {
   // GPT 系列
-  'gpt-4': { input: 3.0, output: 6.0 },
-  'gpt-4-turbo': { input: 1.0, output: 3.0 },
-  'gpt-4o': { input: 0.25, output: 1.0 },
-  'gpt-4o-mini': { input: 0.015, output: 0.06 },
-  'gpt-3.5-turbo': { input: 0.05, output: 0.15 },
-  
+  'gpt-4': { input: 30.0, output: 60.0 },
+  'gpt-4-turbo': { input: 10.0, output: 30.0 },
+  'gpt-4o': { input: 5.0, output: 15.0 },
+  'gpt-4o-mini': { input: 0.15, output: 0.6 },
+  'gpt-3.5-turbo': { input: 0.5, output: 1.5 },
+
   // Claude 系列
-  'claude-3-opus': { input: 1.5, output: 7.5 },
-  'claude-3-sonnet': { input: 0.3, output: 1.5 },
-  'claude-3-haiku': { input: 0.025, output: 0.125 },
-  'claude-3.5-sonnet': { input: 0.3, output: 1.5 },
-  'claude-3.5-haiku': { input: 0.01, output: 0.05 },
-  
+  'claude-3-opus': { input: 15.0, output: 75.0 },
+  'claude-3-sonnet': { input: 3.0, output: 15.0 },
+  'claude-3-haiku': { input: 0.25, output: 1.25 },
+  'claude-3.5-sonnet': { input: 3.0, output: 15.0 },
+  'claude-3.5-haiku': { input: 0.1, output: 0.5 },
+
   // Gemini 系列
-  'gemini-1.5-pro': { input: 0.35, output: 1.05 },
-  'gemini-1.5-flash': { input: 0.0075, output: 0.03 },
-  'gemini-2.0-flash': { input: 0.01, output: 0.04 },
-  
+  'gemini-1.5-pro': { input: 3.5, output: 10.5 },
+  'gemini-1.5-flash': { input: 0.075, output: 0.3 },
+  'gemini-2.0-flash': { input: 0.1, output: 0.4 },
+
   // DeepSeek
-  'deepseek-chat': { input: 0.01, output: 0.02 },
-  'deepseek-coder': { input: 0.01, output: 0.02 },
-  
+  'deepseek-chat': { input: 0.28, output: 0.42 },
+  'deepseek-coder': { input: 0.28, output: 0.42 },
+
   // Qwen
-  'qwen-turbo': { input: 0.008, output: 0.008 },
-  'qwen-plus': { input: 0.04, output: 0.12 },
-  'qwen-max': { input: 0.12, output: 0.12 },
-  
+  'qwen-turbo': { input: 0.8, output: 0.8 },
+  'qwen-plus': { input: 4.0, output: 12.0 },
+  'qwen-max': { input: 12.0, output: 12.0 },
+
   // 其他模型默认价格
-  'default': { input: 0.01, output: 0.02 },
+  'default': { input: 1.0, output: 2.0 },
 };
 
 // 基准模型（用于对比节省）
@@ -78,12 +79,14 @@ export function getModelPricing(model: string): { input: number; output: number 
 
 /**
  * 计算成本（cents）
+ * 基于美元/1M tokens 的定价
  */
 export function calculateCost(inputTokens: number, outputTokens: number, model: string): number {
   const pricing = getModelPricing(model);
-  const inputCost = (inputTokens / 1000) * pricing.input;
-  const outputCost = (outputTokens / 1000) * pricing.output;
-  return Math.round((inputCost + outputCost) * 100); // 转换为 cents
+  // pricing 是美元/1M tokens，计算总美元成本后转为 cents
+  const inputCostUsd = (inputTokens / 1_000_000) * pricing.input;
+  const outputCostUsd = (outputTokens / 1_000_000) * pricing.output;
+  return Math.round((inputCostUsd + outputCostUsd) * 100); // 转换为 cents
 }
 
 /**
@@ -97,9 +100,9 @@ export function compareCost(
   const baselinePricing = MODEL_PRICING[BASELINE_MODEL] || { input: 3.0, output: 6.0 };
   const actualPricing = getModelPricing(actualModel);
   
-  // 计算基准成本
-  const baselineInputCost = (inputTokens / 1000) * baselinePricing.input;
-  const baselineOutputCost = (outputTokens / 1000) * baselinePricing.output;
+  // 计算基准成本 (美元/1M tokens)
+  const baselineInputCost = (inputTokens / 1_000_000) * baselinePricing.input;
+  const baselineOutputCost = (outputTokens / 1_000_000) * baselinePricing.output;
   const originalCostCents = Math.round((baselineInputCost + baselineOutputCost) * 100);
   
   // 计算实际成本

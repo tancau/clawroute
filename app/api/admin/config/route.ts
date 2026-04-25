@@ -27,7 +27,10 @@ async function checkAdminAuth(request: NextRequest): Promise<{ authorized: boole
     return { authorized: false, error: 'No token provided' };
   }
   
-  const secret = process.env.JWT_SECRET || 'hopllm-dev-secret';
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    return { authorized: false, error: 'Server configuration error' };
+  }
   const payload = verifyJWT(token, secret);
   
   if (!payload || typeof payload !== 'object') {
@@ -45,7 +48,7 @@ async function checkAdminAuth(request: NextRequest): Promise<{ authorized: boole
   }
   
   // 检查管理员权限
-  if (user.tier !== 'admin' && user.email !== 'admin@hopllm.com') {
+  if (user.tier !== 'admin' && user.email !== (process.env.ADMIN_EMAIL || 'admin@hopllm.com')) {
     return { authorized: false, error: 'Admin access required' };
   }
   

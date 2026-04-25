@@ -37,7 +37,7 @@
     "savingLabelShort": "節約",
     "codeComment": "# OpenAI SDKのbase_urlを置き換えるだけ",
     "codeLine1": "from openai import OpenAI",
-    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-hopllm/v1\")",
     "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
@@ -60,8 +60,6 @@
     "title": "コスト計算機",
     "monthlyCalls": "月間呼び出し回数",
     "avgTokens": "平均トークン数/呼び出し",
-    "withoutClawroute": "HopLLMなし",
-    "withClawroute": "HopLLMあり",
     "savings": "節約",
     "month": "月",
     "annualSavings": "年間節約",
@@ -69,7 +67,9 @@
     "presetPersonal": "個人",
     "presetSmall": "小規模プロジェクト",
     "presetMedium": "中規模プロジェクト",
-    "presetLarge": "大規模プロジェクト"
+    "presetLarge": "大規模プロジェクト",
+    "withoutHopllm": "HopLLMなし",
+    "withHopllm": "HopLLMあり"
   },
   "configure": {
     "title": "プロキシ設定",
@@ -88,7 +88,7 @@
     "step3Title": "ルーティング戦略を設定",
     "step3Desc": "プライマリモデル（日常使用）とフェイルオーバーモデルを選択します。",
     "step4Title": "設定ファイルをエクスポート",
-    "step4Desc": "clawroute.json設定ファイルをダウンロードして、プロジェクトのルートに配置します。"
+    "step4Desc": "hopllm.json設定ファイルをダウンロードして、プロジェクトのルートに配置します。"
   },
   "templates": {
     "title": "プランマーケット",
@@ -301,6 +301,9 @@
     "copied": "コピーしました",
     "regenerate": "キーを再生成",
     "regenerating": "再生成中...",
+    "regenerateConfirm": "再生成を確認",
+    "regenerateFailed": "再生成に失敗しました。後でもう一度お試しください。",
+    "cancel": "キャンセル",
     "regenerateWarning": "再生成すると、古いキーが無効になります。アプリケーション設定を更新してください。",
     "noApiKey": "API キーが見つかりません。サポートにお問い合わせいただくか、ログアウトして再度ログインしてください。",
     "usageExample": "使用例",

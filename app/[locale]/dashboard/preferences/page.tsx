@@ -58,7 +58,7 @@ export default function PreferencesPage() {
   const t = useTranslations('dashboard');
 
   useEffect(() => {
-    const stored = localStorage.getItem('clawrouter_preferences');
+    const stored = localStorage.getItem('hopllm_preferences');
     if (stored) {
       try {
         setPreferences(JSON.parse(stored));
@@ -71,7 +71,7 @@ export default function PreferencesPage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    localStorage.setItem('clawrouter_preferences', JSON.stringify(preferences));
+    localStorage.setItem('hopllm_preferences', JSON.stringify(preferences));
     await new Promise((resolve) => setTimeout(resolve, 500));
     setIsSaving(false);
     setSaved(true);

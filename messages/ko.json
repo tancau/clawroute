@@ -37,7 +37,7 @@
     "savingLabelShort": "절약",
     "codeComment": "# OpenAI SDK의 base_url만 교체하면 됩니다",
     "codeLine1": "from openai import OpenAI",
-    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-hopllm/v1\")",
     "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
@@ -60,8 +60,6 @@
     "title": "비용 계산기",
     "monthlyCalls": "월간 호출 횟수",
     "avgTokens": "호출당 평균 토큰 수",
-    "withoutClawroute": "HopLLM 없이",
-    "withClawroute": "HopLLM 사용 시",
     "savings": "절약",
     "month": "월",
     "annualSavings": "연간 절약",
@@ -69,7 +67,9 @@
     "presetPersonal": "개인",
     "presetSmall": "소규모 프로젝트",
     "presetMedium": "중간 규모 프로젝트",
-    "presetLarge": "대규모 프로젝트"
+    "presetLarge": "대규모 프로젝트",
+    "withoutHopllm": "HopLLM 없이",
+    "withHopllm": "HopLLM 사용 시"
   },
   "configure": {
     "title": "프록시 설정",
@@ -88,7 +88,7 @@
     "step3Title": "라우팅 전략 설정",
     "step3Desc": "기본 모델(일상 사용)과 페일오버 모델을 선택합니다.",
     "step4Title": "설정 파일 내보내기",
-    "step4Desc": "clawroute.json 설정 파일을 다운로드하여 프로젝트 루트에 배치합니다."
+    "step4Desc": "hopllm.json 설정 파일을 다운로드하여 프로젝트 루트에 배치합니다."
   },
   "templates": {
     "title": "플랜 마켓",
@@ -292,6 +292,34 @@
     "signUpDesc": "지금 등록하고 API 키를 받아 스마트 라우팅을 시작하세요",
     "getApiKey": "API 키 받기",
     "configureProxy": "프록시 설정"
+  },
+  "apiKey": {
+    "title": "HopLLM API 키",
+    "description": "HopLLM 스마트 라우팅 서비스에 접근하기 위한 개인 API 키",
+    "yourApiKey": "귀하의 API 키",
+    "copy": "복사",
+    "copied": "복사됨",
+    "regenerate": "키 재생성",
+    "regenerating": "재생성 중...",
+    "regenerateConfirm": "재생성 확인",
+    "regenerateFailed": "재생성에 실패했습니다. 나중에 다시 시도해 주세요.",
+    "cancel": "취소",
+    "regenerateWarning": "재생성하면 이전 키가 무효화됩니다. 애플리케이션 설정을 업데이트해 주세요.",
+    "noApiKey": "API 키를 찾을 수 없습니다. 지원팀에 문의하거나 로그아웃 후 다시 로그인해 보세요.",
+    "usageExample": "사용 예시",
+    "usageDescription": "OpenAI base_url을 HopLLM으로 교체하고 model='auto'를 사용하여 스마트 라우팅을 이용하세요",
+    "python": "Python",
+    "javascript": "JavaScript",
+    "autoRouteComment": "스마트 라우팅이 최적 모델을 자동 선택",
+    "features": "주요 기능",
+    "featureSmartRouting": "스마트 라우팅",
+    "featureSmartRoutingDesc": "요청에 가장 적합한 모델을 자동 선택",
+    "featureSaveCost": "80% 비용 절감",
+    "featureSaveCostDesc": "품질 저하 없이 더 경제적인 모델 선택",
+    "featureCompatible": "OpenAI 호환",
+    "featureCompatibleDesc": "마이그레이션 비용 없음, base_url만 변경",
+    "featureAutoIntent": "의도 분류",
+    "featureAutoIntentDesc": "요청의 복잡도와 요구사항 분석"
   },
   "privacy": {
     "title": "개인정보 보호정책",

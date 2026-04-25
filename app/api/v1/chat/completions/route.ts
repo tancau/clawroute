@@ -12,7 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities, getProviderWithUserKeys, createProviderFromUserConfig } from '@/lib/routing/providers';
+import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities, getProviderWithUserKeys, createProviderFromUserConfig, calculateRequestCost } from '@/lib/routing/providers';
 import { keyManager } from '@/lib/routing/key-manager';
 import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth';
 import { logRequest } from '@/lib/db';
@@ -598,17 +598,6 @@ async function validateApiKey(apiKey: string | null): Promise<UserValidation | n
     return null;
   }
 
-  // 开发模式：允许任何以 'sk-' 或 'cr-' 开头的 key
-  if (process.env.NODE_ENV === 'development') {
-    if (apiKey.startsWith('sk-') || apiKey.startsWith('cr-') || apiKey.startsWith('sk-or-')) {
-      return {
-        userId: 'dev-user',
-        tier: 'free',
-        credits: 1000,
-      };
-    }
-  }
-
   // 使用 auth 模块的 findUserByApiKey
   try {
     const user = await findUserByApiKey(apiKey);
@@ -623,14 +612,8 @@ async function validateApiKey(apiKey: string | null): Promise<UserValidation | n
       };
     }
   } catch {
-    // 数据库不可用，使用开发模式验证
-    if (apiKey.startsWith('sk-') || apiKey.startsWith('cr-') || apiKey.startsWith('sk-or-')) {
-      return {
-        userId: 'fallback-user',
-        tier: 'free',
-        credits: 100,
-      };
-    }
+    // 数据库不可用时拒绝请求（不再回退到开发模式）
+    return null;
   }
 
   return null;
@@ -835,8 +818,8 @@ export async function POST(request: NextRequest) {
         const usage = data.usage || {};
         const inputTokens = usage.prompt_tokens || 0;
         const outputTokens = usage.completion_tokens || 0;
-        // 简单的成本计算（实际应该根据模型定价）
-        const costUsd = (inputTokens + outputTokens) * 0.00001;
+        // 基于模型定价的动态成本计算
+        const costUsd = calculateRequestCost(usedModel, inputTokens, outputTokens);
 
         await logRequest({
           id: requestId,
@@ -914,7 +897,7 @@ export async function OPTIONS() {
   return NextResponse.json(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Authorization, Content-Type, X-Request-ID',
       'Access-Control-Max-Age': '86400',

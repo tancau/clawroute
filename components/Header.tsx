@@ -50,7 +50,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
           <a
-            href="https://github.com/tancau/clawroute"
+            href="https://github.com/tancau/hopllm"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300 text-sm"

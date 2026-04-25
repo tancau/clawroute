@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
-import { verifyJWT } from '@/lib/auth';
+import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 interface ApiResponse<T = unknown> {
   success: boolean;
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       );
     }
 
-    const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },

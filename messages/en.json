@@ -37,7 +37,7 @@
     "savingLabelShort": "Saves",
     "codeComment": "# Just swap your OpenAI SDK base_url",
     "codeLine1": "from openai import OpenAI",
-    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-hopllm/v1\")",
     "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
@@ -60,8 +60,6 @@
     "title": "Cost Calculator",
     "monthlyCalls": "Monthly Calls",
     "avgTokens": "Avg Tokens per Call",
-    "withoutClawroute": "Without HopLLM",
-    "withClawroute": "With HopLLM",
     "savings": "Savings",
     "month": "month",
     "annualSavings": "Annual Savings",
@@ -69,7 +67,9 @@
     "presetPersonal": "Personal",
     "presetSmall": "Small Project",
     "presetMedium": "Medium Project",
-    "presetLarge": "Large Project"
+    "presetLarge": "Large Project",
+    "withoutHopllm": "Without HopLLM",
+    "withHopllm": "With HopLLM"
   },
   "configure": {
     "title": "Proxy Configuration",
@@ -88,7 +88,7 @@
     "step3Title": "Configure Routing Strategy",
     "step3Desc": "Pick a primary model (for daily use) and fallback models (for when the primary is unavailable). You can also apply a template first, then fine-tune.",
     "step4Title": "Export Config File",
-    "step4Desc": "This is your clawroute.json config file. Download it and place it in your ClawRoute project root to take effect."
+    "step4Desc": "This is your hopllm.json config file. Download it and place it in your HopLLM project root to take effect."
   },
   "modelCompare": {
     "title": "Model Comparison",
@@ -142,17 +142,17 @@
   },
   "configPreview": {
     "title": "Config Preview",
-    "usage": "Save this file as clawroute.json in your project root. ClawRoute will load it automatically on startup.",
+    "usage": "Save this file as hopllm.json in your project root. HopLLM will load it automatically on startup.",
     "copy": "Copy",
     "download": "Download",
     "copySuccess": "Copied!",
     "copyFailed": "Copy failed, please copy manually",
     "copiedToClipboard": "Copied to clipboard",
-    "jsonCopied": "clawroute.json config copied",
+    "jsonCopied": "hopllm.json config copied",
     "copyFailedTitle": "Copy failed",
     "copyManually": "Please copy manually",
     "downloadSuccess": "Download successful",
-    "jsonDownloaded": "clawroute.json downloaded"
+    "jsonDownloaded": "hopllm.json downloaded"
   },
   "template": {
     "title": "Preset Templates",
@@ -293,7 +293,7 @@
     "owner": "Owner",
     "context": "Context",
     "generateConfig": "Generate & Copy Config",
-    "downloadConfig": "Download clawroute.json",
+    "downloadConfig": "Download hopllm.json",
     "verifyKey": "Verify Key",
     "verifying": "Verifying...",
     "keyValid": "Key is valid",
@@ -302,8 +302,8 @@
   },
   "configImport": {
     "title": "Import & Health Check",
-    "description": "Paste clawroute.json to auto-parse + diagnose issues",
-    "pastePlaceholder": "Paste your clawroute.json content...",
+    "description": "Paste hopllm.json to auto-parse + diagnose issues",
+    "pastePlaceholder": "Paste your hopllm.json content...",
     "analyze": "Analyze & Check",
     "invalidJson": "Invalid JSON format",
     "parseError": "Parse failed",
@@ -446,6 +446,9 @@
     "copied": "Copied",
     "regenerate": "Regenerate Key",
     "regenerating": "Regenerating...",
+    "regenerateConfirm": "Confirm Regenerate",
+    "regenerateFailed": "Failed to regenerate. Please try again later.",
+    "cancel": "Cancel",
     "regenerateWarning": "Regenerating will invalidate your old key. Update your applications accordingly.",
     "noApiKey": "No API key found. Please contact support or try logging out and back in.",
     "usageExample": "Usage Example",

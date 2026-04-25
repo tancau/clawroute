@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT, findUserByApiKey } from '@/lib/auth';
+import { verifyJWT, findUserByApiKey, getJWTSecret } from '@/lib/auth';
 
 // Public APIs that don't require authentication
 const PUBLIC_API_PATHS = [
@@ -80,7 +80,7 @@ export async function authenticateApiRequest(request: NextRequest): Promise<Auth
   }
   
   // Try JWT verification first
-  const secret = process.env.JWT_SECRET || 'hopllm-dev-secret';
+  const secret = getJWTSecret();
   const jwtPayload = verifyJWT(token, secret);
   
   if (jwtPayload && jwtPayload.userId) {

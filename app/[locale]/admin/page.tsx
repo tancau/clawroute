@@ -29,7 +29,7 @@ export default function AdminPage() {
     }
 
     // 检查是否是管理员（这里简单检查 tier）
-    if (user && user.tier !== 'admin' && user.email !== 'admin@hopllm.com') {
+    if (user && user.tier !== 'admin' && user.email !== (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@hopllm.com')) {
       router.push('/dashboard');
       return;
     }

@@ -34,17 +34,32 @@ export default function ApiKeyPage() {
     }
   };
 
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
   const handleRegenerate = async () => {
     if (!user?.id) return;
-    
+
+    if (!showConfirm) {
+      setShowConfirm(true);
+      return;
+    }
+
     setIsRegenerating(true);
+    setErrorMsg('');
     try {
       const result = await api.regenerateApiKey(user.id);
-      if (result.data?.apiKey) {
+      if (result.error) {
+        setErrorMsg(result.error.message || t('regenerateFailed'));
+      } else if (result.data?.apiKey) {
         useUserStore.setState({ user: { ...user, apiKey: result.data.apiKey } });
+        setShowConfirm(false);
+      } else {
+        setErrorMsg(t('regenerateFailed'));
       }
     } catch (err) {
       console.error('Failed to regenerate:', err);
+      setErrorMsg(t('regenerateFailed'));
     }
     setIsRegenerating(false);
   };
@@ -102,16 +117,32 @@ export default function ApiKeyPage() {
               </div>
 
               {/* Regenerate Button */}
-              <button
-                onClick={handleRegenerate}
-                disabled={isRegenerating}
-                className="flex items-center gap-2 px-4 py-2 text-neutral-7 hover:text-semantic-error transition-colors disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${isRegenerating ? 'animate-spin' : ''}`} />
-                {isRegenerating ? t('regenerating') : t('regenerate')}
-              </button>
-
-              <p className="text-xs text-neutral-6">{t('regenerateWarning')}</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleRegenerate}
+                    disabled={isRegenerating}
+                    className={`flex items-center gap-2 px-4 py-2 transition-colors disabled:opacity-50 ${
+                      showConfirm
+                        ? 'bg-semantic-error/10 text-semantic-error hover:bg-semantic-error/20'
+                        : 'text-neutral-7 hover:text-semantic-error'
+                    }`}
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+                    {isRegenerating ? t('regenerating') : showConfirm ? t('regenerateConfirm') : t('regenerate')}
+                  </button>
+                  {showConfirm && !isRegenerating && (
+                    <button
+                      onClick={() => { setShowConfirm(false); setErrorMsg(''); }}
+                      className="px-4 py-2 text-neutral-7 hover:text-neutral-10 transition-colors"
+                    >
+                      {t('cancel')}
+                    </button>
+                  )}
+                </div>
+                {errorMsg && <p className="text-sm text-semantic-error">{errorMsg}</p>}
+                <p className="text-xs text-neutral-6">{t('regenerateWarning')}</p>
+              </div>
             </div>
           ) : (
             <div className="p-4 bg-semantic-warning/10 border border-semantic-warning/20 rounded-lg">
@@ -137,8 +168,8 @@ export default function ApiKeyPage() {
                 <code>{`from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.clawrouter.com/v1",
-    api_key="${user.apiKey || 'cr-YOUR_API_KEY'}"
+    base_url="https://api.hopllm.com/v1",
+    api_key="${user.apiKey || 'hl-YOUR_API_KEY'}"
 )
 
 response = client.chat.completions.create(
@@ -157,8 +188,8 @@ print(response.choices[0].message.content)`}</code>
                 <code>{`import OpenAI from 'openai';
 
 const client = new OpenAI({
-    baseURL: "https://api.clawrouter.com/v1",
-    apiKey: "${user.apiKey || 'cr-YOUR_API_KEY'}"
+    baseURL: "https://api.hopllm.com/v1",
+    apiKey: "${user.apiKey || 'hl-YOUR_API_KEY'}"
 });
 
 const response = await client.chat.completions.create({

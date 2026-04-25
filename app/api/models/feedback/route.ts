@@ -6,12 +6,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/middleware/api-auth';
 import { sql } from '@vercel/postgres';
 import { ensureAllFeedbackTables } from '@/lib/db/feedback-tables';
 
 // Generate unique ID
 function generateId(): string {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 11)}`;
 }
 
 // ===== Types =====
@@ -65,6 +66,13 @@ interface FeedbackStats {
 // ===== POST: Submit Feedback =====
 
 export async function POST(request: NextRequest) {
+  // Authenticate request
+  const authResult = await authenticateApiRequest(request);
+  if (!authResult.authenticated) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
+
   try {
     await ensureAllFeedbackTables();
     

@@ -13,7 +13,7 @@ function isModel(data: unknown): data is import('./types').Model {
     typeof obj.id === 'string' &&
     typeof obj.name === 'string' &&
     typeof obj.provider === 'string' &&
-    typeof obj.costPer1KToken === 'number' &&
+    typeof obj.costPer1MToken === 'number' &&
     typeof obj.speedRating === 'number' &&
     typeof obj.qualityRating === 'number' &&
     Array.isArray(obj.capabilityTags)

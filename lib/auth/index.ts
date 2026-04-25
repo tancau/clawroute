@@ -26,6 +26,17 @@ function signJWT(payload: Record<string, unknown>, secret: string): string {
   return `${header}.${body}.${signature}`;
 }
 
+/**
+ * 获取 JWT 密钥（集中管理，所有代码应使用此函数）
+ */
+export function getJWTSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  return secret;
+}
+
 export function verifyJWT(token: string, secret: string): Record<string, unknown> | null {
   const parts = token.split('.');
   if (parts.length !== 3) return null;
@@ -62,17 +73,15 @@ interface InternalUser extends SafeUser {
 
 // ===== Token Generation =====
 
-const JWT_SECRET = () => process.env.JWT_SECRET || 'hopllm-dev-secret';
-
 export function generateTokens(userId: string, tier: string) {
   const now = Math.floor(Date.now() / 1000);
   const accessToken = signJWT(
     { userId, tier, iat: now, exp: now + 3600 },
-    JWT_SECRET()
+    getJWTSecret()
   );
   const refreshToken = signJWT(
     { userId, type: 'refresh', iat: now, exp: now + 7 * 86400 },
-    JWT_SECRET()
+    getJWTSecret()
   );
   return { accessToken, refreshToken, expiresIn: 3600 };
 }
@@ -230,11 +239,11 @@ export async function createUser(email: string, password: string, name?: string)
   const id = crypto.randomUUID();
   const normalizedEmail = email.toLowerCase().trim();
   const passwordHash = hashPassword(password);
-  const apiKey = `cr-${crypto.randomBytes(24).toString('hex')}`;
+  const apiKey = `hl-${crypto.randomBytes(24).toString('hex')}`;
   const now = Date.now();
   
   console.log('[createUser] Creating user with email:', normalizedEmail);
-  console.log('[createUser] Password hash format:', passwordHash.substring(0, 50) + '...');
+  // Password hash details not logged for security
 
   // 获取动态配置的默认 credits
   let defaultCredits = 100;

@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT } from '@/lib/auth';
+import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { updateUserProviderKeys, getUserProviderKeys } from '@/lib/auth';
 import { maskApiKey, isCustomProvider, CustomProviderConfig } from '@/lib/encryption';
 
@@ -36,13 +36,13 @@ async function authenticate(request: NextRequest): Promise<{ userId: string; ema
     const cookieToken = request.cookies.get('auth_token')?.value;
     if (!cookieToken) return null;
     
-    const payload = verifyJWT(cookieToken, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+    const payload = verifyJWT(cookieToken, getJWTSecret());
     if (!payload || !payload.userId) return null;
     
     return { userId: payload.userId as string, email: payload.email as string };
   }
   
-  const payload = verifyJWT(token, process.env.JWT_SECRET || 'clawrouter-dev-secret');
+  const payload = verifyJWT(token, getJWTSecret());
   if (!payload || !payload.userId) return null;
   
   return { userId: payload.userId as string, email: payload.email as string };

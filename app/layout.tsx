@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_CODE || '',
   },
 };
 
@@ -110,7 +110,7 @@ export default async function RootLayout({
             __html: `
               (function() {
                 try {
-                  var stored = JSON.parse(localStorage.getItem('clawroute-theme') || '{}');
+                  var stored = JSON.parse(localStorage.getItem('hopllm-theme') || '{}');
                   var theme = stored.state && stored.state.theme || 'dark';
                   var resolved = theme;
                   if (theme === 'system') {

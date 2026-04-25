@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT } from '../auth';
+import { verifyJWT, getJWTSecret } from '../auth';
 import { findUserById } from '../auth';
 
 export interface AdminUser {
@@ -30,7 +30,7 @@ export async function checkAdminAuth(request: NextRequest): Promise<{
     return { authorized: false, error: 'No token provided' };
   }
   
-  const secret = process.env.JWT_SECRET || 'hopllm-dev-secret';
+  const secret = getJWTSecret();
   const payload = verifyJWT(token, secret);
   
   if (!payload || typeof payload !== 'object') {
@@ -48,7 +48,7 @@ export async function checkAdminAuth(request: NextRequest): Promise<{
   }
   
   // 检查管理员权限
-  if (user.tier !== 'admin' && user.email !== 'admin@hopllm.com') {
+  if (user.tier !== 'admin' && user.email !== (process.env.ADMIN_EMAIL || 'admin@hopllm.com')) {
     return { authorized: false, error: 'Admin access required' };
   }
   

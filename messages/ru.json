@@ -37,7 +37,7 @@
     "savingLabelShort": "Экономит",
     "codeComment": "# Просто замените base_url в OpenAI SDK",
     "codeLine1": "from openai import OpenAI",
-    "codeLine2": "client = OpenAI(base_url=\"https://your-clawroute/v1\")",
+    "codeLine2": "client = OpenAI(base_url=\"https://your-hopllm/v1\")",
     "codeLine3": "resp = client.chat.completions.create(model=\"auto\", ...)"
   },
   "scenes": {
@@ -69,8 +69,6 @@
     "title": "Калькулятор затрат",
     "monthlyCalls": "Ежемесячные вызовы",
     "avgTokens": "Среднее количество токенов на вызов",
-    "withoutClawroute": "Без HopLLM",
-    "withClawroute": "С HopLLM",
     "savings": "Экономия",
     "month": "месяц",
     "annualSavings": "Годовая экономия",
@@ -78,7 +76,9 @@
     "presetPersonal": "Личный",
     "presetSmall": "Малый проект",
     "presetMedium": "Средний проект",
-    "presetLarge": "Крупный проект"
+    "presetLarge": "Крупный проект",
+    "withoutHopllm": "Без HopLLM",
+    "withHopllm": "С HopLLM"
   },
   "configure": {
     "title": "Настройка прокси",
@@ -97,7 +97,7 @@
     "step3Title": "Настройте стратегию маршрутизации",
     "step3Desc": "Выберите основную модель (для ежедневного использования) и резервные модели (когда основная недоступна).",
     "step4Title": "Экспорт файла конфигурации",
-    "step4Desc": "Это ваш файл конфигурации clawroute.json. Скачайте его и поместите в корень вашего проекта ClawRoute."
+    "step4Desc": "Это ваш файл конфигурации hopllm.json. Скачайте его и поместите в корень вашего проекта HopLLM."
   },
   "modelCompare": {
     "title": "Сравнение моделей",
@@ -313,6 +313,9 @@
     "copied": "Скопировано",
     "regenerate": "Перегенерировать ключ",
     "regenerating": "Перегенерация...",
+    "regenerateConfirm": "Подтвердить регенерацию",
+    "regenerateFailed": "Не удалось регенерировать. Попробуйте позже.",
+    "cancel": "Отмена",
     "regenerateWarning": "Перегенерация аннулирует ваш старый ключ. Обновите ваши приложения соответственно.",
     "noApiKey": "API ключ не найден. Пожалуйста, свяжитесь с поддержкой или попробуйте выйти и войти снова.",
     "usageExample": "Пример использования",

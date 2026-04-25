@@ -96,7 +96,7 @@ app.get('/health', (c) => {
   return c.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '0.1.0',
+    version: process.env.APP_VERSION || '0.1.0',
   });
 });
 
@@ -672,7 +672,7 @@ app.post('/v1/users/login', async (c) => {
     const { passwordHash, ...userSafe } = user;
     
     // 生成 JWT access token 和 refresh token
-    const jwtSecret = process.env.JWT_SECRET || 'hopllm-dev-secret';
+    const jwtSecret = process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET required'); })();
     const now = Math.floor(Date.now() / 1000);
     const accessToken = signJWT(
       { userId: user.id, tier: user.tier, iat: now, exp: now + 3600 },
@@ -715,7 +715,7 @@ app.post('/v1/auth/refresh', async (c) => {
     }
     
     // Verify refresh token using JWT
-    const jwtSecret = process.env.JWT_SECRET || 'hopllm-dev-secret';
+    const jwtSecret = process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET required'); })();
     const payload = verifyJWT(body.refreshToken, jwtSecret);
     if (!payload || payload.type !== 'refresh') {
       return c.json({
@@ -914,7 +914,31 @@ app.get('/v1/users/:id', async (c) => {
 // 重新生成 API Key
 app.post('/v1/users/:id/regenerate-key', async (c) => {
   try {
+    // 验证 JWT 认证
+    const jwtSecret = process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET required'); })();
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return c.json({
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      }, 401);
+    }
+    const token = authHeader.slice(7);
+    const payload = verifyJWT(token, jwtSecret);
+    if (!payload || !payload.userId) {
+      return c.json({
+        error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token' },
+      }, 401);
+    }
+
     const userId = c.req.param('id');
+
+    // 验证请求者只能重新生成自己的密钥
+    if (payload.userId !== userId) {
+      return c.json({
+        error: { code: 'FORBIDDEN', message: 'You can only regenerate your own API key' },
+      }, 403);
+    }
+
     const user = getUser({ id: userId });
     
     if (!user) {
@@ -1188,7 +1212,7 @@ app.get('/api/models/catalog', async (c) => {
       id: `${m.provider}/${m.model_id}`,
       name: m.display_name || m.model_id,
       provider: m.provider,
-      costPer1KToken: (m.input_cost_1m + m.output_cost_1m) / 1000 / 2, // 简化：取 input+output 平均
+      costPer1MToken: (m.input_cost_1m + m.output_cost_1m) / 2, // 简化：取 input+output 平均
       inputCostPer1MToken: m.input_cost_1m,
       outputCostPer1MToken: m.output_cost_1m,
       speedRating: m.avg_latency_ms ? (m.avg_latency_ms < 400 ? 3 : m.avg_latency_ms < 800 ? 2 : 1) : 2,

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/middleware/api-auth';
 
 /**
  * Verify an API key by making a lightweight chat completion request.
@@ -7,7 +8,14 @@ import { NextRequest, NextResponse } from 'next/server';
  * Returns: { valid: boolean, model?: string, error?: string, latencyMs?: number }
  */
 export async function POST(request: NextRequest) {
+  // Authenticate request
+  const authResult = await authenticateApiRequest(request);
+  if (!authResult.authenticated) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
   try {
+
     const body = await request.json();
     const { baseUrl, apiKey, model } = body;
 

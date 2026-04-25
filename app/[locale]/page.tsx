@@ -4,6 +4,8 @@ import { FeaturesSection } from '@/components/home/FeaturesSection';
 import { SceneSection } from '@/components/home/SceneSection';
 import { QuickStartSection } from '@/components/home/QuickStartSection';
 import { CostSection } from '@/components/home/CostSection';
+import { ModelShowcase } from '@/components/home/ModelShowcase';
+import { Section } from '@/components/layout/Section';
 
 export default function Home() {
   const t = useTranslations('home');
@@ -35,6 +37,11 @@ ${t('codeLine3')}`;
       />
 
       <SceneSection />
+
+      {/* Model Showcase - Public pricing display */}
+      <Section variant="alternate">
+        <ModelShowcase />
+      </Section>
 
       <QuickStartSection
         quickStartTitle={t('quickStartTitle')}

@@ -1,0 +1,52 @@
+{
+  "description": "Mapping between official model names and OpenRouter model names",
+  "lastUpdated": "2026-04-24",
+  "mappings": {
+    "openai": {
+      "gpt-4o": ["gpt-4o", "gpt-5.4"],
+      "gpt-4o-mini": ["gpt-4o-mini", "gpt-5.4-mini"],
+      "gpt-4-turbo": ["gpt-4-turbo", "gpt-4.8-turbo"],
+      "gpt-4": ["gpt-4", "gpt-4.5"],
+      "gpt-3.5-turbo": ["gpt-3.5-turbo"]
+    },
+    "anthropic": {
+      "claude-3-5-sonnet": ["claude-3.5-sonnet", "claude-sonnet-4-6"],
+      "claude-3-5-haiku": ["claude-3.5-haiku", "claude-haiku-4-5"],
+      "claude-3-opus": ["claude-3-opus", "claude-opus-4-6"]
+    },
+    "google": {
+      "gemini-1.5-pro": ["gemini-1.5-pro", "gemini-2.0-pro"],
+      "gemini-1.5-flash": ["gemini-1.5-flash", "gemini-2.0-flash"],
+      "gemini-2.0-flash": ["gemini-2.0-flash"]
+    },
+    "deepseek": {
+      "deepseek-chat": ["deepseek-chat", "deepseek-v3", "deepseek-v3.2"],
+      "deepseek-reasoner": ["deepseek-reasoner", "deepseek-r1"],
+      "deepseek-coder": ["deepseek-coder", "deepseek-v3-coder"]
+    },
+    "qwen": {
+      "qwen-plus": ["qwen-plus", "qwen2.5-72b"],
+      "qwen-max": ["qwen-max", "qwen2.5-32b"],
+      "qwen-turbo": ["qwen-turbo"]
+    },
+    "mistral": {
+      "mistral-small": ["mistral-small", "mistral-7b"],
+      "mistral-medium": ["mistral-medium", "mixtral-8x7b"],
+      "mistral-large": ["mistral-large", "mistral-8x22b"]
+    },
+    "grok": {
+      "grok-2": ["grok-2", "grok-4.20"],
+      "grok-2-mini": ["grok-2-mini", "grok-4.1-fast"]
+    },
+    "moonshot": {
+      "moonshot-v1-8k": ["moonshot-v1-8k", "kimi-k2"],
+      "moonshot-v1-32k": ["moonshot-v1-32k", "kimi-k2.5"],
+      "moonshot-v1-128k": ["moonshot-v1-128k", "kimi-k2.6"]
+    }
+  },
+  "notes": {
+    "openai": "OpenRouter uses newer version numbering (e.g., gpt-5.4 instead of gpt-4o)",
+    "deepseek": "OpenRouter uses version numbers (v3, v3.2) instead of product names",
+    "grok": "OpenRouter uses version numbers (4.20, 4.1) instead of generation names"
+  }
+}

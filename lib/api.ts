@@ -1,6 +1,6 @@
 // API 服务层 - 连接后端
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '');
 
 // ===== Types =====
 export interface User {
@@ -69,7 +69,7 @@ class ApiClient {
     this.baseUrl = baseUrl;
     // 从 localStorage 恢复 token
     if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('clawroute_token');
+      this.token = localStorage.getItem('hopllm_token');
     }
   }
 
@@ -77,9 +77,9 @@ class ApiClient {
     this.token = token;
     if (typeof window !== 'undefined') {
       if (token) {
-        localStorage.setItem('clawroute_token', token);
+        localStorage.setItem('hopllm_token', token);
       } else {
-        localStorage.removeItem('clawroute_token');
+        localStorage.removeItem('hopllm_token');
       }
     }
   }

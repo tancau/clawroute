@@ -16,7 +16,7 @@
 HopLLM（智跳）是一个**智能路由 API 代理**，帮你：
 1. 选择使用场景
 2. 拖拽调整路由规则
-3. 一键导出 OpenClaw 可用的 YAML 配置
+3. 一键导出 HopLLM 可用的 YAML 配置
 
 **简单来说**：HopLLM 帮你生成最优的模型路由配置，智能路由，自动省钱。
 
@@ -135,7 +135,7 @@ MIT License — 可免费商用，但请保留署名。
 
 - 🌐 **在线体验**：[https://hopllm.com](https://hopllm.com)
 - 📂 **GitHub**：[github.com/tancau/hopllm](https://github.com/tancau/hopllm)
-- 📖 **OpenClaw 文档**：[docs.openclaw.ai](https://docs.openclaw.ai)
+- 📖 **HopLLM 文档**：[docs.openclaw.ai](https://docs.openclaw.ai)
 - 🤖 **OpenRouter**：[openrouter.ai](https://openrouter.ai) — 模型聚合平台
 
 ## 📸 截图

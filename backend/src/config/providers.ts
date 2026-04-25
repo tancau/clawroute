@@ -239,7 +239,7 @@ export const providers: ProviderConfig[] = [
   // 自建服务
   {
     name: 'litellm',
-    baseUrl: 'http://23.94.236.146:3000/v1',
+    baseUrl: process.env.LITELLM_URL || 'http://localhost:3000/v1',
     apiKeyEnv: 'LITELLM_API_KEY',
     models: [
       'qwen/qwen3.6-plus',
@@ -272,6 +272,240 @@ export const providers: ProviderConfig[] = [
     rateLimit: { rpm: 60 },
     timeout: 60000,
     priority: 88,
+    enabled: true,
+  },
+
+  // ==================== Grok (xAI) ====================
+  // 官方文档：https://x.ai/api
+  {
+    name: 'grok',
+    baseUrl: 'https://api.x.ai/v1',
+    apiKeyEnv: 'XAI_API_KEY',
+    models: [
+      'grok-2',
+      'grok-2-vision',
+      'grok-2-mini',
+      'grok-3',
+      'grok-3-mini',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 45000,
+    priority: 75,
+    enabled: true,
+  },
+
+  // ==================== Perplexity ====================
+  // 官方文档：https://docs.perplexity.ai/
+  {
+    name: 'perplexity',
+    baseUrl: 'https://api.perplexity.ai',
+    apiKeyEnv: 'PERPLEXITY_API_KEY',
+    models: [
+      'sonar',
+      'sonar-pro',
+      'sonar-reasoning',
+      'sonar-deep-research',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 60000,
+    priority: 70,
+    enabled: true,
+  },
+
+  // ==================== NVIDIA (NIM) ====================
+  // 官方文档：https://build.nvidia.com/explore/discover
+  {
+    name: 'nvidia',
+    baseUrl: 'https://integrate.api.nvidia.com/v1',
+    apiKeyEnv: 'NVIDIA_API_KEY',
+    models: [
+      'nvidia/llama-3.1-nemotron-70b-instruct',
+      'nvidia/llama-3.3-nemotron-super-49b-v1',
+      'nvidia/phi-4',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 45000,
+    priority: 65,
+    enabled: true,
+  },
+
+  // ==================== 01.AI (零一万物) ====================
+  // 官方文档：https://platform.01.ai/
+  {
+    name: 'yi',
+    baseUrl: 'https://api.01.ai/v1',
+    apiKeyEnv: 'YI_API_KEY',
+    models: [
+      'yi-large',
+      'yi-medium',
+      'yi-spark',
+      'yi-vision',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 72,
+    enabled: true,
+  },
+
+  // ==================== Moonshot (月之暗面) ====================
+  // 官方文档：https://platform.moonshot.cn/
+  {
+    name: 'moonshot',
+    baseUrl: 'https://api.moonshot.cn/v1',
+    apiKeyEnv: 'MOONSHOT_API_KEY',
+    models: [
+      'moonshot-v1-8k',
+      'moonshot-v1-32k',
+      'moonshot-v1-128k',
+      'kimi-k2',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 60000,
+    priority: 82,
+    enabled: true,
+  },
+
+  // ==================== Baichuan (百川智能) ====================
+  // 官方文档：https://platform.baichuan-ai.com/
+  {
+    name: 'baichuan',
+    baseUrl: 'https://api.baichuan-ai.com/v1',
+    apiKeyEnv: 'BAICHUAN_API_KEY',
+    models: [
+      'Baichuan4',
+      'Baichuan3-Turbo',
+      'Baichuan3-Turbo-128k',
+      'Baichuan2-Turbo',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 73,
+    enabled: true,
+  },
+
+  // ==================== Zhipu AI (智谱) ====================
+  // 官方文档：https://open.bigmodel.cn/
+  {
+    name: 'zhipu',
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    apiKeyEnv: 'ZHIPU_API_KEY',
+    models: [
+      'glm-4-plus',
+      'glm-4-air',
+      'glm-4-flash',
+      'glm-4v',
+      'chatglm3-turbo',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 74,
+    enabled: true,
+  },
+
+  // ==================== Stepfun (阶跃星辰) ====================
+  // 官方文档：https://platform.stepfun.com/
+  {
+    name: 'stepfun',
+    baseUrl: 'https://api.stepfun.com/v1',
+    apiKeyEnv: 'STEPFUN_API_KEY',
+    models: [
+      'step-1-8k',
+      'step-1-32k',
+      'step-1-128k',
+      'step-1-flash',
+      'step-2-mini',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 71,
+    enabled: true,
+  },
+
+  // ==================== MiniMax ====================
+  // 官方文档：https://www.minimaxi.com/
+  {
+    name: 'minimax',
+    baseUrl: 'https://api.minimax.chat/v1',
+    apiKeyEnv: 'MINIMAX_API_KEY',
+    models: [
+      'abab6.5s',
+      'abab6.5g',
+      'abab6.5t',
+      'abab7',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 69,
+    enabled: true,
+  },
+
+  // ==================== ByteDance (豆包) ====================
+  // 官方文档：https://www.volcengine.com/product/doubao
+  {
+    name: 'bytedance',
+    baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
+    apiKeyEnv: 'BYTEDANCE_API_KEY',
+    models: [
+      'doubao-pro-128k',
+      'doubao-pro-32k',
+      'doubao-lite-128k',
+      'doubao-lite-32k',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 76,
+    enabled: true,
+  },
+
+  // ==================== Tencent (混元) ====================
+  // 官方文档：https://cloud.tencent.com/product/hunyuan
+  {
+    name: 'tencent',
+    baseUrl: 'https://hunyuan.tencentcloudapi.com',
+    apiKeyEnv: 'TENCENT_API_KEY',
+    models: [
+      'hunyuan-pro',
+      'hunyuan-standard',
+      'hunyuan-lite',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 68,
+    enabled: true,
+  },
+
+  // ==================== InternLM (书生浦语) ====================
+  // 官方文档：https://internlm.intern-ai.org.cn/
+  {
+    name: 'internlm',
+    baseUrl: 'https://api.internlm.com/v1',
+    apiKeyEnv: 'INTERNLM_API_KEY',
+    models: [
+      'internlm2.5-latest',
+      'internlm2.5-20b',
+      'internlm2.5-7b',
+    ],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 67,
+    enabled: true,
+  },
+
+  // ==================== SiliconFlow ====================
+  // 官方文档：https://siliconflow.cn/
+  {
+    name: 'siliconflow',
+    baseUrl: 'https://api.siliconflow.cn/v1',
+    apiKeyEnv: 'SILICONFLOW_API_KEY',
+    models: [
+      'deepseek-ai/DeepSeek-V3',
+      'deepseek-ai/DeepSeek-R1',
+      'Qwen/Qwen2.5-72B-Instruct',
+      'meta-llama/Llama-3.3-70B-Instruct',
+    ],
+    rateLimit: { rpm: 100 },
+    timeout: 45000,
+    priority: 55,
     enabled: true,
   },
 ];

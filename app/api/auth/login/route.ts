@@ -76,8 +76,6 @@ export async function POST(request: NextRequest) {
 
     // Verify password
     console.log('[Login] User ID:', user.id);
-    console.log('[Login] Stored passwordHash length:', user.passwordHash.length);
-    console.log('[Login] Stored passwordHash format check (should have colon):', user.passwordHash.includes(':'));
     
     const passwordValid = verifyPassword(body.password, user.passwordHash);
     console.log('[Login] Password valid:', passwordValid);

@@ -32,6 +32,31 @@ export interface ModelCapability {
 }
 
 /**
+ * 根据模型名称计算请求成本
+ * @param model 模型名称
+ * @param inputTokens 输入 token 数
+ * @param outputTokens 输出 token 数
+ * @returns 成本（美元）
+ */
+export function calculateRequestCost(
+  model: string,
+  inputTokens: number,
+  outputTokens: number
+): number {
+  const capability = getModelCapability(model);
+  if (!capability) {
+    // 未知模型使用默认费率 $0.01/1K tokens
+    return ((inputTokens + outputTokens) / 1000) * 0.01;
+  }
+
+  // inputCost 和 outputCost 是每 1M tokens 的美元价格
+  const inputCostUsd = (inputTokens / 1_000_000) * capability.inputCost;
+  const outputCostUsd = (outputTokens / 1_000_000) * capability.outputCost;
+
+  return inputCostUsd + outputCostUsd;
+}
+
+/**
  * Provider 配置列表
  */
 export const providers: ProviderConfig[] = [
@@ -82,7 +107,7 @@ export const providers: ProviderConfig[] = [
   },
   {
     name: 'litellm',
-    baseUrl: process.env.LITELLM_URL || 'http://23.94.236.146:3000/v1',
+    baseUrl: process.env.LITELLM_URL || 'http://localhost:3000/v1',
     apiKeyEnv: 'LITELLM_API_KEY',
     models: ['qwen/qwen3.6-plus', 'qwen/qwen3-coder'],
     rateLimit: { rpm: 100 },

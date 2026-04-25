@@ -77,16 +77,17 @@ export function generateHopLLMConfig(selection: ModelSelection): string {
       if (model?.contextWindow) entry.contextWindow = model.contextWindow;
       if (model?.maxTokens) entry.maxTokens = model.maxTokens;
 
-      // Add cost if non-zero
-      const costPer1K = model?.costPer1KToken ?? 0;
-      if (costPer1K > 0) {
+      // Add cost if non-zero (cost is per 1M tokens, convert to per 1K for config)
+      const costPer1M = model?.costPer1MToken ?? 0;
+      const costPer1K = costPer1M / 1000;
+      if (costPer1M > 0) {
         entry.cost = {
           input: roundCost(costPer1K),
           output: roundCost(costPer1K * 1.5),
           cacheRead: 0,
           cacheWrite: 0,
         };
-      } else if (costPer1K === 0) {
+      } else if (costPer1M === 0) {
         entry.cost = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
       }
 

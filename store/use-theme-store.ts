@@ -43,7 +43,7 @@ export const useThemeStore = create<ThemeStore>()(
       },
     }),
     {
-      name: 'clawroute-theme',
+      name: 'hopllm-theme',
       partialize: (state) => ({ theme: state.theme } as Partial<ThemeStore>),
       onRehydrateStorage: () => (state) => {
         if (state) {

@@ -44,7 +44,7 @@ export default function DashboardPage() {
         setShowOnboarding(true);
       }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, router, isHydrated]);
 
   // Show loading skeleton until hydration completes
   if (!isHydrated || isLoading || !isAuthenticated || !user) {

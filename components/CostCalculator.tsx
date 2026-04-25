@@ -105,13 +105,13 @@ export function CostCalculator({
             <div className="text-2xl font-bold text-[#94a3b8]">
               ${calculations.naiveMonthly.toFixed(2)}
             </div>
-            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('withoutClawroute')}</div>
+            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('withoutHopllm')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-[#00c9ff]">
               ${calculations.smartMonthly.toFixed(2)}
             </div>
-            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('withClawroute')}</div>
+            <div className="text-sm text-[#94a3b8] whitespace-nowrap">{t('withHopllm')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold bg-gradient-to-r from-[#00c9ff] to-[#92fe9d] bg-clip-text text-transparent">
