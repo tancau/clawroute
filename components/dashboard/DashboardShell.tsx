@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PiggyBank, Settings, LogOut, Key, Plug, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, PiggyBank, Settings, LogOut, Key, Plug, BarChart3, GitBranch } from 'lucide-react';
 import { useUserStore } from '@/store/use-user-store';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
     { href: '/dashboard/providers', label: t('providersNav'), icon: Plug },
     { href: '/dashboard/savings', label: t('savings'), icon: PiggyBank },
     { href: '/dashboard/preferences', label: t('preferences'), icon: Settings },
+    { href: '/dashboard/routing-rules', label: t('routingRules') || 'Routing Rules', icon: GitBranch },
   ];
 
   const isActive = (href: string) => {

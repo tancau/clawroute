@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 import { ensureAllFeedbackTables } from '@/lib/db/feedback-tables';
 import modelCapabilitiesData from '@/data/model-capabilities.json';
 import type { ModelCapability } from '@/lib/models/capability-matrix';

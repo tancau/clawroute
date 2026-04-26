@@ -3,7 +3,7 @@
  * 用于支持通知、告警、Webhook 等功能
  */
 
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 import { ensureAllFeedbackTables } from './db/feedback-tables';
 import { ensureSystemConfigTable, initializeDefaultConfigs } from './db/system-config';
 

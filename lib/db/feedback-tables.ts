@@ -4,7 +4,7 @@
  * Tables for storing user feedback on model capabilities
  */
 
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 
 // ===== Model Feedback Table =====
 

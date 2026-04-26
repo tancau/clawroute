@@ -8,7 +8,7 @@
  * 3. 使用统计
  */
 
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 
 // ==================== 类型定义 ====================
 

@@ -3,7 +3,7 @@
  * 用于创建和管理数据库表
  */
 
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 
 // 确保 request_logs 表存在
 export async function ensureRequestLogsTable() {

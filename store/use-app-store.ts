@@ -53,6 +53,10 @@ interface AppStore {
   setCompareViewMode: (mode: 'card' | 'table') => void;
   advancedPanelOpen: boolean;
   setAdvancedPanelOpen: (open: boolean) => void;
+
+  // Routing preference slice
+  routingPreference: 'cost_first' | 'balanced' | 'quality_first';
+  setRoutingPreference: (pref: 'cost_first' | 'balanced' | 'quality_first') => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -159,4 +163,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setCompareViewMode: (mode) => set({ compareViewMode: mode }),
   advancedPanelOpen: false,
   setAdvancedPanelOpen: (open) => set({ advancedPanelOpen: open }),
+
+  // Routing preference slice
+  routingPreference: 'balanced',
+  setRoutingPreference: (pref) => set({ routingPreference: pref }),
 }));

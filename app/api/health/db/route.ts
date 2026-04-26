@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const { sql } = await import('@vercel/postgres');
+    const { sql } = await import('@/lib/db/pg');
     
     // Test connection
     const result = await sql`SELECT 1 as test`;

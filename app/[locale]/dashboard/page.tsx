@@ -15,6 +15,7 @@ import { RecentRequests } from '@/components/Dashboard/RecentRequests';
 import { TopModels } from '@/components/Dashboard/TopModels';
 import { AdvancedPanel } from '@/components/configure/AdvancedPanel';
 import { Activity, DollarSign, Zap, TrendingUp } from 'lucide-react';
+import { ModelLeaderboardWidget } from '@/components/dashboard/ModelLeaderboardWidget';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -67,84 +68,99 @@ export default function DashboardPage() {
         errorDescription={t('errorDescription')}
         reloadLabel={t('reload')}
       >
-        <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-10">{t('title')}</h1>
-          <p className="text-neutral-7 mt-1">{t('welcome')}, {user.name || user.email}</p>
-        </div>
+        {/* Main Container with Sidebar */}
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-neutral-10">{t('title')}</h1>
+            <p className="text-neutral-7 mt-1">{t('welcome')}, {user.name || user.email}</p>
+          </div>
 
-        {/* Proxy Status */}
-        <ProxyStatusIndicator className="inline-flex" />
+          {/* Two Column Layout */}
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left Column - Main Content */}
+            <div className="flex-1 min-w-0 space-y-8">
+              {/* Proxy Status */}
+              <ProxyStatusIndicator className="inline-flex" />
 
-        {/* Quick Links */}
-        <div className="flex gap-4 text-sm">
-          <Link href="/docs" className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg hover:bg-brand-primary/20 transition-colors">
-            📖 Docs
-          </Link>
-          <Link href="/dashboard/stats" className="px-4 py-2 bg-brand-accent/10 text-brand-accent rounded-lg hover:bg-brand-accent/20 transition-colors">
-            📊 Statistics
-          </Link>
-          <Link href="/configure" className="px-4 py-2 bg-surface-overlay text-neutral-10 rounded-lg hover:bg-surface-raised transition-colors">
-            ⚙️ Configure
-          </Link>
-        </div>
+              {/* Quick Links */}
+              <div className="flex gap-4 text-sm flex-wrap">
+                <Link href="/docs" className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg hover:bg-brand-primary/20 transition-colors">
+                  📖 Docs
+                </Link>
+                <Link href="/dashboard/stats" className="px-4 py-2 bg-brand-accent/10 text-brand-accent rounded-lg hover:bg-brand-accent/20 transition-colors">
+                  📊 Statistics
+                </Link>
+                <Link href="/configure" className="px-4 py-2 bg-surface-overlay text-neutral-10 rounded-lg hover:bg-surface-raised transition-colors">
+                  ⚙️ Configure
+                </Link>
+              </div>
 
-        {/* Layer 1: Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            label={t('credits')}
-            value={user.credits?.toLocaleString() || '0'}
-            icon={Zap}
-            format="number"
-          />
-          <StatCard
-            label={t('monthlyRequests')}
-            value="--"
-            icon={Activity}
-            format="number"
-          />
-          <StatCard
-            label={t('monthlySavings')}
-            value="--"
-            icon={DollarSign}
-            format="currency"
-            trend={{ value: 12, direction: 'up', label: t('vsLastMonth') }}
-          />
-          <StatCard
-            label={t('monthlyEarnings')}
-            value="--"
-            icon={TrendingUp}
-            format="currency"
-          />
-        </div>
+              {/* Layer 1: Stats Overview */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard
+                  label={t('credits')}
+                  value={user.credits?.toLocaleString() || '0'}
+                  icon={Zap}
+                  format="number"
+                />
+                <StatCard
+                  label={t('monthlyRequests')}
+                  value="--"
+                  icon={Activity}
+                  format="number"
+                />
+                <StatCard
+                  label={t('monthlySavings')}
+                  value="--"
+                  icon={DollarSign}
+                  format="currency"
+                  trend={{ value: 12, direction: 'up', label: t('vsLastMonth') }}
+                />
+                <StatCard
+                  label={t('monthlyEarnings')}
+                  value="--"
+                  icon={TrendingUp}
+                  format="currency"
+                />
+              </div>
 
-        {/* Layer 2: Usage Overview & Credits Trend */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <UsageOverview userId={user.id} />
-          <CreditsTrend userId={user.id} />
-        </div>
+              {/* Layer 2: Usage Overview & Credits Trend */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <UsageOverview userId={user.id} />
+                <CreditsTrend userId={user.id} />
+              </div>
 
-        {/* Layer 3: Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <UsageChart userId={user.id} days={7} />
-          <CostTracker userId={user.id} />
-        </div>
+              {/* Layer 3: Charts */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <UsageChart userId={user.id} days={7} />
+                <CostTracker userId={user.id} />
+              </div>
 
-        {/* Layer 4: Recent Requests & Top Models */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <RecentRequests userId={user.id} />
-          <TopModels userId={user.id} />
-        </div>
+              {/* Layer 4: Recent Requests & Top Models */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <RecentRequests userId={user.id} />
+                <TopModels userId={user.id} />
+              </div>
 
-        {/* Layer 5: Advanced (collapsible) */}
-        <div className="space-y-4">
-          <AdvancedPanel
-            label={t('keyManagement')}
-            apiDiscoveryLabel={t('apiKeys')}
-            configImportLabel={t('testPanel')}
-          />
-        </div>
+              {/* Layer 5: Advanced (collapsible) */}
+              <AdvancedPanel
+                label={t('keyManagement')}
+                apiDiscoveryLabel={t('apiKeys')}
+                configImportLabel={t('testPanel')}
+              />
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="lg:w-80 shrink-0">
+              <div className="lg:sticky lg:top-4 space-y-4">
+                {/* Model Leaderboard */}
+                <ModelLeaderboardWidget />
+                
+                {/* Additional sidebar content can go here */}
+              </div>
+            </div>
+          </div>
         </div>
       </ErrorBoundary>
     </DashboardShell>

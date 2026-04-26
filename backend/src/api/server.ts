@@ -7,6 +7,7 @@ import { ClassifyTool } from '../tools/classify';
 import { RouteTool } from '../tools/route';
 import { ProxyTool, createSSEStream } from '../tools/proxy';
 import { initDatabase, db } from '../db';
+import { initCustomRulesTable } from '../db/custom-rules';
 import { UserTool, getUser, updateUser, deductCredits, verifyPassword, hashPassword, regenerateApiKey } from '../users';
 import { KeyTool, getKeys, getAvailableKey, updateKey, recordKeyUsage, deleteKey } from '../keys';
 import { BillingTool, getUserEarnings, getUserUsageStats } from '../billing';
@@ -42,6 +43,7 @@ function verifyJWT(token: string, secret: string): Record<string, any> | null {
 
 // 初始化数据库
 initDatabase();
+initCustomRulesTable();
 
 // 创建 Hono 应用
 const app = new Hono();
@@ -410,6 +412,7 @@ app.post('/v1/chat/completions', async (c) => {
         maxLatency: body.maxLatency,
         preferredProvider: body.provider,
       },
+      routingPreference: body.routingPreference || 'balanced',
     }, context);
 
     // 4. 如果 model 不是 'auto'，使用指定模型
@@ -582,6 +585,11 @@ toolRegistry.register(ProxyTool);
 toolRegistry.register(UserTool);
 toolRegistry.register(KeyTool);
 toolRegistry.register(BillingTool);
+
+// ==================== Custom Rules API ====================
+
+import customRulesRouter from '../api/user/rules/index';
+app.route('/api/user/rules', customRulesRouter);
 
 // ==================== 用户 API ====================
 

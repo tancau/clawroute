@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 import { verifyJWT } from '@/lib/auth';
 import { ensureWebhookLogsTable } from '@/lib/db-tables';
 
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
 
 // 确保通知表存在
 async function ensureNotificationsTableExists() {
-  const { sql } = await import('@vercel/postgres');
+  const { sql } = await import('@/lib/db/pg');
   await sql`
     CREATE TABLE IF NOT EXISTS notifications (
       id TEXT PRIMARY KEY,

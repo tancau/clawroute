@@ -426,6 +426,7 @@
     "autoDowngradeHint": "当超过预算时，自动切换到免费模型",
     "excludeModels": "排除模型",
     "excludeModelsDesc": "选择不想使用的模型",
+    "noModelsAvailable": "没有可用模型",
     "excluded": "已排除",
     "free": "免费",
     "paid": "付费",
@@ -436,7 +437,9 @@
     "failedToLoadUsage": "加载使用数据失败",
     "failedToLoadSavings": "加载节省数据失败",
     "errorTitle": "仪表盘错误",
-    "errorDescription": "加载仪表盘时发生错误，请尝试重新加载页面。"
+    "errorDescription": "加载仪表盘时发生错误，请尝试重新加载页面。",
+    "routingRules": "路由规则",
+    "routingRulesDesc": "管理意图路由规则和优先级。拖拽调整顺序，优先级越高越先匹配。"
   },
   "apiKey": {
     "title": "HopLLM API 密钥",
@@ -636,5 +639,34 @@
     "signUpDesc": "立即注册，获取您的 API Key，开始使用智能路由",
     "getApiKey": "获取 API Key",
     "configureProxy": "配置代理"
+  },
+  "modelRecommendation": {
+    "title": "模型推荐",
+    "presetDesc": "根据您的可用模型，我们为不同任务推荐最佳配置",
+    "optimal": "最优配置",
+    "economy": "省钱模式",
+    "power": "最强模式",
+    "recommendations": "推荐模型",
+    "taskModels": "任务模型",
+    "preview": "设置预览",
+    "loading": "正在加载推荐...",
+    "noRecommendations": "暂无推荐",
+    "costPerToken": "价格/百万token",
+    "presetApplied": "预设已应用",
+    "applySettings": "应用这些设置",
+    "selectPresetFirst": "点击上方预设按钮查看配置",
+    "default": "默认对话",
+    "coding": "代码编写",
+    "reasoning": "数学推理",
+    "creative": "创意写作",
+    "math": "数学计算",
+    "translation": "翻译",
+    "chinese": "中文处理",
+    "longContext": "长文本",
+    "budget": "省钱备选",
+    "foundModels": "发现 {count} 个可用模型",
+    "applySuccess": "模型设置已成功应用",
+    "capabilityScores": "能力评分",
+    "costComparison": "费用对比"
   }
 }

@@ -2,7 +2,7 @@
  * Webhook 触发工具
  */
 
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 import { ensureWebhooksTable, ensureWebhookLogsTable } from './db-tables';
 
 // Webhook 事件类型

@@ -3,7 +3,7 @@
  * 用于动态配置系统参数
  */
 
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 
 // 配置项类型
 export type ConfigType = 'string' | 'number' | 'boolean' | 'json';

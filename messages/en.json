@@ -426,6 +426,7 @@
     "autoDowngradeHint": "Automatically switch to free models when budget is exceeded",
     "excludeModels": "Exclude Models",
     "excludeModelsDesc": "Select models you don't want to use",
+    "noModelsAvailable": "No models available",
     "excluded": "Excluded",
     "free": "Free",
     "paid": "Paid",
@@ -436,7 +437,9 @@
     "failedToLoadUsage": "Failed to load usage data",
     "failedToLoadSavings": "Failed to load savings data",
     "errorTitle": "Dashboard Error",
-    "errorDescription": "An error occurred while loading the dashboard. Please try reloading the page."
+    "errorDescription": "An error occurred while loading the dashboard. Please try reloading the page.",
+    "routingRules": "Routing Rules",
+    "routingRulesDesc": "Manage intent routing rules and priorities. Drag to reorder, higher priority matches first."
   },
   "apiKey": {
     "title": "HopLLM API Key",
@@ -636,5 +639,34 @@
     "signUpDesc": "Sign up now to get your API key and start using smart routing",
     "getApiKey": "Get API Key",
     "configureProxy": "Configure Proxy"
+  },
+  "modelRecommendation": {
+    "title": "Model Recommendation",
+    "presetDesc": "Based on your available models, we recommend the best configuration for different tasks",
+    "optimal": "Optimal",
+    "economy": "Economy",
+    "power": "Power",
+    "recommendations": "Top Models",
+    "taskModels": "Task Models",
+    "preview": "Preview",
+    "loading": "Loading recommendations...",
+    "noRecommendations": "No recommendations available",
+    "costPerToken": "Cost/1M tokens",
+    "presetApplied": "Preset Applied",
+    "applySettings": "Apply These Settings",
+    "selectPresetFirst": "Click a preset button above to see the configuration",
+    "default": "Default Chat",
+    "coding": "Coding",
+    "reasoning": "Reasoning",
+    "creative": "Creative Writing",
+    "math": "Math",
+    "translation": "Translation",
+    "chinese": "Chinese",
+    "longContext": "Long Context",
+    "budget": "Budget Model",
+    "foundModels": "Found {count} available models",
+    "applySuccess": "Model settings applied successfully",
+    "capabilityScores": "Capability Scores",
+    "costComparison": "Cost Comparison"
   }
 }

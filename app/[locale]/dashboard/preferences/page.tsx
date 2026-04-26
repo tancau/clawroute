@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useUserStore } from '@/store/use-user-store';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { ModelCapability } from '@/lib/models/capability-matrix';
 
 type OptimizationGoal = 'cost' | 'quality' | 'speed' | 'balanced';
 
@@ -23,22 +27,19 @@ interface Preferences {
   excludedModels: string[];
 }
 
-const AVAILABLE_MODELS = [
-  { id: 'gpt-5.4', name: 'GPT-5.4', cost: 'paid' },
-  { id: 'gpt-4o', name: 'GPT-4o', cost: 'paid' },
-  { id: 'claude-opus-4-7', name: 'Claude Opus 4.7', cost: 'paid' },
-  { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6', cost: 'paid' },
-  { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', cost: 'paid' },
-  { id: 'deepseek-chat', name: 'DeepSeek Chat', cost: 'paid' },
-  { id: 'qwen3-max', name: 'Qwen3 Max', cost: 'paid' },
-  { id: 'qwen-free', name: 'Qwen Free', cost: 'free' },
-  { id: 'gemma-free', name: 'Gemma Free', cost: 'free' },
-  { id: 'llama-free', name: 'Llama Free', cost: 'free' },
-];
+interface ModelsResponse {
+  models: ModelCapability[];
+  lastUpdated: string;
+  totalModels: number;
+}
 
 export default function PreferencesPage() {
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useUserStore();
+  const t = useTranslations('dashboard');
+
   const [preferences, setPreferences] = useState<Preferences>({
-    optimizationGoal: 'cost',
+    optimizationGoal: 'balanced',
     modelPreferences: {
       coding: 'free',
       reasoning: 'paid',
@@ -52,30 +53,112 @@ export default function PreferencesPage() {
     },
     excludedModels: [],
   });
+
+  const [models, setModels] = useState<ModelCapability[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const t = useTranslations('dashboard');
+  const [error, setError] = useState<string | null>(null);
 
+  // Redirect if not authenticated
   useEffect(() => {
-    const stored = localStorage.getItem('clawrouter_preferences');
-    if (stored) {
-      try {
-        setPreferences(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse preferences:', e);
-      }
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth/login');
     }
-    setIsLoading(false);
-  }, []);
+  }, [isAuthenticated, authLoading, router]);
+
+  // Load models and preferences
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Fetch available models from capabilities API
+        const modelsRes = await fetch('/api/models/capabilities');
+        if (!modelsRes.ok) throw new Error('Failed to load models');
+        const modelsData: ModelsResponse = await modelsRes.json();
+        setModels(modelsData.models.filter(m => m.isAvailable));
+
+        // Fetch user preferences from preferences API
+        const prefsRes = await fetch('/api/user/preferences', {
+          headers: {
+            'Authorization': `Bearer ${useUserStore.getState().token}`,
+          },
+        });
+
+        if (prefsRes.ok) {
+          const prefsData = await prefsRes.json();
+          if (prefsData.preferences) {
+            setPreferences(prefsData.preferences);
+          }
+        } else if (prefsRes.status !== 401) {
+          // 401 means not authenticated, which is handled above
+          // For other errors, try localStorage fallback
+          const stored = localStorage.getItem('clawrouter_preferences');
+          if (stored) {
+            try {
+              setPreferences(JSON.parse(stored));
+            } catch (e) {
+              console.error('Failed to parse preferences:', e);
+            }
+          }
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+        // Fallback to localStorage
+        const stored = localStorage.getItem('clawrouter_preferences');
+        if (stored) {
+          try {
+            setPreferences(JSON.parse(stored));
+          } catch (e) {
+            console.error('Failed to parse preferences:', e);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [isAuthenticated, user]);
 
   const handleSave = async () => {
+    if (!user) return;
+
     setIsSaving(true);
-    localStorage.setItem('clawrouter_preferences', JSON.stringify(preferences));
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setIsSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setError(null);
+
+    try {
+      // Save to database via API
+      const res = await fetch('/api/user/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${useUserStore.getState().token}`,
+        },
+        body: JSON.stringify(preferences),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to save preferences');
+      }
+
+      // Also save to localStorage as backup
+      localStorage.setItem('clawrouter_preferences', JSON.stringify(preferences));
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      // If API fails, at least save to localStorage
+      localStorage.setItem('clawrouter_preferences', JSON.stringify(preferences));
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const toggleExcludedModel = (modelId: string) => {
@@ -87,10 +170,21 @@ export default function PreferencesPage() {
     }));
   };
 
-  if (isLoading) {
+  // Determine if model is free or paid based on cost
+  const getModelCostType = (model: ModelCapability): 'free' | 'paid' => {
+    if (model.isFree) return 'free';
+    if (model.cost.input === 0 && model.cost.output === 0) return 'free';
+    return 'paid';
+  };
+
+  // Show loading skeleton
+  if (authLoading || isLoading || !isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-neutral-10">{t('loading')}</div>
+        <div className="space-y-4 w-64">
+          <Skeleton className="h-8 w-48 mx-auto" />
+          <Skeleton className="h-4 w-32 mx-auto" />
+        </div>
       </div>
     );
   }
@@ -104,32 +198,56 @@ export default function PreferencesPage() {
           <p className="text-neutral-7 mt-1">{t('modelPreferenceDesc')}</p>
         </div>
 
-        {/* Optimization Goal */}
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 bg-semantic-error/10 border border-semantic-error/20 rounded-lg">
+            <p className="text-semantic-error">{error}</p>
+          </div>
+        )}
+
+        {/* Optimization Goal - 评分权重滑块 */}
         <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
           <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('optimizationGoal')}</h2>
-          <p className="text-neutral-7 text-sm mb-4">{t('optimizationGoalDesc')}</p>
+          <p className="text-neutral-7 text-sm mb-6">{t('optimizationGoalDesc')}</p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { value: 'cost', label: t('costFirst'), desc: t('costFirstDesc'), icon: '💰' },
-              { value: 'quality', label: t('qualityFirst'), desc: t('qualityFirstDesc'), icon: '⭐' },
-              { value: 'speed', label: t('speedFirst'), desc: t('speedFirstDesc'), icon: '⚡' },
-              { value: 'balanced', label: t('balanced'), desc: t('balancedDesc'), icon: '⚖️' },
-            ].map((item) => (
-              <button
-                key={item.value}
-                onClick={() => setPreferences((prev) => ({ ...prev, optimizationGoal: item.value as OptimizationGoal }))}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  preferences.optimizationGoal === item.value
-                    ? 'border-brand-primary bg-brand-primary/10'
-                    : 'border-border-subtle hover:border-neutral-6'
-                }`}
-              >
-                <div className="text-2xl mb-2">{item.icon}</div>
-                <div className="text-neutral-10 font-medium">{item.label}</div>
-                <div className="text-xs text-neutral-7 mt-1">{item.desc}</div>
-              </button>
-            ))}
+          {/* 滑块控件 */}
+          <div className="space-y-4">
+            {/* 当前选项标签 */}
+            <div className="flex justify-center gap-8">
+              <span className={`text-sm transition-colors ${preferences.optimizationGoal === 'cost' ? 'text-green-500 font-medium' : 'text-neutral-6'}`}>💰 {t('costFirst')}</span>
+              <span className={`text-sm transition-colors ${preferences.optimizationGoal === 'balanced' ? 'text-brand-primary font-medium' : 'text-neutral-6'}`}>⚖️ {t('balanced')}</span>
+              <span className={`text-sm transition-colors ${preferences.optimizationGoal === 'quality' ? 'text-purple-500 font-medium' : 'text-neutral-6'}`}>✨ {t('qualityFirst')}</span>
+            </div>
+
+            {/* 滑块 */}
+            <div className="relative px-2">
+              <input
+                type="range"
+                min="0"
+                max="2"
+                step="1"
+                value={preferences.optimizationGoal === 'cost' ? 0 : preferences.optimizationGoal === 'balanced' ? 1 : 2}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value);
+                  const goal = val === 0 ? 'cost' : val === 1 ? 'balanced' : 'quality';
+                  setPreferences((prev) => ({ ...prev, optimizationGoal: goal as OptimizationGoal }));
+                }}
+                className="w-full h-3 rounded-full appearance-none cursor-pointer bg-gradient-to-r from-green-400 via-brand-primary to-purple-500"
+              />
+              {/* 刻度标签 */}
+              <div className="flex justify-between mt-2 text-xs text-neutral-6">
+                <span>省钱优先</span>
+                <span>平衡</span>
+                <span>质量优先</span>
+              </div>
+            </div>
+
+            {/* 当前模式说明 */}
+            <div className="text-center text-sm text-neutral-7 bg-surface-overlay rounded-lg py-3">
+              {preferences.optimizationGoal === 'cost' && t('costFirstDesc')}
+              {preferences.optimizationGoal === 'balanced' && t('balancedDesc')}
+              {preferences.optimizationGoal === 'quality' && t('qualityFirstDesc')}
+            </div>
           </div>
         </div>
 
@@ -253,34 +371,44 @@ export default function PreferencesPage() {
           </div>
         </div>
 
-        {/* Excluded Models */}
+        {/* Excluded Models - Dynamic from API */}
         <div className="bg-surface-raised border border-border-subtle rounded-xl p-6">
           <h2 className="text-xl font-bold text-neutral-10 mb-4">{t('excludeModels')}</h2>
           <p className="text-neutral-7 text-sm mb-4">{t('excludeModelsDesc')}</p>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {AVAILABLE_MODELS.map((model) => (
-              <button
-                key={model.id}
-                onClick={() => toggleExcludedModel(model.id)}
-                className={`p-3 rounded-lg border text-left transition-all ${
-                  preferences.excludedModels.includes(model.id)
-                    ? 'border-semantic-error/50 bg-semantic-error/10'
-                    : 'border-border-subtle hover:border-neutral-6'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-10 text-sm">{model.name}</span>
-                  {preferences.excludedModels.includes(model.id) && (
-                    <span className="text-semantic-error text-xs">{t('excluded')}</span>
-                  )}
-                </div>
-                <div className="text-xs text-neutral-6 mt-1">
-                  {model.cost === 'free' ? t('free') : t('paid')}
-                </div>
-              </button>
-            ))}
-          </div>
+          {models.length === 0 ? (
+            <div className="text-center py-8 text-neutral-7">
+              {t('noModelsAvailable')}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {models.map((model) => {
+                const costType = getModelCostType(model);
+                return (
+                  <button
+                    key={model.id}
+                    onClick={() => toggleExcludedModel(model.id)}
+                    className={`p-3 rounded-lg border text-left transition-all ${
+                      preferences.excludedModels.includes(model.id)
+                        ? 'border-semantic-error/50 bg-semantic-error/10'
+                        : 'border-border-subtle hover:border-neutral-6'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-neutral-10 text-sm">{model.name}</span>
+                      {preferences.excludedModels.includes(model.id) && (
+                        <span className="text-semantic-error text-xs">{t('excluded')}</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-neutral-6 mt-1">
+                      {costType === 'free' ? t('free') : t('paid')}
+                      {model.provider && ` · ${model.provider}`}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Save Button */}

@@ -56,6 +56,7 @@ export const RouteInputSchema = z.object({
     requireFeatures: z.array(z.string()).optional().describe('必需的功能'),
   }).optional().default({}),
   contextLength: z.number().optional().describe('上下文长度'),
+  routingPreference: z.enum(['cost_first', 'balanced', 'quality_first']).optional().default('balanced').describe('路由偏好：省钱优先、平衡、质量优先'),
 });
 
 /**
@@ -125,7 +126,7 @@ export const RouteTool: Tool<typeof RouteInputSchema, RouteOutput> = {
     // 4. 排序并选择最佳
     const scored = filtered.map(m => ({
       model: m,
-      score: calculateScore(m, input.constraints),
+      score: calculateScore(m, input.constraints, input.routingPreference),
     }));
     
     scored.sort((a, b) => b.score - a.score);
@@ -240,33 +241,41 @@ function applyConstraints(
  */
 function calculateScore(
   model: ModelCapability,
-  constraints?: RouteInput['constraints']
+  constraints?: RouteInput['constraints'],
+  preference?: 'cost_first' | 'balanced' | 'quality_first'
 ): number {
   let score = 0;
 
-  // 质量分数 (权重: 40)
-  score += (model.qualityScore || 0.8) * 40;
+  // 根据偏好调整权重
+  const weights = {
+    cost_first: { quality: 20, latency: 15, cost: 50, feature: 15 },
+    balanced: { quality: 40, latency: 20, cost: 20, feature: 10 },
+    quality_first: { quality: 60, latency: 25, cost: 5, feature: 10 },
+  };
 
-  // 延迟分数 (权重: 20) - 越低越好
+  const w = weights[preference || 'balanced'];
+
+  // 质量分数
+  score += (model.qualityScore || 0.8) * w.quality;
+
+  // 延迟分数 - 越低越好
   if (model.avgLatency) {
-    const latencyScore = Math.max(0, 20 - (model.avgLatency / 200));
-    score += latencyScore;
+    score += Math.max(0, w.latency - (model.avgLatency / 200));
   } else {
-    score += 10; // 无延迟数据给中等分
+    score += w.latency / 2;
   }
 
-  // 成本分数 (权重: 20) - 越低越好
+  // 成本分数 - 越低越好
   const totalCost = model.inputCost + model.outputCost;
-  if (totalCost > 0) {
-    const costScore = Math.max(0, 20 - totalCost);
-    score += costScore;
+  if (totalCost === 0) {
+    score += w.cost;
   } else {
-    score += 20; // 免费/代理模型给满分
+    score += Math.max(0, w.cost - totalCost * 5);
   }
 
-  // 功能分数 (权重: 10)
+  // 功能分数
   if (model.features?.length) {
-    score += Math.min(model.features.length * 2, 10);
+    score += Math.min(model.features.length * 2, w.feature);
   }
 
   // Provider 优先级调整

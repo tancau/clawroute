@@ -16,6 +16,7 @@ import { getProvider, getModelCapability, getModelsForIntent, modelCapabilities,
 import { keyManager } from '@/lib/routing/key-manager';
 import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth';
 import { logRequest } from '@/lib/db';
+import { logModelUsage } from '@/lib/db/model-usage';
 import { getConfig, getDailyLimitByTier } from '@/lib/config';
 import { checkChatRateLimit } from '@/lib/middleware/rate-limit';
 
@@ -43,6 +44,57 @@ interface IntentClassification {
   intent: string;
   confidence: number;
   source: 'rule' | 'cached';
+}
+
+// ==================== 路由偏好评分 ====================
+
+type RoutingPreference = 'cost_first' | 'balanced' | 'quality_first';
+
+interface ScoredModel {
+  model: typeof modelCapabilities[number];
+  score: number;
+}
+
+/**
+ * 根据偏好计算模型得分
+ */
+function calculateScoreWithPreference(
+  model: typeof modelCapabilities[number],
+  preference: RoutingPreference = 'balanced'
+): number {
+  const weights = {
+    cost_first: { quality: 20, latency: 15, cost: 50, feature: 15 },
+    balanced: { quality: 40, latency: 20, cost: 20, feature: 10 },
+    quality_first: { quality: 60, latency: 25, cost: 5, feature: 10 },
+  };
+
+  const w = weights[preference];
+  let score = 0;
+
+  // 质量分数
+  score += (model.qualityScore || 0.8) * w.quality;
+
+  // 延迟分数
+  if (model.avgLatency) {
+    score += Math.max(0, w.latency - (model.avgLatency / 200));
+  } else {
+    score += w.latency / 2;
+  }
+
+  // 成本分数
+  const totalCost = (model.inputCost || 0) + (model.outputCost || 0);
+  if (totalCost === 0) {
+    score += w.cost;
+  } else {
+    score += Math.max(0, w.cost - totalCost * 5);
+  }
+
+  // 功能分数
+  if (model.features?.length) {
+    score += Math.min(model.features.length * 2, w.feature);
+  }
+
+  return score;
 }
 
 // ==================== 意图分类（简化版） ====================
@@ -203,7 +255,7 @@ interface RouteResult {
   alternatives: Array<{ model: string; provider: string }>;
 }
 
-function routeModel(intent: string, requestedModel?: string, userProviderKeys?: Record<string, unknown>): RouteResult {
+function routeModel(intent: string, requestedModel?: string, userProviderKeys?: Record<string, unknown>, routingPreference?: RoutingPreference): RouteResult {
   // 如果用户指定了模型，直接使用
   if (requestedModel && requestedModel !== 'auto') {
     // === 1. 优先检查用户自定义 Provider（关键修复！）===
@@ -335,8 +387,14 @@ function routeModel(intent: string, requestedModel?: string, userProviderKeys?: 
   // 如果没有可用的，回退到第一个候选
   const effectiveCandidates = availableCandidates.length > 0 ? availableCandidates : candidates;
   
-  // 选择最佳模型（按质量分数排序）
-  const selected = effectiveCandidates[0]!;
+  // 根据偏好选择最佳模型（使用加权评分）
+  const pref = routingPreference || 'balanced';
+  const scored: ScoredModel[] = effectiveCandidates.map(m => ({
+    model: m,
+    score: calculateScoreWithPreference(m, pref),
+  }));
+  scored.sort((a, b) => b.score - a.score);
+  const selected = scored[0]?.model;
   const provider = getProvider(selected.provider);
   
   if (!provider) {
@@ -730,8 +788,24 @@ export async function POST(request: NextRequest) {
     const userMessage = lastMessage?.content || '';
     classification = classifyIntent(userMessage);
 
-    // 6. 选择模型
-    route = routeModel(classification.intent, body.model, user?.providerKeys);
+    // 6. 获取用户路由偏好
+    let routingPreference: RoutingPreference | undefined;
+    if (user) {
+      try {
+        const prefResult = await sql`SELECT optimization_goal FROM user_preferences WHERE user_id = ${user.userId}`;
+        if (prefResult.rows.length > 0) {
+          const goal = prefResult.rows[0].optimization_goal as string;
+          if (goal === 'cost') routingPreference = 'cost_first';
+          else if (goal === 'quality') routingPreference = 'quality_first';
+          else routingPreference = 'balanced';
+        }
+      } catch {
+        // Ignore errors, use default
+      }
+    }
+
+    // 7. 选择模型
+    route = routeModel(classification.intent, body.model, user?.providerKeys, routingPreference);
 
     // 7. 执行请求
     // 优先使用 getProviderWithUserKeys（支持自定义 Provider）
@@ -849,6 +923,34 @@ export async function POST(request: NextRequest) {
           intent: classification.intent,
           latencyMs,
           success: true,
+        });
+
+        // 记录模型使用（用于排行榜）
+        // 将 intent 映射到 task_type
+        const taskTypeMapping: Record<string, string> = {
+          'coding': 'coding',
+          'reasoning': 'reasoning',
+          'math': 'math',
+          'translation': 'translation',
+          'creative': 'creative',
+          'analysis': 'analysis',
+          'long_context': 'analysis',
+          'casual_chat': 'chat',
+        };
+        const taskType = taskTypeMapping[classification.intent] || 'chat';
+
+        logModelUsage({
+          id: `mu-${requestId}`,
+          userId: user.userId,
+          modelId: usedModel,
+          taskType,
+          inputTokens,
+          outputTokens,
+          cost: costUsd,
+          latencyMs,
+          success: true,
+        }).catch(err => {
+          console.error('[ChatCompletions] Failed to log model usage:', err);
         });
       } catch (logError) {
         console.error('[ChatCompletions] Failed to log request:', logError);

@@ -1,90 +1,91 @@
-# 🚀 HopLLM (智跳)
+# HopLLM (智跳)
 
-> Smart model routing config generator — Save 60-80% on API costs.
-
-English | [简体中文](./README.zh.md)
+> Intelligent LLM routing API proxy — Save **60-80%** on AI API costs with smart model selection.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/tancau/hopllm?style=flat-square)](https://github.com/tancau/hopllm)
+[![GitHub Stars](https://img.shields.io/github/stars/tancau/hopllm?style=flat-square&logo=github)](https://github.com/tancau/hopllm)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://typescriptlang.org)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com)
 
-**Live Demo**: [https://clawroute.vercel.app](https://clawroute.vercel.app)
-
----
-
-## 🎬 Demo Video
-
-Watch how HopLLM helps you save 60-80% on API costs in under 30 seconds:
-
-[![HopLLM Demo](https://img.shields.io/badge/Video-Coming%20Soon-blue?style=for-the-badge)](https://github.com/tancau/hopllm/discussions)
-
-*Video coming soon — showing scene selection → config generation → export*
+**[🚀 Live Demo](https://hopllm.com)** · **[📖 Docs](https://docs.hopllm.com)** · **[🐛 Report Bug](https://github.com/tancau/hopllm/issues)** · **[💡 Request Feature](https://github.com/tancau/hopllm/discussions)**
 
 ---
 
 ## 🎯 What is HopLLM?
 
-HopLLM is a **smart routing API proxy** that helps you:
-1. Select your use case
-2. Drag-and-drop to adjust routing rules
-3. Export OpenClaw-compatible YAML config with one click
+**HopLLM** (智跳) is an intelligent routing API proxy for Large Language Models. Instead of manually choosing which model to use, HopLLM automatically routes each request to the optimal model based on:
 
-**Simply put**: Tell HopLLM what you need, and it generates the optimal model routing configuration.
+- **Complexity** — Simple queries → cheap models; complex tasks → advanced models
+- **Context** — Code detection, reasoning requirements, token length
+- **Cost efficiency** — Maximum savings without quality loss
+
+**Zero migration cost** — Just switch your API base URL from `api.openai.com` to `hopllm.com`. Everything else stays the same.
+
+---
+
+## 💰 Cost Savings by Use Case
+
+| Scene | Savings | Best For |
+|-------|---------|----------|
+| 🤖 Trading Bot | **60-80%** | Crypto/stock automated trading signals |
+| 💬 Customer Service | **40-60%** | FAQ, ticket routing, auto-reply |
+| 📊 Data Analysis | **50-70%** | Statistical analysis, report generation |
+| ✍️ Content Creation | **30-50%** | Articles, copywriting, social media |
+| 🔍 Research Assistant | **35-55%** | Literature review, academic search |
+| 🛠️ Dev Tools | **45-65%** | Code generation, debugging, refactoring |
 
 ---
 
 ## ✨ Core Features
 
-### 🤖 Scene Selector
-Choose your use case and get optimized routing configuration:
-
-| Scene | Savings | Description |
-|-------|---------|-------------|
-| 🤖 Trading Bot | 60-80% | Crypto/stock automated trading |
-| 💬 Customer Service | 40-60% | Intelligent customer support |
-| ✍️ Content Creation | 30-50% | Article writing, copywriting |
-| 📊 Data Analysis | 50-70% | Data processing, statistical analysis |
-| 🔍 Research Assistant | 35-55% | Academic research, literature analysis |
-| 🛠️ Dev Tools | 45-65% | Code generation, debugging, refactoring |
+### 🎨 Visual Scene Selector
+Select your use case from 6 preset scenes. HopLLM generates optimized routing rules instantly — no manual configuration needed.
 
 ### 🔧 Drag-and-Drop Rule Editor
-Visual editing of routing rules, no YAML writing required:
+Build routing rules visually:
 - 4 condition attributes: Complexity / Contains Code / Needs Reasoning / Token Length
-- Drag to reorder priorities
-- Default rule as fallback
+- Drag to reorder priority
+- Real-time YAML preview
 
 ### 📊 Model Comparison Panel
-- 24+ mainstream models (Qwen / DeepSeek / Claude / GPT / Gemini / Llama, etc.)
-- Sort by Cost / Quality / Speed
-- Display price per 1K tokens
+Compare 24+ models side-by-side:
+- **Qwen / DeepSeek / Claude / GPT / Gemini / Llama / Mistral** and more
+- Sort by Cost · Quality · Speed
+- Live price per 1M tokens
 
 ### 📋 Template Market
-6 preset scene templates, import and customize with one click
+6 production-ready scene templates. Import with one click, customize as needed.
+
+### 🔌 OpenAI-Compatible API
+```bash
+# Just change the base URL — everything else works out of the box
+curl https://api.hopllm.com/v1/chat/completions \
+  -H "Authorization: Bearer $HOPLLM_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
 
 ---
 
 ## 🚀 Quick Start
 
 ### Live Demo (No Installation)
-👉 [https://hopllm.com](https://hopllm.com)
+👉 **[https://hopllm.com](https://hopllm.com)** — Try the visual configurator now
 
 ### Run Locally
 
 ```bash
-# Clone the repo
 git clone https://github.com/tancau/hopllm.git
 cd hopllm
-
-# Install dependencies
 pnpm install
-
-# Start dev server
 pnpm dev
-
-# Run tests
-pnpm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to use.
+Open [http://localhost:3000](http://localhost:3000) and start configuring your routing rules.
 
 ---
 
@@ -92,14 +93,14 @@ Open [http://localhost:3000](http://localhost:3000) to use.
 
 | Layer | Technology |
 |-------|------------|
-| Framework | Next.js 14 (App Router) |
-| i18n | next-intl |
-| Language | TypeScript |
-| Styling | Tailwind CSS + shadcn/ui |
-| State | Zustand |
-| Drag & Drop | @dnd-kit |
-| Testing | Vitest |
-| Deployment | Vercel |
+| Framework | [Next.js 14](https://nextjs.org) (App Router) |
+| Language | [TypeScript](https://typescriptlang.org) |
+| Styling | [Tailwind CSS](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
+| i18n | [next-intl](https://next-intl-docs.vercel.app) |
+| State | [Zustand](https://zustand-demo.pmnd.rs) |
+| Drag & Drop | [@dnd-kit](https://dndkit.com) |
+| Testing | [Vitest](https://vitest.dev) |
+| Deployment | [Vercel](https://vercel.com) |
 
 ---
 
@@ -108,45 +109,50 @@ Open [http://localhost:3000](http://localhost:3000) to use.
 ```
 hopllm/
 ├── app/
-│   └── [locale]/           # i18n routes (zh/en)
+│   └── [locale]/           # i18n routes (en/zh)
 │       ├── page.tsx        # Home (scene selector)
-│       ├── configure/      # Config page (rule editor + preview)
-│       └── templates/      # Template market
+│       ├── configure/      # Rule editor + config preview
+│       ├── templates/      # Template market
+│       └── dashboard/      # Usage stats, API keys, providers
 ├── components/             # React components
-├── lib/                    # Core business logic
-├── data/                   # Static data
-├── messages/               # i18n translation files
-│   ├── zh.json
-│   └── en.json
-└── store/                  # Zustand global state
+├── lib/                    # Core routing logic
+├── data/                   # Model data & pricing
+├── store/                  # Zustand global state
+└── messages/               # i18n translations (en.json, zh.json)
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Issues and PRs are welcome!
+Contributions are welcome! Open an [issue](https://github.com/tancau/hopllm/issues) or submit a PR.
 
 **Ways to contribute**:
-- 🐛 Report bugs
-- 💡 Suggest new features
-- 📝 Submit new scene templates
-- 🔧 Improve code or documentation
+- 🐛 Report bugs or request features via [GitHub Issues](https://github.com/tancau/hopllm/issues)
+- 📝 Submit new scene templates to the template market
+- 🔧 Improve documentation
+- ⭐ Star the repo if you find it useful
 
 ---
 
 ## 📄 License
 
-MIT License — Free for commercial use, but please keep attribution.
+[MIT License](LICENSE) — Free for personal and commercial use. Attribution appreciated.
 
 ---
 
 ## 🔗 Links
 
-- 🌐 **Live Demo**: [https://hopllm.com](https://hopllm.com)
-- 📂 **GitHub**: [github.com/tancau/hopllm](https://github.com/tancau/hopllm)
-- 📖 **OpenClaw Docs**: [docs.openclaw.ai](https://docs.openclaw.ai)
-- 🤖 **OpenRouter**: [openrouter.ai](https://openrouter.ai) — Model aggregation platform
+| Resource | URL |
+|----------|-----|
+| 🌐 Live Demo | [https://hopllm.com](https://hopllm.com) |
+| 📂 GitHub | [github.com/tancau/hopllm](https://github.com/tancau/hopllm) |
+| 📖 Docs | [docs.hopllm.com](https://docs.hopllm.com) |
+| 🐦 Twitter | [@hopllm](https://twitter.com/hopllm) |
+| 🤖 OpenRouter | [openrouter.ai](https://openrouter.ai) |
+| 📖 OpenClaw Docs | [docs.openclaw.ai](https://docs.openclaw.ai) |
+
+---
 
 ## 📸 Screenshots
 
@@ -156,4 +162,4 @@ MIT License — Free for commercial use, but please keep attribution.
 
 ---
 
-*If you find HopLLM useful, please give us a ⭐*
+*If HopLLM saves you money or time, please give us a ⭐*

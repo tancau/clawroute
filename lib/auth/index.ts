@@ -88,7 +88,7 @@ async function getPostgres() {
   // 复用连接池
   if (sql) return sql;
   
-  const connectionString = process.env.POSTGRES_URL;
+  const connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL;
   if (!connectionString) {
     console.error('[getPostgres] POSTGRES_URL not configured');
     return null;
@@ -99,7 +99,7 @@ async function getPostgres() {
     sql = postgres(connectionString, {
       max: 10, // 最大连接数
       idle_timeout: 30, // 空闲超时（秒）
-      connect_timeout: 10, // 连接超时（秒）
+      connect_timeout: 30, // 连接超时（秒）
       // Supabase transaction mode 不支持 prepared statements
       prepare: false,
     });

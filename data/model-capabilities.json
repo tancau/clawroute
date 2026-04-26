@@ -6,35 +6,47 @@
       "name": "GPT-4o",
       "description": "OpenAI's flagship multimodal model with excellent reasoning and coding abilities",
       "capabilities": {
-        "coding": 9.0,
+        "coding": 9,
         "reasoning": 9.2,
         "math": 8.8,
         "translation": 8.5,
         "creative": 8.5,
-        "analysis": 9.0,
-        "longContext": 7.0,
-        "chinese": 8.0
+        "analysis": 9,
+        "longContext": 7,
+        "chinese": 8
       },
       "benchmarks": {
         "humanEval": 90.2,
         "mmlu": 88.7,
-        "gsm8K": 92.0,
+        "gsm8K": 92,
         "mtBench": 9.3,
-        "arenaElo": 1285
+        "arenaElo": 1443
       },
-      "arenaElo": 1285,
+      "arenaElo": 1443,
       "cost": {
         "input": 2.5,
-        "output": 10.0
+        "output": 10
       },
       "contextWindow": 128000,
       "maxTokens": 16384,
-      "inputTypes": ["text", "image"],
-      "tags": ["flagship", "multimodal", "reasoning", "coding"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "flagship",
+        "multimodal",
+        "reasoning",
+        "coding"
+      ],
       "overallScore": 8.6,
       "valueScore": 2.1,
-      "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["OpenAI", "Chatbot Arena", "OpenLLM Leaderboard"],
+      "updatedAt": "2026-04-21T10:37:41.133Z",
+      "dataSource": [
+        "OpenAI",
+        "Chatbot Arena",
+        "OpenLLM Leaderboard"
+      ],
       "isAvailable": true
     },
     {
@@ -47,15 +59,15 @@
         "reasoning": 7.8,
         "math": 7.5,
         "translation": 7.5,
-        "creative": 7.0,
+        "creative": 7,
         "analysis": 7.5,
-        "longContext": 7.0,
-        "chinese": 7.0
+        "longContext": 7,
+        "chinese": 7
       },
       "benchmarks": {
         "humanEval": 75.9,
-        "mmlu": 82.0,
-        "gsm8K": 86.0,
+        "mmlu": 82,
+        "gsm8K": 86,
         "mtBench": 8.5,
         "arenaElo": 1220
       },
@@ -66,12 +78,22 @@
       },
       "contextWindow": 128000,
       "maxTokens": 16384,
-      "inputTypes": ["text", "image"],
-      "tags": ["fast", "affordable", "multimodal"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "fast",
+        "affordable",
+        "multimodal"
+      ],
       "overallScore": 7.5,
       "valueScore": 5.2,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["OpenAI", "Chatbot Arena"],
+      "dataSource": [
+        "OpenAI",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -81,34 +103,43 @@
       "description": "High-performance GPT-4 variant with extended context",
       "capabilities": {
         "coding": 8.8,
-        "reasoning": 9.0,
+        "reasoning": 9,
         "math": 8.5,
-        "translation": 8.0,
+        "translation": 8,
         "creative": 8.5,
         "analysis": 8.8,
-        "longContext": 7.0,
+        "longContext": 7,
         "chinese": 7.5
       },
       "benchmarks": {
         "humanEval": 87.1,
         "mmlu": 86.4,
-        "gsm8K": 89.0,
+        "gsm8K": 89,
         "mtBench": 9.1,
         "arenaElo": 1265
       },
       "arenaElo": 1265,
       "cost": {
-        "input": 10.0,
-        "output": 30.0
+        "input": 10,
+        "output": 30
       },
       "contextWindow": 128000,
       "maxTokens": 4096,
-      "inputTypes": ["text", "image"],
-      "tags": ["reasoning", "complex-tasks"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "reasoning",
+        "complex-tasks"
+      ],
       "overallScore": 8.4,
       "valueScore": 1.3,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["OpenAI", "Chatbot Arena"],
+      "dataSource": [
+        "OpenAI",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -118,34 +149,45 @@
       "description": "Anthropic's balanced model with excellent coding and reasoning",
       "capabilities": {
         "coding": 9.2,
-        "reasoning": 9.0,
+        "reasoning": 9,
         "math": 8.5,
-        "translation": 8.0,
+        "translation": 8,
         "creative": 8.8,
-        "analysis": 9.0,
-        "longContext": 8.0,
+        "analysis": 9,
+        "longContext": 8,
         "chinese": 7.5
       },
       "benchmarks": {
-        "humanEval": 92.0,
+        "humanEval": 92,
         "mmlu": 88.7,
-        "gsm8K": 88.0,
+        "gsm8K": 88,
         "mtBench": 9.2,
         "arenaElo": 1272
       },
       "arenaElo": 1272,
       "cost": {
-        "input": 3.0,
-        "output": 15.0
+        "input": 3,
+        "output": 15
       },
       "contextWindow": 200000,
       "maxTokens": 8192,
-      "inputTypes": ["text", "image"],
-      "tags": ["coding", "reasoning", "writing", "balanced"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "coding",
+        "reasoning",
+        "writing",
+        "balanced"
+      ],
       "overallScore": 8.6,
       "valueScore": 1.9,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Anthropic", "Chatbot Arena"],
+      "dataSource": [
+        "Anthropic",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -154,35 +196,45 @@
       "name": "Claude 3.5 Haiku",
       "description": "Fast and efficient Claude variant for everyday tasks",
       "capabilities": {
-        "coding": 8.0,
-        "reasoning": 8.0,
+        "coding": 8,
+        "reasoning": 8,
         "math": 7.5,
-        "translation": 7.0,
+        "translation": 7,
         "creative": 7.5,
         "analysis": 7.8,
-        "longContext": 8.0,
+        "longContext": 8,
         "chinese": 6.5
       },
       "benchmarks": {
-        "humanEval": 80.0,
+        "humanEval": 80,
         "mmlu": 81.5,
-        "gsm8K": 85.0,
+        "gsm8K": 85,
         "mtBench": 8.6,
         "arenaElo": 1215
       },
       "arenaElo": 1215,
       "cost": {
-        "input": 1.0,
-        "output": 5.0
+        "input": 1,
+        "output": 5
       },
       "contextWindow": 200000,
       "maxTokens": 8192,
-      "inputTypes": ["text", "image"],
-      "tags": ["fast", "efficient", "coding"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "fast",
+        "efficient",
+        "coding"
+      ],
       "overallScore": 7.6,
       "valueScore": 2.8,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Anthropic", "Chatbot Arena"],
+      "dataSource": [
+        "Anthropic",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -195,31 +247,41 @@
         "reasoning": 9.5,
         "math": 8.8,
         "translation": 8.5,
-        "creative": 9.0,
+        "creative": 9,
         "analysis": 9.2,
-        "longContext": 8.0,
-        "chinese": 8.0
+        "longContext": 8,
+        "chinese": 8
       },
       "benchmarks": {
         "humanEval": 85.4,
-        "mmlu": 92.0,
-        "gsm8K": 95.0,
+        "mmlu": 92,
+        "gsm8K": 95,
         "mtBench": 9.4,
         "arenaElo": 1250
       },
       "arenaElo": 1250,
       "cost": {
-        "input": 15.0,
-        "output": 75.0
+        "input": 15,
+        "output": 75
       },
       "contextWindow": 200000,
       "maxTokens": 4096,
-      "inputTypes": ["text", "image"],
-      "tags": ["reasoning", "complex-tasks", "writing"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "reasoning",
+        "complex-tasks",
+        "writing"
+      ],
       "overallScore": 8.8,
-      "valueScore": 1.0,
+      "valueScore": 1,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Anthropic", "Chatbot Arena"],
+      "dataSource": [
+        "Anthropic",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -229,18 +291,18 @@
       "description": "Google's fast multimodal model with excellent value",
       "capabilities": {
         "coding": 7.5,
-        "reasoning": 8.0,
+        "reasoning": 8,
         "math": 7.5,
         "translation": 7.5,
-        "creative": 7.0,
+        "creative": 7,
         "analysis": 7.5,
-        "longContext": 10.0,
-        "chinese": 7.0
+        "longContext": 10,
+        "chinese": 7
       },
       "benchmarks": {
-        "humanEval": 75.0,
-        "mmlu": 80.0,
-        "gsm8K": 82.0,
+        "humanEval": 75,
+        "mmlu": 80,
+        "gsm8K": 82,
         "mtBench": 8.3,
         "arenaElo": 1205
       },
@@ -251,12 +313,23 @@
       },
       "contextWindow": 1048576,
       "maxTokens": 8192,
-      "inputTypes": ["text", "image"],
-      "tags": ["fast", "affordable", "multimodal", "long-context"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "fast",
+        "affordable",
+        "multimodal",
+        "long-context"
+      ],
       "overallScore": 7.8,
       "valueScore": 6.5,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Google", "Chatbot Arena"],
+      "dataSource": [
+        "Google",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -268,17 +341,17 @@
         "coding": 8.5,
         "reasoning": 8.8,
         "math": 8.5,
-        "translation": 8.0,
-        "creative": 8.0,
+        "translation": 8,
+        "creative": 8,
         "analysis": 8.5,
-        "longContext": 10.0,
+        "longContext": 10,
         "chinese": 7.5
       },
       "benchmarks": {
         "humanEval": 84.1,
         "mmlu": 85.9,
         "gsm8K": 91.7,
-        "mtBench": 9.0,
+        "mtBench": 9,
         "arenaElo": 1240
       },
       "arenaElo": 1240,
@@ -288,12 +361,22 @@
       },
       "contextWindow": 2097152,
       "maxTokens": 8192,
-      "inputTypes": ["text", "image"],
-      "tags": ["long-context", "reasoning", "multimodal"],
+      "inputTypes": [
+        "text",
+        "image"
+      ],
+      "tags": [
+        "long-context",
+        "reasoning",
+        "multimodal"
+      ],
       "overallScore": 8.5,
       "valueScore": 2.2,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Google", "Chatbot Arena"],
+      "dataSource": [
+        "Google",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -304,33 +387,43 @@
       "capabilities": {
         "coding": 8.8,
         "reasoning": 9.2,
-        "math": 9.0,
+        "math": 9,
         "translation": 7.5,
         "creative": 7.5,
         "analysis": 8.8,
-        "longContext": 5.0,
+        "longContext": 5,
         "chinese": 8.5
       },
       "benchmarks": {
-        "humanEval": 89.0,
-        "mmlu": 90.0,
-        "gsm8K": 95.0,
-        "mtBench": 9.0,
+        "humanEval": 89,
+        "mmlu": 90,
+        "gsm8K": 95,
+        "mtBench": 9,
         "arenaElo": 1270
       },
       "arenaElo": 1270,
       "cost": {
-        "input": 1.0,
-        "output": 2.0
+        "input": 1,
+        "output": 2
       },
       "contextWindow": 64000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["reasoning", "math", "coding", "chinese"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "reasoning",
+        "math",
+        "coding",
+        "chinese"
+      ],
       "overallScore": 8.2,
       "valueScore": 4.6,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["DeepSeek", "Chatbot Arena"],
+      "dataSource": [
+        "DeepSeek",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -341,33 +434,42 @@
       "capabilities": {
         "coding": 8.5,
         "reasoning": 8.5,
-        "math": 8.0,
-        "translation": 8.0,
-        "creative": 8.0,
+        "math": 8,
+        "translation": 8,
+        "creative": 8,
         "analysis": 8.2,
-        "longContext": 5.0,
-        "chinese": 9.0
+        "longContext": 5,
+        "chinese": 9
       },
       "benchmarks": {
-        "humanEval": 85.0,
-        "mmlu": 87.0,
-        "gsm8K": 88.0,
+        "humanEval": 85,
+        "mmlu": 87,
+        "gsm8K": 88,
         "mtBench": 8.8,
         "arenaElo": 1235
       },
       "arenaElo": 1235,
       "cost": {
         "input": 0.5,
-        "output": 1.0
+        "output": 1
       },
       "contextWindow": 64000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["general", "coding", "chinese"],
-      "overallScore": 8.0,
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "general",
+        "coding",
+        "chinese"
+      ],
+      "overallScore": 8,
       "valueScore": 5.2,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["DeepSeek", "Chatbot Arena"],
+      "dataSource": [
+        "DeepSeek",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -376,20 +478,20 @@
       "name": "DeepSeek Coder",
       "description": "Specialized coding model with excellent code completion",
       "capabilities": {
-        "coding": 9.0,
-        "reasoning": 8.0,
+        "coding": 9,
+        "reasoning": 8,
         "math": 7.5,
         "translation": 6.5,
         "creative": 6.5,
         "analysis": 7.5,
-        "longContext": 5.0,
-        "chinese": 8.0
+        "longContext": 5,
+        "chinese": 8
       },
       "benchmarks": {
-        "humanEval": 90.0,
-        "mmlu": 80.0,
-        "gsm8K": 82.0,
-        "mtBench": 8.0,
+        "humanEval": 90,
+        "mmlu": 80,
+        "gsm8K": 82,
+        "mtBench": 8,
         "arenaElo": 1200
       },
       "arenaElo": 1200,
@@ -399,12 +501,21 @@
       },
       "contextWindow": 64000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["coding", "code-completion", "chinese"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "coding",
+        "code-completion",
+        "chinese"
+      ],
       "overallScore": 7.5,
       "valueScore": 5.5,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["DeepSeek", "Chatbot Arena"],
+      "dataSource": [
+        "DeepSeek",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -419,29 +530,38 @@
         "translation": 8.5,
         "creative": 8.5,
         "analysis": 8.5,
-        "longContext": 5.0,
+        "longContext": 5,
         "chinese": 9.5
       },
       "benchmarks": {
-        "humanEval": 85.0,
-        "mmlu": 87.0,
-        "gsm8K": 89.0,
-        "mtBench": 9.0,
+        "humanEval": 85,
+        "mmlu": 87,
+        "gsm8K": 89,
+        "mtBench": 9,
         "arenaElo": 1245
       },
       "arenaElo": 1245,
       "cost": {
-        "input": 2.0,
-        "output": 6.0
+        "input": 2,
+        "output": 6
       },
       "contextWindow": 32768,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["reasoning", "complex-tasks", "chinese"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "reasoning",
+        "complex-tasks",
+        "chinese"
+      ],
       "overallScore": 8.4,
-      "valueScore": 3.0,
+      "valueScore": 3,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Alibaba", "Chatbot Arena"],
+      "dataSource": [
+        "Alibaba",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -450,35 +570,44 @@
       "name": "Qwen3.6 Plus",
       "description": "Balanced Qwen model with excellent Chinese support",
       "capabilities": {
-        "coding": 8.0,
+        "coding": 8,
         "reasoning": 8.2,
-        "math": 8.0,
-        "translation": 8.0,
-        "creative": 8.0,
-        "analysis": 8.0,
-        "longContext": 7.0,
-        "chinese": 9.0
+        "math": 8,
+        "translation": 8,
+        "creative": 8,
+        "analysis": 8,
+        "longContext": 7,
+        "chinese": 9
       },
       "benchmarks": {
-        "humanEval": 80.0,
-        "mmlu": 83.0,
-        "gsm8K": 85.0,
+        "humanEval": 80,
+        "mmlu": 83,
+        "gsm8K": 85,
         "mtBench": 8.7,
-        "arenaElo": 1220
+        "arenaElo": 1448
       },
-      "arenaElo": 1220,
+      "arenaElo": 1448,
       "cost": {
         "input": 0.8,
-        "output": 2.0
+        "output": 2
       },
       "contextWindow": 131072,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["general", "reasoning", "chinese"],
-      "overallScore": 8.0,
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "general",
+        "reasoning",
+        "chinese"
+      ],
+      "overallScore": 8,
       "valueScore": 3.8,
-      "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Alibaba", "Chatbot Arena"],
+      "updatedAt": "2026-04-21T10:37:41.133Z",
+      "dataSource": [
+        "Alibaba",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -490,16 +619,16 @@
         "coding": 8.8,
         "reasoning": 7.8,
         "math": 7.5,
-        "translation": 7.0,
-        "creative": 7.0,
+        "translation": 7,
+        "creative": 7,
         "analysis": 7.5,
-        "longContext": 7.0,
+        "longContext": 7,
         "chinese": 8.5
       },
       "benchmarks": {
-        "humanEval": 88.0,
-        "mmlu": 78.0,
-        "gsm8K": 80.0,
+        "humanEval": 88,
+        "mmlu": 78,
+        "gsm8K": 80,
         "mtBench": 8.3,
         "arenaElo": 1195
       },
@@ -510,12 +639,21 @@
       },
       "contextWindow": 131072,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["coding", "affordable", "chinese"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "coding",
+        "affordable",
+        "chinese"
+      ],
       "overallScore": 7.7,
       "valueScore": 6.2,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Alibaba", "Chatbot Arena"],
+      "dataSource": [
+        "Alibaba",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -525,18 +663,18 @@
       "description": "Free tier of Qwen3 Coder for simple tasks",
       "capabilities": {
         "coding": 7.5,
-        "reasoning": 7.0,
+        "reasoning": 7,
         "math": 6.5,
         "translation": 6.5,
         "creative": 6.5,
         "analysis": 6.8,
-        "longContext": 7.0,
-        "chinese": 8.0
+        "longContext": 7,
+        "chinese": 8
       },
       "benchmarks": {
-        "humanEval": 75.0,
-        "mmlu": 70.0,
-        "gsm8K": 72.0,
+        "humanEval": 75,
+        "mmlu": 70,
+        "gsm8K": 72,
         "mtBench": 7.5,
         "arenaElo": 1100
       },
@@ -547,12 +685,22 @@
       },
       "contextWindow": 131072,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["coding", "free", "simple-tasks", "chinese"],
-      "overallScore": 7.0,
-      "valueScore": 70.0,
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "coding",
+        "free",
+        "simple-tasks",
+        "chinese"
+      ],
+      "overallScore": 7,
+      "valueScore": 70,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Alibaba", "New-API"],
+      "dataSource": [
+        "Alibaba",
+        "New-API"
+      ],
       "isFree": true,
       "isAvailable": true
     },
@@ -564,33 +712,42 @@
       "capabilities": {
         "coding": 8.5,
         "reasoning": 8.8,
-        "math": 8.0,
+        "math": 8,
         "translation": 7.5,
         "creative": 7.5,
         "analysis": 8.5,
-        "longContext": 7.0,
-        "chinese": 6.0
+        "longContext": 7,
+        "chinese": 6
       },
       "benchmarks": {
-        "humanEval": 84.0,
-        "mmlu": 87.0,
-        "gsm8K": 85.0,
+        "humanEval": 84,
+        "mmlu": 87,
+        "gsm8K": 85,
         "mtBench": 8.8,
         "arenaElo": 1230
       },
       "arenaElo": 1230,
       "cost": {
-        "input": 4.0,
-        "output": 12.0
+        "input": 4,
+        "output": 12
       },
       "contextWindow": 128000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["reasoning", "complex-tasks", "coding"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "reasoning",
+        "complex-tasks",
+        "coding"
+      ],
       "overallScore": 7.9,
       "valueScore": 1.7,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Mistral", "Chatbot Arena"],
+      "dataSource": [
+        "Mistral",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -599,35 +756,43 @@
       "name": "Mistral Medium",
       "description": "Balanced Mistral model for everyday tasks",
       "capabilities": {
-        "coding": 8.0,
-        "reasoning": 8.0,
+        "coding": 8,
+        "reasoning": 8,
         "math": 7.5,
-        "translation": 7.0,
+        "translation": 7,
         "creative": 7.5,
         "analysis": 7.8,
-        "longContext": 5.0,
+        "longContext": 5,
         "chinese": 5.5
       },
       "benchmarks": {
-        "humanEval": 80.0,
-        "mmlu": 81.0,
-        "gsm8K": 80.0,
+        "humanEval": 80,
+        "mmlu": 81,
+        "gsm8K": 80,
         "mtBench": 8.3,
         "arenaElo": 1190
       },
       "arenaElo": 1190,
       "cost": {
-        "input": 1.0,
-        "output": 3.0
+        "input": 1,
+        "output": 3
       },
       "contextWindow": 32000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["general", "coding"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "general",
+        "coding"
+      ],
       "overallScore": 7.3,
       "valueScore": 3.2,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Mistral", "Chatbot Arena"],
+      "dataSource": [
+        "Mistral",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -636,19 +801,19 @@
       "name": "Mistral Small",
       "description": "Fast and lightweight Mistral model",
       "capabilities": {
-        "coding": 7.0,
-        "reasoning": 7.0,
+        "coding": 7,
+        "reasoning": 7,
         "math": 6.5,
-        "translation": 6.0,
+        "translation": 6,
         "creative": 6.5,
         "analysis": 6.8,
-        "longContext": 4.0,
-        "chinese": 5.0
+        "longContext": 4,
+        "chinese": 5
       },
       "benchmarks": {
-        "humanEval": 70.0,
-        "mmlu": 72.0,
-        "gsm8K": 70.0,
+        "humanEval": 70,
+        "mmlu": 72,
+        "gsm8K": 70,
         "mtBench": 7.5,
         "arenaElo": 1120
       },
@@ -659,12 +824,20 @@
       },
       "contextWindow": 32000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["general", "fast"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "general",
+        "fast"
+      ],
       "overallScore": 6.6,
       "valueScore": 4.3,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Mistral", "Chatbot Arena"],
+      "dataSource": [
+        "Mistral",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -673,19 +846,19 @@
       "name": "Llama 3.1 70B",
       "description": "Meta's open-source flagship model",
       "capabilities": {
-        "coding": 8.0,
+        "coding": 8,
         "reasoning": 8.2,
         "math": 7.8,
-        "translation": 7.0,
+        "translation": 7,
         "creative": 7.5,
-        "analysis": 8.0,
-        "longContext": 7.0,
-        "chinese": 6.0
+        "analysis": 8,
+        "longContext": 7,
+        "chinese": 6
       },
       "benchmarks": {
-        "humanEval": 79.0,
-        "mmlu": 83.0,
-        "gsm8K": 83.0,
+        "humanEval": 79,
+        "mmlu": 83,
+        "gsm8K": 83,
         "mtBench": 8.5,
         "arenaElo": 1195
       },
@@ -696,12 +869,21 @@
       },
       "contextWindow": 131072,
       "maxTokens": 4096,
-      "inputTypes": ["text"],
-      "tags": ["open-source", "reasoning", "coding"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "open-source",
+        "reasoning",
+        "coding"
+      ],
       "overallScore": 7.5,
       "valueScore": 4.8,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Meta", "Chatbot Arena"],
+      "dataSource": [
+        "Meta",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -712,18 +894,18 @@
       "capabilities": {
         "coding": 6.5,
         "reasoning": 6.5,
-        "math": 6.0,
+        "math": 6,
         "translation": 5.5,
-        "creative": 6.0,
+        "creative": 6,
         "analysis": 6.2,
-        "longContext": 7.0,
+        "longContext": 7,
         "chinese": 4.5
       },
       "benchmarks": {
-        "humanEval": 65.0,
-        "mmlu": 68.0,
-        "gsm8K": 65.0,
-        "mtBench": 7.0,
+        "humanEval": 65,
+        "mmlu": 68,
+        "gsm8K": 65,
+        "mtBench": 7,
         "arenaElo": 1080
       },
       "arenaElo": 1080,
@@ -733,12 +915,21 @@
       },
       "contextWindow": 131072,
       "maxTokens": 4096,
-      "inputTypes": ["text"],
-      "tags": ["open-source", "free", "simple-tasks"],
-      "overallScore": 6.0,
-      "valueScore": 60.0,
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "open-source",
+        "free",
+        "simple-tasks"
+      ],
+      "overallScore": 6,
+      "valueScore": 60,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Meta", "New-API"],
+      "dataSource": [
+        "Meta",
+        "New-API"
+      ],
       "isFree": true,
       "isAvailable": true
     },
@@ -752,31 +943,41 @@
         "reasoning": 8.5,
         "math": 7.5,
         "translation": 7.5,
-        "creative": 7.0,
+        "creative": 7,
         "analysis": 8.2,
-        "longContext": 7.0,
+        "longContext": 7,
         "chinese": 6.5
       },
       "benchmarks": {
-        "humanEval": 75.0,
-        "mmlu": 84.0,
-        "gsm8K": 78.0,
+        "humanEval": 75,
+        "mmlu": 84,
+        "gsm8K": 78,
         "mtBench": 8.5,
         "arenaElo": 1200
       },
       "arenaElo": 1200,
       "cost": {
-        "input": 2.0,
-        "output": 6.0
+        "input": 2,
+        "output": 6
       },
       "contextWindow": 128000,
       "maxTokens": 4096,
-      "inputTypes": ["text"],
-      "tags": ["rag", "reasoning", "complex-tasks", "enterprise"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "rag",
+        "reasoning",
+        "complex-tasks",
+        "enterprise"
+      ],
       "overallScore": 7.5,
       "valueScore": 2.7,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Cohere", "Chatbot Arena"],
+      "dataSource": [
+        "Cohere",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -785,20 +986,20 @@
       "name": "Command R",
       "description": "Cohere's RAG model for retrieval-augmented generation",
       "capabilities": {
-        "coding": 7.0,
+        "coding": 7,
         "reasoning": 7.5,
-        "math": 7.0,
-        "translation": 7.0,
+        "math": 7,
+        "translation": 7,
         "creative": 6.5,
         "analysis": 7.5,
-        "longContext": 7.0,
-        "chinese": 6.0
+        "longContext": 7,
+        "chinese": 6
       },
       "benchmarks": {
-        "humanEval": 70.0,
-        "mmlu": 77.0,
-        "gsm8K": 74.0,
-        "mtBench": 8.0,
+        "humanEval": 70,
+        "mmlu": 77,
+        "gsm8K": 74,
+        "mtBench": 8,
         "arenaElo": 1160
       },
       "arenaElo": 1160,
@@ -808,12 +1009,20 @@
       },
       "contextWindow": 128000,
       "maxTokens": 4096,
-      "inputTypes": ["text"],
-      "tags": ["rag", "general"],
-      "overallScore": 7.0,
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "rag",
+        "general"
+      ],
+      "overallScore": 7,
       "valueScore": 3.6,
       "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Cohere", "Chatbot Arena"],
+      "dataSource": [
+        "Cohere",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -822,35 +1031,44 @@
       "name": "GLM-4",
       "description": "Zhipu AI's flagship model with excellent Chinese support",
       "capabilities": {
-        "coding": 8.0,
+        "coding": 8,
         "reasoning": 8.5,
-        "math": 8.0,
+        "math": 8,
         "translation": 8.5,
-        "creative": 8.0,
+        "creative": 8,
         "analysis": 8.2,
-        "longContext": 6.0,
+        "longContext": 6,
         "chinese": 9.5
       },
       "benchmarks": {
-        "humanEval": 80.0,
-        "mmlu": 84.0,
-        "gsm8K": 85.0,
+        "humanEval": 80,
+        "mmlu": 84,
+        "gsm8K": 85,
         "mtBench": 8.7,
-        "arenaElo": 1210
+        "arenaElo": 1443
       },
-      "arenaElo": 1210,
+      "arenaElo": 1443,
       "cost": {
-        "input": 1.0,
-        "output": 1.0
+        "input": 1,
+        "output": 1
       },
       "contextWindow": 128000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["chinese", "reasoning", "coding"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "chinese",
+        "reasoning",
+        "coding"
+      ],
       "overallScore": 8.1,
       "valueScore": 5.7,
-      "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Zhipu AI", "Chatbot Arena"],
+      "updatedAt": "2026-04-21T10:37:41.133Z",
+      "dataSource": [
+        "Zhipu AI",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     },
     {
@@ -862,36 +1080,58 @@
         "coding": 8.5,
         "reasoning": 8.8,
         "math": 8.5,
-        "translation": 9.0,
+        "translation": 9,
         "creative": 8.5,
         "analysis": 8.5,
-        "longContext": 8.0,
+        "longContext": 8,
         "chinese": 9.8
       },
       "benchmarks": {
-        "humanEval": 85.0,
-        "mmlu": 87.0,
-        "gsm8K": 88.0,
-        "mtBench": 9.0,
-        "arenaElo": 1240
+        "humanEval": 85,
+        "mmlu": 87,
+        "gsm8K": 88,
+        "mtBench": 9,
+        "arenaElo": 1457
       },
-      "arenaElo": 1240,
+      "arenaElo": 1457,
       "cost": {
-        "input": 2.0,
-        "output": 2.0
+        "input": 2,
+        "output": 2
       },
       "contextWindow": 200000,
       "maxTokens": 8192,
-      "inputTypes": ["text"],
-      "tags": ["chinese", "reasoning", "coding", "latest"],
+      "inputTypes": [
+        "text"
+      ],
+      "tags": [
+        "chinese",
+        "reasoning",
+        "coding",
+        "latest"
+      ],
       "overallScore": 8.5,
       "valueScore": 3.8,
-      "updatedAt": "2026-04-21T00:00:00Z",
-      "dataSource": ["Zhipu AI", "Chatbot Arena"],
+      "updatedAt": "2026-04-21T10:37:41.133Z",
+      "dataSource": [
+        "Zhipu AI",
+        "Chatbot Arena"
+      ],
       "isAvailable": true
     }
   ],
-  "lastUpdated": "2026-04-21T00:00:00Z",
+  "lastUpdated": "2026-04-21T10:37:41.133Z",
   "version": "1.0.0",
-  "dataSource": ["OpenAI", "Anthropic", "Google", "DeepSeek", "Alibaba/Qwen", "Mistral", "Meta", "Cohere", "Zhipu AI/GLM", "Chatbot Arena", "OpenLLM Leaderboard"]
+  "dataSource": [
+    "OpenAI",
+    "Anthropic",
+    "Google",
+    "DeepSeek",
+    "Alibaba/Qwen",
+    "Mistral",
+    "Meta",
+    "Cohere",
+    "Zhipu AI/GLM",
+    "Chatbot Arena",
+    "OpenLLM Leaderboard"
+  ]
 }

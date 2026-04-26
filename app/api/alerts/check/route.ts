@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db/pg';
 import { verifyJWT, getCredits } from '@/lib/auth';
 import { 
   ensureAlertsTable, 

@@ -1,4 +1,5 @@
 import type { ToolContext, IntentType } from '../types';
+import { getEnabledCustomRules } from '../../db/custom-rules';
 
 /**
  * 规则定义
@@ -9,6 +10,21 @@ interface Rule {
   condition: (msg: string) => boolean;
   intent: IntentType;
   confidence: number;
+  isCustom?: boolean;
+}
+
+/**
+ * 规则配置（用于前端编辑）
+ */
+export interface RuleConfig {
+  id: string;
+  name: string;
+  type: 'system' | 'custom';
+  intent: IntentType;
+  priority: number;
+  enabled: boolean;
+  keyword?: string;   // 仅 custom 规则有
+  description?: string; // 仅 system 规则有
 }
 
 /**
@@ -134,12 +150,32 @@ const RULES: Rule[] = [
 ];
 
 /**
+ * 加载用户的自定义规则
+ */
+export async function loadCustomRules(userId: string): Promise<Rule[]> {
+  try {
+    const customRules = getEnabledCustomRules(userId);
+    return customRules.map(rule => ({
+      name: `custom:${rule.id}`,
+      priority: rule.priority + 1000, // 自定义规则优先级高于预设规则
+      condition: (msg: string) => msg.includes(rule.keyword),
+      intent: rule.intent,
+      confidence: 0.95,
+      isCustom: true,
+    }));
+  } catch (error) {
+    console.warn('Failed to load custom rules:', error);
+    return [];
+  }
+}
+
+/**
  * 应用规则引擎
  * 按优先级匹配，返回第一个匹配结果
  */
 export async function applyRules(
   message: string,
-  _context: ToolContext
+  context: ToolContext
 ): Promise<{
   intent: IntentType;
   confidence: number;
@@ -148,8 +184,14 @@ export async function applyRules(
   // 预处理消息
   const normalizedMsg = message.trim();
 
+  // 合并自定义规则
+  const customRules = context.user?.id
+    ? await loadCustomRules(context.user.id)
+    : [];
+  const allRules = [...customRules, ...RULES];
+
   // 按优先级排序
-  const sortedRules = [...RULES].sort((a, b) => b.priority - a.priority);
+  const sortedRules = allRules.sort((a, b) => b.priority - a.priority);
 
   // 逐条匹配
   for (const rule of sortedRules) {
@@ -158,7 +200,7 @@ export async function applyRules(
         return {
           intent: rule.intent,
           confidence: rule.confidence,
-          reasoning: `Matched rule: ${rule.name}`,
+          reasoning: `Matched rule: ${rule.name}${rule.isCustom ? ' (custom)' : ''}`,
         };
       }
     } catch (error) {
@@ -179,10 +221,59 @@ export function getRules(): Rule[] {
 }
 
 /**
- * 添加自定义规则
+ * 添加自定义规则（仅预设规则）
  */
 export function addRule(rule: Rule): void {
   RULES.push(rule);
   // 重新排序
   RULES.sort((a, b) => b.priority - a.priority);
+}
+
+/**
+ * 系统预设规则的描述映射
+ */
+const SYSTEM_RULE_DESCRIPTIONS: Record<string, string> = {
+  code_block: '检测代码块或代码关键字',
+  code_keywords: '检测写代码相关的中文关键词',
+  trading: '检测加密货币交易相关词汇',
+  long_context: '检测超长消息 (>4000字符)',
+  math_analysis: '检测数学分析计算关键词',
+  translation: '检测翻译相关关键词',
+  creative_writing: '检测创意写作关键词',
+  reasoning: '检测逻辑推理关键词',
+  knowledge: '检测知识查询短句',
+  chinese_casual: '中文日常短对话',
+  english_casual: '英文日常短对话',
+};
+
+/**
+ * 获取所有可编辑的规则（系统预设 + 用户自定义）
+ * 系统预设规则不可删除，只能调整优先级和启用/禁用
+ * 用户自定义规则可以删除
+ */
+export function getEditableRules(
+  userId?: string,
+  customRules: import('../../db/custom-rules').CustomRule[] = []
+): RuleConfig[] {
+  const systemRules: RuleConfig[] = RULES.map(r => ({
+    id: r.name,
+    name: r.name,
+    type: 'system' as const,
+    intent: r.intent,
+    priority: r.priority,
+    enabled: true,
+    description: SYSTEM_RULE_DESCRIPTIONS[r.name] || '',
+  }));
+
+  const userCustomRules: RuleConfig[] = customRules.map(r => ({
+    id: r.id,
+    name: r.keyword,
+    type: 'custom' as const,
+    intent: r.intent,
+    priority: r.priority,
+    enabled: r.enabled,
+    keyword: r.keyword,
+  }));
+
+  return [...userCustomRules, ...systemRules];
 }

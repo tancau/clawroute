@@ -11,6 +11,8 @@ import {
   INTENT_CAPABILITY_MAP,
   getBudgetLimits,
   calculateOverallScore,
+  calculateValueScore,
+  ModelCapabilityScores,
 } from '@/lib/models/capability-matrix';
 
 // ===== Data Loading =====
@@ -33,6 +35,86 @@ function loadCapabilityData(): CapabilityMatrixData {
     throw new Error('Model capability data not available');
   }
 }
+
+// ===== New Recommendation Types =====
+
+/** Extended intent types for new API */
+export type ExtendedIntent =
+  | 'coding'
+  | 'reasoning'
+  | 'math'
+  | 'translation'
+  | 'creative'
+  | 'analysis'
+  | 'longContext'
+  | 'chinese'
+  | 'chat'
+  | 'auto';
+
+/** Budget mode for recommendations */
+export type BudgetMode = 'economy' | 'medium' | 'premium' | 'unlimited';
+
+/** Selection mode for recommendations */
+export type SelectionMode = 'best' | 'value' | 'cheapest';
+
+/** New recommendation request format */
+export interface NewRecommendationRequest {
+  availableModels: string[];
+  intent?: ExtendedIntent;
+  budget?: BudgetMode;
+  mode?: SelectionMode;
+}
+
+/** Recommendation item with detailed info */
+export interface RecommendationItem {
+  model: string;
+  score: number;
+  costPerToken: { input: number; output: number }; 
+  capabilityScore: number;
+  valueScore: number;
+  reason: string;
+}
+
+/** Preset recommendation */
+export interface PresetRecommendation {
+  model: string;
+  reason: string;
+}
+
+/** New recommendation response */
+export interface NewRecommendationResponse {
+  recommendations: RecommendationItem[];
+  presets: {
+    optimal: PresetRecommendation;
+    economy: PresetRecommendation;
+    power: PresetRecommendation;
+  };
+  taskRecommendations?: Record<ExtendedIntent, RecommendationItem>;
+}
+
+// ===== Intent to Capability Mapping =====
+
+const EXTENDED_INTENT_CAPABILITY_MAP: Record<ExtendedIntent, (keyof ModelCapabilityScores)[]> = {
+  coding: ['coding', 'reasoning'],
+  reasoning: ['reasoning', 'analysis'],
+  math: ['math', 'reasoning'],
+  translation: ['translation', 'chinese'],
+  creative: ['creative'],
+  analysis: ['analysis', 'reasoning'],
+  longContext: ['longContext'],
+  chinese: ['chinese', 'translation'],
+  chat: ['reasoning', 'analysis', 'coding'], // Overall balanced
+  auto: ['reasoning', 'analysis', 'coding'], // Overall best
+};
+
+// ===== Budget Mode Limits =====
+
+const BUDGET_MODE_LIMITS: Record<BudgetMode, { maxTotalCost: number }> = {
+  economy: { maxTotalCost: 1 }, // < $1 per 1M tokens
+  medium: { maxTotalCost: 5 }, // < $5 per 1M tokens
+  premium: { maxTotalCost: 20 }, // < $20 per 1M tokens
+  unlimited: { maxTotalCost: Infinity },
+};
 
 // ===== Recommendation Engine =====
 
@@ -269,6 +351,24 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
+    // Handle new request format with availableModels
+    if (body.availableModels && Array.isArray(body.availableModels)) {
+      const newRequest: NewRecommendationRequest = {
+        availableModels: body.availableModels,
+        intent: body.intent as ExtendedIntent || 'auto',
+        budget: body.budget as BudgetMode || 'medium',
+        mode: body.mode as SelectionMode || 'best',
+      };
+      
+      const response = getNewRecommendations(newRequest);
+      return NextResponse.json({
+        success: true,
+        ...response,
+        timestamp: new Date().toISOString(),
+      });
+    }
+    
+    // Legacy request format
     const recommendationRequest: RecommendationRequest = {
       intent: body.intent || 'general',
       budget: body.budget,
@@ -296,4 +396,209 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// ===== New Recommendation Functions =====
+
+/** Calculate capability score for a specific intent */
+function getIntentCapabilityScore(
+  model: ModelCapability,
+  intent: ExtendedIntent
+): number {
+  const capabilities = EXTENDED_INTENT_CAPABILITY_MAP[intent];
+  if (!capabilities || capabilities.length === 0) {
+    return model.overallScore || calculateOverallScore(model.capabilities);
+  }
+  
+  let totalScore = 0;
+  for (const cap of capabilities) {
+    totalScore += model.capabilities[cap] || 0;
+  }
+  return Math.round((totalScore / capabilities.length) * 10) / 10;
+}
+
+/** Generate recommendation reason */
+function generateReason(model: ModelCapability, intent: ExtendedIntent, mode: SelectionMode): string {
+  const score = getIntentCapabilityScore(model, intent);
+  const parts: string[] = [];
+  
+  if (score >= 9) parts.push(`${intent}能力顶尖`);
+  else if (score >= 8) parts.push(`${intent}能力优秀`);
+  else if (score >= 7) parts.push(`${intent}能力良好`);
+  
+  if (model.isFree) parts.push('完全免费');
+  else if (model.cost.input + model.cost.output < 1) parts.push('成本极低');
+  else if (model.cost.input + model.cost.output < 5) parts.push('性价比高');
+  
+  if (model.arenaElo && model.arenaElo > 1400) parts.push('Arena排名前列');
+  if (model.contextWindow >= 200000) parts.push('超大上下文');
+  
+  if (mode === 'cheapest' && !model.isFree) parts.push('最低价格');
+  if (mode === 'value') parts.push('最优性价比');
+  
+  return parts.length > 0 ? parts.join(', ') : '综合表现良好';
+}
+
+/** Get recommendations based on new request format */
+function getNewRecommendations(request: NewRecommendationRequest): NewRecommendationResponse {
+  const data = loadCapabilityData();
+  
+  // Filter models by available list
+  const availableModels = request.availableModels;
+  const filteredModels = data.models.filter(m => 
+    availableModels.includes(m.id) || 
+    availableModels.some(avail => avail.includes(m.name.toLowerCase()) || m.id.includes(avail))
+  );
+  
+  // If no matching models found, use all
+  const modelsToUse = filteredModels.length > 0 ? filteredModels : data.models;
+  
+  // Budget filter
+  const budgetLimit = BUDGET_MODE_LIMITS[request.budget || 'medium'];
+  const budgetFiltered = modelsToUse.filter(m => 
+    budgetLimit.maxTotalCost === Infinity || 
+    m.isFree || 
+    (m.cost.input + m.cost.output) <= budgetLimit.maxTotalCost
+  );
+  
+  // Sort based on mode
+  const intent = request.intent || 'auto';
+  const mode = request.mode || 'best';
+  
+  const sortedModels = [...budgetFiltered].sort((a, b) => {
+    const aScore = getIntentCapabilityScore(a, intent);
+    const bScore = getIntentCapabilityScore(b, intent);
+    
+    if (mode === 'best') {
+      return bScore - aScore; // Highest capability score
+    } else if (mode === 'value') {
+      // Balance capability and cost
+      const aValue = a.valueScore || calculateValueScore(aScore, a.cost);
+      const bValue = b.valueScore || calculateValueScore(bScore, b.cost);
+      return bValue - aValue;
+    } else if (mode === 'cheapest') {
+      // Lowest cost
+      const aCost = a.cost.input + a.cost.output;
+      const bCost = b.cost.input + b.cost.output;
+      return aCost - bCost;
+    }
+    return 0;
+  });
+  
+  // Generate recommendations
+  const recommendations: RecommendationItem[] = sortedModels.slice(0, 5).map(model => {
+    const capabilityScore = getIntentCapabilityScore(model, intent);
+    return {
+      model: model.id,
+      score: Math.round(capabilityScore * 10),
+      costPerToken: model.cost,
+      capabilityScore: capabilityScore,
+      valueScore: model.valueScore || calculateValueScore(capabilityScore, model.cost),
+      reason: generateReason(model, intent, mode),
+    };
+  });
+  
+  // Generate presets
+  const presets = {
+    optimal: findBestForPreset(sortedModels, 'optimal', availableModels),
+    economy: findBestForPreset(sortedModels, 'economy', availableModels),
+    power: findBestForPreset(sortedModels, 'power', availableModels),
+  };
+  
+  // Generate task recommendations
+  const taskIntents: ExtendedIntent[] = ['coding', 'reasoning', 'math', 'translation', 'creative', 'analysis', 'longContext', 'chinese', 'chat'];
+  const taskRecommendations: Record<string, RecommendationItem> = {};
+  
+  for (const taskIntent of taskIntents) {
+    const bestForTask = findBestForIntent(modelsToUse, taskIntent, budgetLimit.maxTotalCost);
+    if (bestForTask) {
+      taskRecommendations[taskIntent] = {
+        model: bestForTask.id,
+        score: Math.round(getIntentCapabilityScore(bestForTask, taskIntent) * 10),
+        costPerToken: bestForTask.cost,
+        capabilityScore: getIntentCapabilityScore(bestForTask, taskIntent),
+        valueScore: bestForTask.valueScore || calculateValueScore(getIntentCapabilityScore(bestForTask, taskIntent), bestForTask.cost),
+        reason: generateReason(bestForTask, taskIntent, 'best'),
+      };
+    }
+  }
+  
+  return { recommendations, presets, taskRecommendations };
+}
+
+/** Find best model for a preset type */
+function findBestForPreset(
+  models: ModelCapability[],
+  presetType: 'optimal' | 'economy' | 'power',
+  availableModels: string[]
+): PresetRecommendation {
+  // Prefer models that are in the available list
+  const inAvailableList = models.filter(m => availableModels.includes(m.id));
+  const useModels = inAvailableList.length > 0 ? inAvailableList : models;
+  
+  if (presetType === 'optimal') {
+    // Best overall score with reasonable cost
+    const sorted = [...useModels].sort((a, b) => {
+      const aOverall = a.overallScore || calculateOverallScore(a.capabilities);
+      const bOverall = b.overallScore || calculateOverallScore(b.capabilities);
+      // Prefer high score but penalize high cost
+      const aPenalty = (a.cost.input + a.cost.output) > 10 ? 0.1 : 0;
+      const bPenalty = (b.cost.input + b.cost.output) > 10 ? 0.1 : 0;
+      return (bOverall - bPenalty) - (aOverall - aPenalty);
+    });
+    const best = sorted[0];
+    if (!best) return { model: useModels[0]?.id || '', reason: 'Fallback model' }; 
+    return { model: best.id, reason: generateReason(best, 'auto', 'value') };
+  }
+  
+  if (presetType === 'economy') {
+    // Best free or cheapest model with decent quality
+    const freeModels = useModels.filter(m => m.isFree || (m.cost.input + m.cost.output) <= 1);
+    if (freeModels.length > 0) {
+      const sorted = [...freeModels].sort((a, b) => 
+        (b.overallScore || calculateOverallScore(b.capabilities)) - 
+        (a.overallScore || calculateOverallScore(a.capabilities))
+      );
+      const best = sorted[0];
+      if (!best) return { model: freeModels[0]?.id || useModels[0]?.id || '', reason: 'Fallback model' }; 
+      return { model: best.id, reason: generateReason(best, 'auto', 'cheapest') };
+    }
+    // If no free, pick cheapest
+    const sorted = [...useModels].sort((a, b) => 
+      (a.cost.input + a.cost.output) - (b.cost.input + b.cost.output)
+    );
+    const best = sorted[0];
+    if (!best) return { model: useModels[0]?.id || '', reason: 'Fallback model' }; 
+    return { model: best.id, reason: generateReason(best, 'auto', 'cheapest') };
+  }
+  
+  if (presetType === 'power') {
+    // Highest capability score regardless of cost
+    const sorted = [...useModels].sort((a, b) => 
+      (b.overallScore || calculateOverallScore(b.capabilities)) - 
+      (a.overallScore || calculateOverallScore(a.capabilities))
+    );
+    const best = sorted[0];
+    if (!best) return { model: useModels[0]?.id || '', reason: 'Fallback model' }; 
+    return { model: best.id, reason: generateReason(best, 'auto', 'best') };
+  }
+  
+  return { model: useModels[0]?.id || '', reason: 'Default recommendation' };
+}
+
+/** Find best model for a specific intent */
+function findBestForIntent(
+  models: ModelCapability[],
+  intent: ExtendedIntent,
+  maxCost: number
+): ModelCapability | null {
+  const filtered = models.filter(m => 
+    maxCost === Infinity || m.isFree || (m.cost.input + m.cost.output) <= maxCost
+  );
+  
+  const sorted = [...filtered].sort((a, b) => 
+    getIntentCapabilityScore(b, intent) - getIntentCapabilityScore(a, intent)
+  );
+  
+  return sorted[0] || null;
 }
