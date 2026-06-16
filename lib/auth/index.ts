@@ -99,8 +99,7 @@ async function getPostgres() {
   
   // 如果最近失败过，检查是否应该重试
   if (connectionError && now - lastConnectionAttempt < CONNECTION_RETRY_INTERVAL) {
-    console.warn('[getPostgres] PostgreSQL recently failed, using memory fallback. Error:', connectionError);
-    console.warn('[getPostgres] Will retry in', Math.ceil((CONNECTION_RETRY_INTERVAL - (now - lastConnectionAttempt)) / 1000), 'seconds');
+    // PostgreSQL 不可用时静默使用内存回退
     return null;
   }
   
@@ -108,31 +107,35 @@ async function getPostgres() {
     // Try different connection methods
     const { sql } = await import('@vercel/postgres');
     
-    // Debug: check all postgres env vars
-    console.log('[getPostgres] Environment variables check:');
-    console.log('[getPostgres] - POSTGRES_URL:', !!process.env.POSTGRES_URL);
-    console.log('[getPostgres] - POSTGRES_URL_NON_POOLING:', !!process.env.POSTGRES_URL_NON_POOLING);
-    console.log('[getPostgres] - POSTGRES_PRISMA_URL:', !!process.env.POSTGRES_PRISMA_URL);
-    
     // Test connection with timeout
     const result = await sql`SELECT 1 as test`;
     connectionError = null; // 重置错误状态
-    console.log('[getPostgres] PostgreSQL connection successful, test result:', result.rows[0]);
     return sql;
   } catch (err) {
     lastConnectionAttempt = now;
     connectionError = err instanceof Error ? err.message : String(err);
-    console.error('[getPostgres] PostgreSQL connection failed:', connectionError);
-    if (err instanceof Error && 'cause' in err) {
-      console.error('[getPostgres] Error cause:', err.cause);
-    }
-    console.error('[getPostgres] This will cause user data to be stored in memory only!');
+    // PostgreSQL 不可用时静默使用内存回退，不输出敏感错误信息
     return null;
   }
 }
 
 // In-memory fallback store
 const memoryUsers: Map<string, InternalUser> = new Map();
+const memoryUsersById: Map<string, InternalUser> = new Map();
+
+// 内存存储定期清理（防止无限增长）
+const MEMORY_STORE_MAX_SIZE = 10000;
+setInterval(() => {
+  if (memoryUsers.size > MEMORY_STORE_MAX_SIZE) {
+    // 按创建时间排序，移除最旧的一半
+    const entries = Array.from(memoryUsers.entries());
+    entries.sort((a, b) => a[1].createdAt - b[1].createdAt);
+    const toRemove = entries.slice(0, Math.floor(entries.length / 2));
+    for (const [key] of toRemove) {
+      memoryUsers.delete(key);
+    }
+  }
+}, 3600000); // 每小时检查一次
 
 // 确保 Postgres 表存在（只执行一次）
 let tableEnsured = false;
@@ -165,9 +168,8 @@ async function ensureTable() {
       // Index may already exist
     }
     tableEnsured = true;
-    console.log('[ensureTable] Users table verified');
-  } catch (err) {
-    console.error('[ensureTable] Failed to ensure table:', err);
+  } catch {
+    // 静默处理表创建错误
   }
 }
 
@@ -198,12 +200,8 @@ export async function findUserById(id: string): Promise<InternalUser | null> {
   }
 
   // Fallback: memory store
-  for (const user of Array.from(memoryUsers.values())) {
-    if (user.id === id) {
-      return user;
-    }
-  }
-  return null;
+  const user = memoryUsersById.get(id);
+  return user || null;
 }
 
 export async function findUserByEmail(email: string): Promise<InternalUser | null> {
@@ -242,9 +240,6 @@ export async function createUser(email: string, password: string, name?: string)
   const apiKey = `hl-${crypto.randomBytes(24).toString('hex')}`;
   const now = Date.now();
   
-  console.log('[createUser] Creating user with email:', normalizedEmail);
-  // Password hash details not logged for security
-
   // 获取动态配置的默认 credits
   let defaultCredits = 100;
   try {
@@ -262,14 +257,13 @@ export async function createUser(email: string, password: string, name?: string)
       INSERT INTO users (id, email, password_hash, name, tier, credits, api_key, created_at, updated_at)
       VALUES (${id}, ${normalizedEmail}, ${passwordHash}, ${name || null}, 'free', ${defaultCredits}, ${apiKey}, ${now}, ${now})
     `;
-    console.log('[createUser] User saved to PostgreSQL');
   } else {
-    // Fallback: memory store
-    console.warn('[createUser] WARNING: Using memory fallback - user data will be lost on restart!');
+    // Fallback: memory store - 用户数据将在服务器重启后丢失
     const user: InternalUser = {
       id, email: normalizedEmail, passwordHash, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now,
     };
     memoryUsers.set(normalizedEmail, user);
+    memoryUsersById.set(id, user);
   }
 
   return { id, email: normalizedEmail, name, tier: 'free', credits: defaultCredits, apiKey, createdAt: now };

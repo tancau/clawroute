@@ -50,13 +50,44 @@
     "withoutHopllm": "Ohne HopLLM",
     "withHopllm": "Mit HopLLM"
   },
+  "configure": {
+    "title": "Proxy-Konfiguration",
+    "switchScene": "Szene wechseln",
+    "noScene": "Bitte wählen Sie zuerst eine Szene",
+    "goHome": "Zurück zur Startseite",
+    "loading": "Laden...",
+    "next": "Weiter",
+    "advancedTools": "Erweiterte Tools",
+    "apiDiscovery": "API-Entdeckung",
+    "configImport": "Konfiguration importieren",
+    "step1Title": "Wählen Sie Ihre Szene",
+    "step1Desc": "Die Szene bestimmt, welche Modelle für Sie am besten geeignet sind. Verschiedene Szenen haben unterschiedliche Anforderungen an Geschwindigkeit, Qualität und Kosten.",
+    "step2Title": "Kandidatenmodelle vergleichen",
+    "step2Desc": "Basierend auf Ihrer Szene sind hier die empfohlenen Modelle. Vergleichen Sie ihre Geschwindigkeit, Qualität und Kosten, um sich auf den nächsten Schritt vorzubereiten.",
+    "step3Title": "Routing-Strategie konfigurieren",
+    "step3Desc": "Wählen Sie ein primäres Modell (für die tägliche Nutzung) und Fallback-Modelle (wenn das primäre nicht verfügbar ist). Sie können auch zuerst eine Vorlage anwenden und dann anpassen.",
+    "step4Title": "Konfigurationsdatei exportieren",
+    "step4Desc": "Dies ist Ihre hopllm.json-Konfigurationsdatei. Laden Sie sie herunter und platzieren Sie sie im Stammverzeichnis Ihres HopLLM-Projekts, damit sie wirksam wird."
+  },
   "scenes": {
-    "trading-bot": "Trading-Bot",
+    "trading-bot": "Trading Bot",
     "customer-service": "Kundenservice",
-    "content-creation": "Content-Erstellung",
+    "content-creation": "Inhaltserstellung",
     "data-analysis": "Datenanalyse",
     "research-assistant": "Forschungsassistent",
-    "dev-tools": "Dev-Tools"
+    "dev-tools": "Entwicklertools"
+  },
+  "modelCompare": {
+    "title": "Modellvergleich",
+    "sortCost": "Kosten zuerst",
+    "sortQuality": "Qualität zuerst",
+    "sortSpeed": "Geschwindigkeit zuerst",
+    "modelName": "Modell",
+    "speed": "Geschwindigkeit",
+    "quality": "Qualität",
+    "costPer1K": "Kosten/1K Token",
+    "reason": "Grund",
+    "showingAllModels": "Zeige alle Modelle - wählen Sie eine Szene zum Filtern"
   },
   "templates": {
     "title": "Plan-Marktplatz",
@@ -64,8 +95,10 @@
     "searchPlaceholder": "Pläne suchen...",
     "all": "Alle",
     "noMatch": "Keine passenden Pläne gefunden",
-    "goHome": "Zurück zur Szeneauswahl",
-    "previewConfig": "Konfiguration ansehen"
+    "goHome": "Gehe nach Hause, um eine Szene auszuwählen",
+    "previewConfig": "Konfiguration Vorschau",
+    "tryAdjusting": "Versuchen Sie, Ihre Suche oder Filter anzupassen",
+    "clearFilters": "Filter löschen"
   },
   "footer": {
     "dataUpdated": "Daten aktualisiert",
@@ -364,5 +397,30 @@
     "connectionFailed": "Connection test failed",
     "foundModelsCount": "Found {count} models",
     "cancel": "Cancel"
+  },
+  "modelReasons": {
+    "qwen3-coder-free": "Kostenlos, gut für einfache Aufgaben",
+    "qwen3-coder": "Hervorragendes Preis-Leistungs-Verhältnis, Top-Wahl für Coding",
+    "qwen3-5-coder-plus": "Starke Code-Fähigkeit, fairer Preis",
+    "gpt-4o-mini": "Schnell und günstig",
+    "gpt-4o": "Rundum starke Fähigkeiten",
+    "claude-3-5-haiku": "Schnell und gute Qualität",
+    "claude-3-5-sonnet": "Ausgewogen, starke Gesamtleistung",
+    "gemini-2-0-flash": "Sehr schnell und günstig",
+    "deepseek-chat": "Ausgewogen, gut für Chinesisch",
+    "deepseek-reasoner": "Starke Schlussfolgerungsfähigkeit, guter Preis",
+    "mistral-small": "Schnell und wirtschaftlich",
+    "mistral-medium": "Ausgewogene Leistung und Preis",
+    "mistral-large": "Leistungsstarke Schlussfolgerungsfähigkeit",
+    "llama-3-1-8b": "Leichtgewichtig, gut für einfache Aufgaben",
+    "llama-3-1-70b": "Ausgewogenes Open-Source-Modell",
+    "command-r": "Ausgewogene Leistung und Preis",
+    "command-r-plus": "Leistungsstarke Schlussfolgerungsfähigkeit",
+    "grok-2-mini": "Schnell und wirtschaftlich",
+    "grok-2": "Rundum starke Fähigkeiten",
+    "moonshot-v1-8k": "Gut für chinesische Szenarien",
+    "openrouter-claude-opus-4-7": "Anthropic neueste Version",
+    "openrouter-gemini-2-5-flash-image": "Google neueste Version",
+    "openrouter-qwen3-6-plus": "Alibaba neueste Version"
   }
 }

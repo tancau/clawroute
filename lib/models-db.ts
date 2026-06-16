@@ -4,9 +4,6 @@ import modelsDataRaw from '@/data/models.json';
 // 编译时静态数据作为 fallback
 const staticModels: Model[] = (modelsDataRaw || []) as Model[];
 
-// Debug: log static models length
-console.log('Static models length:', staticModels.length);
-
 // 运行时动态数据缓存
 let dynamicModels: Model[] | null = null;
 let lastFetchTime = 0;

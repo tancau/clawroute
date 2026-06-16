@@ -73,9 +73,9 @@ export default function TemplatesPage() {
         {filteredTemplates.length === 0 ? (
           <TemplateEmptyState
             title={t('noMatch')}
-            description="Try adjusting your search or filters"
+            description={t('tryAdjusting')}
             onClearFilters={handleClearFilters}
-            clearLabel="Clear filters"
+            clearLabel={t('clearFilters')}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

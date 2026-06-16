@@ -85,7 +85,7 @@ export const useUserStore = create<UserStore>()(
 
           if (result.error) {
             const msg = result.error.code === 'BACKEND_UNAVAILABLE'
-              ? '后端服务暂不可用，请稍后再试'
+              ? 'Backend service unavailable, please try again later'
               : result.error.message;
             set({ isLoading: false, error: msg });
             return false;
@@ -99,8 +99,8 @@ export const useUserStore = create<UserStore>()(
             error: null,
           });
           return true;
-        } catch (err) {
-          set({ isLoading: false, error: '登录失败，请稍后再试' });
+        } catch {
+          set({ isLoading: false, error: 'Login failed, please try again later' });
           return false;
         }
       },
@@ -112,7 +112,7 @@ export const useUserStore = create<UserStore>()(
 
           if (result.error) {
             const msg = result.error.code === 'BACKEND_UNAVAILABLE'
-              ? '后端服务暂不可用，请稍后再试'
+              ? 'Backend service unavailable, please try again later'
               : result.error.message;
             set({ isLoading: false, error: msg });
             return false;
@@ -126,8 +126,8 @@ export const useUserStore = create<UserStore>()(
             error: null,
           });
           return true;
-        } catch (err) {
-          set({ isLoading: false, error: '注册失败，请稍后再试' });
+        } catch {
+          set({ isLoading: false, error: 'Registration failed, please try again later' });
           return false;
         }
       },

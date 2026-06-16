@@ -1,26 +1,26 @@
 {
   "trading-bot": {
-    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3-coder", "deepseek/deepseek-v3", "deepseek/deepseek-r1", "anthropic/claude-3.5-haiku", "openai/gpt-4o-mini", "google/gemini-2.0-flash"],
+    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3-coder", "deepseek/deepseek-v4-pro", "deepseek/deepseek-v4-flash", "anthropic/claude-opus-4-8", "openai/gpt-5.5", "google/gemini-3-5-flash"],
     "defaultTemplateId": "tpl-trading-bot"
   },
   "customer-service": {
-    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3.6-plus", "deepseek/deepseek-v3", "anthropic/claude-3.5-haiku", "openai/gpt-4o-mini", "google/gemini-2.0-flash", "mistral/mistral-small"],
+    "candidateModelIds": ["qwen/qwen3-coder-free", "openrouter/qwen3.6-plus", "deepseek/deepseek-v4-pro", "anthropic/claude-opus-4-8", "openai/gpt-5.5", "google/gemini-3-5-flash", "mistral/mistral-small"],
     "defaultTemplateId": "tpl-customer-service"
   },
   "content-creation": {
-    "candidateModelIds": ["qwen/qwen3.6-plus", "qwen/qwen3.6-max", "anthropic/claude-3.5-sonnet", "anthropic/claude-3-opus", "openai/gpt-4o", "google/gemini-1.5-pro"],
+    "candidateModelIds": ["openrouter/qwen3.6-plus", "anthropic/claude-opus-4-8", "openai/gpt-5.5", "google/gemini-3-5-pro"],
     "defaultTemplateId": "tpl-content-creation"
   },
   "data-analysis": {
-    "candidateModelIds": ["qwen/qwen3-coder", "deepseek/deepseek-v3", "deepseek/deepseek-r1", "anthropic/claude-3.5-sonnet", "openai/gpt-4o", "google/gemini-1.5-pro", "meta/llama-3.1-70b"],
+    "candidateModelIds": ["qwen/qwen3-coder", "deepseek/deepseek-v4-pro", "anthropic/claude-opus-4-8", "openai/gpt-5.5", "google/gemini-3-5-pro", "meta/llama-3.1-70b"],
     "defaultTemplateId": "tpl-data-analysis"
   },
   "research-assistant": {
-    "candidateModelIds": ["deepseek/deepseek-r1", "qwen/qwen3.6-max", "anthropic/claude-3.5-sonnet", "anthropic/claude-3-opus", "openai/gpt-4o", "google/gemini-1.5-pro", "cohere/command-r-plus"],
+    "candidateModelIds": ["deepseek/deepseek-v4-pro", "anthropic/claude-opus-4-8", "openai/gpt-5.5", "google/gemini-3-5-pro", "cohere/command-r-plus"],
     "defaultTemplateId": "tpl-research-assistant"
   },
   "dev-tools": {
-    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3-coder", "qwen/qwen3.5-coder-plus", "deepseek/deepseek-coder", "deepseek/deepseek-r1", "anthropic/claude-3.5-haiku", "anthropic/claude-3.5-sonnet", "openai/gpt-4o-mini", "openai/gpt-4o"],
+    "candidateModelIds": ["qwen/qwen3-coder-free", "qwen/qwen3-coder", "qwen/qwen3.5-coder-plus", "deepseek/deepseek-v4-pro", "anthropic/claude-opus-4-8", "openai/gpt-5.5"],
     "defaultTemplateId": "tpl-dev-tools"
   }
 }

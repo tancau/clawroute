@@ -50,6 +50,25 @@
     "withoutHopllm": "Sem HopLLM",
     "withHopllm": "Com HopLLM"
   },
+  "configure": {
+    "title": "Configuração de Proxy",
+    "switchScene": "Trocar Cena",
+    "noScene": "Por favor, selecione uma cena primeiro",
+    "goHome": "Ir para Início",
+    "loading": "Carregando...",
+    "next": "Próximo",
+    "advancedTools": "Ferramentas Avançadas",
+    "apiDiscovery": "Descoberta de API",
+    "configImport": "Importar Configuração",
+    "step1Title": "Escolha Sua Cena",
+    "step1Desc": "A cena determina quais modelos são melhores para você. Diferentes cenas têm diferentes requisitos de velocidade, qualidade e custo.",
+    "step2Title": "Compare Modelos Candidatos",
+    "step2Desc": "Com base na sua cena, aqui estão os modelos recomendados. Compare sua velocidade, qualidade e custo para se preparar para o próximo passo.",
+    "step3Title": "Configure Estratégia de Roteamento",
+    "step3Desc": "Escolha um modelo primário (para uso diário) e modelos de fallback (quando o primário não está disponível). Você também pode aplicar um modelo primeiro e depois ajustar.",
+    "step4Title": "Exportar Arquivo de Configuração",
+    "step4Desc": "Este é seu arquivo de configuração hopllm.json. Baixe-o e coloque no diretório raiz do seu projeto HopLLM para entrar em vigor."
+  },
   "scenes": {
     "trading-bot": "Bot de Trading",
     "customer-service": "Atendimento ao Cliente",
@@ -58,14 +77,28 @@
     "research-assistant": "Assistente de Pesquisa",
     "dev-tools": "Ferramentas Dev"
   },
+  "modelCompare": {
+    "title": "Comparação de Modelos",
+    "sortCost": "Custo Primeiro",
+    "sortQuality": "Qualidade Primeiro",
+    "sortSpeed": "Velocidade Primeiro",
+    "modelName": "Modelo",
+    "speed": "Velocidade",
+    "quality": "Qualidade",
+    "costPer1K": "Custo/1K token",
+    "reason": "Motivo",
+    "showingAllModels": "Mostrando todos os modelos - selecione uma cena para filtrar"
+  },
   "templates": {
     "title": "Mercado de Planos",
     "description": "Navegar e procurar planos de proxy de roteamento e modelos de configuração",
     "searchPlaceholder": "Pesquisar planos...",
     "all": "Todos",
     "noMatch": "Nenhum plano correspondente encontrado",
-    "goHome": "Ir para o início para selecionar cenário",
-    "previewConfig": "Visualizar configuração"
+    "goHome": "Vá para a página inicial para selecionar uma cena",
+    "previewConfig": "Visualizar configuração",
+    "tryAdjusting": "Tente ajustar sua pesquisa ou filtros",
+    "clearFilters": "Limpar filtros"
   },
   "footer": {
     "dataUpdated": "Dados atualizados",
@@ -364,5 +397,30 @@
     "connectionFailed": "Connection test failed",
     "foundModelsCount": "Found {count} models",
     "cancel": "Cancel"
+  },
+  "modelReasons": {
+    "qwen3-coder-free": "Grátis, bom para tarefas simples",
+    "qwen3-coder": "Excelente custo-benefício, melhor escolha para codificação",
+    "qwen3-5-coder-plus": "Forte capacidade de código, preço justo",
+    "gpt-4o-mini": "Rápido e acessível",
+    "gpt-4o": "Capacidades bem equilibradas",
+    "claude-3-5-haiku": "Rápido e boa qualidade",
+    "claude-3-5-sonnet": "Equilibrado, forte no geral",
+    "gemini-2-0-flash": "Muito rápido e barato",
+    "deepseek-chat": "Equilibrado, bom para chinês",
+    "deepseek-reasoner": "Forte capacidade de raciocínio, bom preço",
+    "mistral-small": "Rápido e econômico",
+    "mistral-medium": "Desempenho e preço equilibrados",
+    "mistral-large": "Poderosa capacidade de raciocínio",
+    "llama-3-1-8b": "Leve, bom para tarefas simples",
+    "llama-3-1-70b": "Modelo de código aberto equilibrado",
+    "command-r": "Desempenho e preço equilibrados",
+    "command-r-plus": "Poderosa capacidade de raciocínio",
+    "grok-2-mini": "Rápido e econômico",
+    "grok-2": "Capacidades bem equilibradas",
+    "moonshot-v1-8k": "Bom para cenários chineses",
+    "openrouter-claude-opus-4-7": "Anthropic versão mais recente",
+    "openrouter-gemini-2-5-flash-image": "Google versão mais recente",
+    "openrouter-qwen3-6-plus": "Alibaba versão mais recente"
   }
 }

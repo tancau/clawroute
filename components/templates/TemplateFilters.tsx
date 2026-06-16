@@ -24,13 +24,14 @@ export function TemplateFilters({
   allLabel,
 }: TemplateFiltersProps) {
   const tScenes = useTranslations('scenes');
+  const tTemplates = useTranslations('templates');
 
   return (
     <div className="flex flex-col sm:flex-row gap-3">
       <div className="relative sm:max-w-xs flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-7" />
         <Input
-          placeholder="Search templates..."
+          placeholder={tTemplates('searchPlaceholder')}
           value={searchKeyword}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-9"

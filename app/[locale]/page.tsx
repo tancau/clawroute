@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { HeroSection } from '@/components/home/HeroSection';
+import { QuickExperience } from '@/components/home/QuickExperience';
 import { FeaturesSection } from '@/components/home/FeaturesSection';
 import { SceneSection } from '@/components/home/SceneSection';
 import { QuickStartSection } from '@/components/home/QuickStartSection';
@@ -25,6 +26,9 @@ ${t('codeLine3')}`;
         browseTemplates={t('browseTemplates')}
         getApiKey={t('getApiKey')}
       />
+
+      {/* 30-Second Quick Experience */}
+      <QuickExperience />
 
       <FeaturesSection
         featuresTitle={t('featuresTitle')}

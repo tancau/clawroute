@@ -309,13 +309,13 @@ function routeModel(intent: string, requestedModel?: string, userProviderKeys?: 
       }
     }
     
-    // 默认使用 DeepSeek（性价比高）
+    // 默认使用 DeepSeek V4 Flash（性价比高，在 modelCapabilities 中有记录）
     return {
-      selectedModel: 'deepseek-chat',
+      selectedModel: 'deepseek-v4-flash',
       provider: 'deepseek',
       baseUrl: 'https://api.deepseek.com/v1',
-      reason: 'Default fallback: DeepSeek chat',
-      alternatives: [],
+      reason: 'Default fallback: DeepSeek V4 Flash',
+      alternatives: [{ model: 'qwen3-coder-free', provider: 'qwen' }],
     };
   }
   

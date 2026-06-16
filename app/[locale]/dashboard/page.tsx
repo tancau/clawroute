@@ -22,7 +22,7 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading } = useUserStore();
+  const { user, isAuthenticated, isLoading, data, usage, earnings, fetchDashboard, fetchUsage, fetchEarnings } = useUserStore();
   const t = useTranslations('dashboard');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -31,6 +31,15 @@ export default function DashboardPage() {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+
+  // Fetch dashboard data when user is authenticated
+  useEffect(() => {
+    if (isHydrated && isAuthenticated && user?.id) {
+      fetchDashboard(user.id);
+      fetchUsage(user.id, 30);
+      fetchEarnings(user.id);
+    }
+  }, [isHydrated, isAuthenticated, user?.id, fetchDashboard, fetchUsage, fetchEarnings]);
 
   useEffect(() => {
     // Only redirect after hydration is complete
@@ -57,6 +66,11 @@ export default function DashboardPage() {
       </div>
     );
   }
+
+  // Calculate real stats from store data
+  const monthlyRequests = usage?.totalRequests || 0;
+  const monthlySavings = data?.usage?.savedDollars || 0;
+  const monthlyEarnings = earnings?.totalDollars || 0;
 
   return (
     <>
@@ -100,20 +114,20 @@ export default function DashboardPage() {
           />
           <StatCard
             label={t('monthlyRequests')}
-            value="--"
+            value={monthlyRequests}
             icon={Activity}
             format="number"
           />
           <StatCard
             label={t('monthlySavings')}
-            value="--"
+            value={monthlySavings}
             icon={DollarSign}
             format="currency"
             trend={{ value: 12, direction: 'up', label: t('vsLastMonth') }}
           />
           <StatCard
             label={t('monthlyEarnings')}
-            value="--"
+            value={monthlyEarnings}
             icon={TrendingUp}
             format="currency"
           />

@@ -7,6 +7,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
+// 检查 PostgreSQL 是否可用
+async function isPostgresAvailable(): Promise<boolean> {
+  try {
+    await sql`SELECT 1`;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 interface DailyUsage {
   date: string;
   requests: number;
@@ -43,6 +53,25 @@ export async function GET(request: NextRequest) {
 
     // 计算起始时间
     const startTime = Date.now() - days * 24 * 60 * 60 * 1000;
+
+    // 检查数据库是否可用
+    const dbAvailable = await isPostgresAvailable();
+    if (!dbAvailable) {
+      // 数据库不可用时返回空数据
+      const emptyUsage: DailyUsage[] = [];
+      for (let i = 0; i < days; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        if (dateStr) {
+          emptyUsage.push({ date: dateStr, requests: 0, tokens: 0, cost: 0 });
+        }
+      }
+      return NextResponse.json({ 
+        success: true, 
+        data: { period: { days }, usage: emptyUsage.reverse() }
+      });
+    }
 
     // 按天聚合数据
     const result = await sql`

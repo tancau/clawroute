@@ -90,6 +90,18 @@
     "step4Title": "設定ファイルをエクスポート",
     "step4Desc": "hopllm.json設定ファイルをダウンロードして、プロジェクトのルートに配置します。"
   },
+  "modelCompare": {
+    "title": "モデル比較",
+    "sortCost": "コスト優先",
+    "sortQuality": "品質優先",
+    "sortSpeed": "速度優先",
+    "modelName": "モデル",
+    "speed": "速度",
+    "quality": "品質",
+    "costPer1K": "コスト/1Kトークン",
+    "reason": "理由",
+    "showingAllModels": "すべてのモデルを表示 - フィルタリングするにはシーンを選択"
+  },
   "templates": {
     "title": "プランマーケット",
     "description": "ルーティングプロキシプランとテンプレートの検索",
@@ -97,7 +109,9 @@
     "all": "すべて",
     "noMatch": "一致するプランが見つかりません",
     "goHome": "ホームに戻ってシーンを選択",
-    "previewConfig": "設定をプレビュー"
+    "previewConfig": "設定をプレビュー",
+    "tryAdjusting": "検索またはフィルターを調整してください",
+    "clearFilters": "フィルターをクリア"
   },
   "footer": {
     "dataUpdated": "データ更新",
@@ -406,5 +420,30 @@
     "connectionFailed": "Connection test failed",
     "foundModelsCount": "Found {count} models",
     "cancel": "Cancel"
+  },
+  "modelReasons": {
+    "qwen3-coder-free": "無料、簡単なタスクに適している",
+    "qwen3-coder": "コスパ最高、コーディングの首选",
+    "qwen3-5-coder-plus": "コード能力が高く、価格も適正",
+    "gpt-4o-mini": "高速で安価",
+    "gpt-4o": "総合能力が高い",
+    "claude-3-5-haiku": "高速で品質が良い",
+    "claude-3-5-sonnet": "バランスが取れて総合能力が高い",
+    "gemini-2-0-flash": "非常に高速で安価",
+    "deepseek-chat": "バランス型、中国語に適している",
+    "deepseek-reasoner": "推論能力が高く、価格も良い",
+    "mistral-small": "高速で経済的",
+    "mistral-medium": "パフォーマンスと価格のバランス",
+    "mistral-large": "強力な推論能力",
+    "llama-3-1-8b": "軽量、簡単なタスクに適している",
+    "llama-3-1-70b": "バランスの取れたオープンソースモデル",
+    "command-r": "パフォーマンスと価格のバランス",
+    "command-r-plus": "強力な推論能力",
+    "grok-2-mini": "高速で経済的",
+    "grok-2": "総合能力が高い",
+    "moonshot-v1-8k": "中国語シーンに適している",
+    "openrouter-claude-opus-4-7": "Anthropic 最新バージョン",
+    "openrouter-gemini-2-5-flash-image": "Google 最新バージョン",
+    "openrouter-qwen3-6-plus": "Alibaba 最新バージョン"
   }
 }

@@ -50,6 +50,25 @@
     "withoutHopllm": "Sin HopLLM",
     "withHopllm": "Con HopLLM"
   },
+  "configure": {
+    "title": "Configuración de Proxy",
+    "switchScene": "Cambiar Escenario",
+    "noScene": "Por favor, seleccione un escenario primero",
+    "goHome": "Ir al Inicio",
+    "loading": "Cargando...",
+    "next": "Siguiente",
+    "advancedTools": "Herramientas Avanzadas",
+    "apiDiscovery": "Descubrimiento de API",
+    "configImport": "Importar Configuración",
+    "step1Title": "Elige Tu Escenario",
+    "step1Desc": "El escenario determina qué modelos son mejores para ti. Diferentes escenarios tienen diferentes requisitos de velocidad, calidad y costo.",
+    "step2Title": "Comparar Modelos Candidatos",
+    "step2Desc": "Basado en tu escenario, aquí están los modelos recomendados. Compara su velocidad, calidad y costo para prepararte para el siguiente paso.",
+    "step3Title": "Configurar Estrategia de Enrutamiento",
+    "step3Desc": "Elige un modelo primario (para uso diario) y modelos de respaldo (cuando el primario no está disponible). También puedes aplicar una plantilla primero y luego ajustar.",
+    "step4Title": "Exportar Archivo de Configuración",
+    "step4Desc": "Este es tu archivo de configuración hopllm.json. Descárgalo y colócalo en el directorio raíz de tu proyecto HopLLM para que entre en vigor."
+  },
   "scenes": {
     "trading-bot": "Bot de Trading",
     "customer-service": "Servicio al Cliente",
@@ -58,6 +77,18 @@
     "research-assistant": "Asistente de Investigación",
     "dev-tools": "Herramientas Dev"
   },
+  "modelCompare": {
+    "title": "Comparación de Modelos",
+    "sortCost": "Costo Primero",
+    "sortQuality": "Calidad Primero",
+    "sortSpeed": "Velocidad Primero",
+    "modelName": "Modelo",
+    "speed": "Velocidad",
+    "quality": "Calidad",
+    "costPer1K": "Costo/1K token",
+    "reason": "Razón",
+    "showingAllModels": "Mostrando todos los modelos - seleccione una escena para filtrar"
+  },
   "templates": {
     "title": "Mercado de Planes",
     "description": "Explorar planes de proxy de enrutamiento y plantillas de configuración",
@@ -65,7 +96,9 @@
     "all": "Todos",
     "noMatch": "No se encontraron planes coincidentes",
     "goHome": "Ir al inicio para seleccionar escenario",
-    "previewConfig": "Vista previa de configuración"
+    "previewConfig": "Vista previa de configuración",
+    "tryAdjusting": "Intente ajustar su búsqueda o filtros",
+    "clearFilters": "Limpiar filtros"
   },
   "footer": {
     "dataUpdated": "Datos actualizados",
@@ -364,5 +397,30 @@
     "connectionFailed": "Connection test failed",
     "foundModelsCount": "Found {count} models",
     "cancel": "Cancel"
+  },
+  "modelReasons": {
+    "qwen3-coder-free": "Gratis, bueno para tareas simples",
+    "qwen3-coder": "Excelente relación calidad-precio, primera opción para codificación",
+    "qwen3-5-coder-plus": "Fuerte capacidad de código, precio justo",
+    "gpt-4o-mini": "Rápido y asequible",
+    "gpt-4o": "Capacidades bien equilibradas",
+    "claude-3-5-haiku": "Rápido y buena calidad",
+    "claude-3-5-sonnet": "Equilibrado, fuerte en general",
+    "gemini-2-0-flash": "Muy rápido y barato",
+    "deepseek-chat": "Equilibrado, bueno para chino",
+    "deepseek-reasoner": "Fuerte capacidad de razonamiento, buen precio",
+    "mistral-small": "Rápido y económico",
+    "mistral-medium": "Rendimiento y precio equilibrados",
+    "mistral-large": "Poderosa capacidad de razonamiento",
+    "llama-3-1-8b": "Ligero, bueno para tareas simples",
+    "llama-3-1-70b": "Modelo de código abierto equilibrado",
+    "command-r": "Rendimiento y precio equilibrados",
+    "command-r-plus": "Poderosa capacidad de razonamiento",
+    "grok-2-mini": "Rápido y económico",
+    "grok-2": "Capacidades bien equilibradas",
+    "moonshot-v1-8k": "Bueno para escenarios chinos",
+    "openrouter-claude-opus-4-7": "Anthropic última versión",
+    "openrouter-gemini-2-5-flash-image": "Google última versión",
+    "openrouter-qwen3-6-plus": "Alibaba última versión"
   }
 }

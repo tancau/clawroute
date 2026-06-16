@@ -1,5 +1,6 @@
 import type { ModelSelection, HopLLMConfig, HopLLMProviderEntry, HopLLMModelEntry } from './types';
 import { getModelById } from './models-db';
+import { getModelCapability } from './routing/providers';
 
 /**
  * Provider metadata for config generation.
@@ -17,6 +18,7 @@ const PROVIDER_META: Record<string, {
   mistral: { baseUrl: 'https://api.mistral.ai/v1', api: 'openai-completions' },
   meta: { baseUrl: 'https://openrouter.ai/api/v1', api: 'openai-completions' },
   cohere: { baseUrl: 'https://api.cohere.ai/v2', api: 'openai-completions' },
+  openrouter: { baseUrl: 'https://openrouter.ai/api/v1', api: 'openai-completions' },
 };
 
 /** Round cost to avoid floating point artifacts */
@@ -77,13 +79,27 @@ export function generateHopLLMConfig(selection: ModelSelection): string {
       if (model?.contextWindow) entry.contextWindow = model.contextWindow;
       if (model?.maxTokens) entry.maxTokens = model.maxTokens;
 
-      // Add cost if non-zero (cost is per 1M tokens, convert to per 1K for config)
+      // Add cost if available (cost is per 1M tokens, convert to per 1K for config)
       const costPer1M = model?.costPer1MToken ?? 0;
+      const outputCostPer1M = model?.outputCostPer1MToken ?? 0;
       const costPer1K = costPer1M / 1000;
+      // 使用 modelCapabilities 获取真实的 output cost，回退到 models.json 的 outputCostPer1MToken，最终回退到 input * 1.5
+      const cap = getModelCapability(modelId);
+      let outputCostPer1K: number;
+      if (cap && cap.outputCost > 0) {
+        outputCostPer1K = cap.outputCost / 1000;
+      } else if (outputCostPer1M > 0) {
+        outputCostPer1K = outputCostPer1M / 1000;
+      } else if (costPer1M > 0) {
+        outputCostPer1K = costPer1K * 1.5;
+      } else {
+        outputCostPer1K = 0;
+      }
+      
       if (costPer1M > 0) {
         entry.cost = {
           input: roundCost(costPer1K),
-          output: roundCost(costPer1K * 1.5),
+          output: roundCost(outputCostPer1K),
           cacheRead: 0,
           cacheWrite: 0,
         };

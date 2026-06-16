@@ -18,11 +18,13 @@ export interface Model {
   id: string;           // e.g. "qwen/qwen3-coder"
   name: string;
   provider: string;
-  costPer1MToken: number; // USD per 1M tokens
+  costPer1MToken: number; // USD per 1M tokens (input)
+  outputCostPer1MToken?: number; // USD per 1M tokens (output), defaults to costPer1MToken if not set
   speedRating: 1 | 2 | 3;
   qualityRating: 1 | 2 | 3;
   capabilityTags: string[];
   recommendationReason?: string;
+  recommendationReasonKey?: string;
   // Config format fields
   input?: string[];
   contextWindow?: number;

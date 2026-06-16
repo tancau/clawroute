@@ -64,7 +64,7 @@ export const providers: ProviderConfig[] = [
     name: 'openai',
     baseUrl: 'https://api.openai.com/v1',
     apiKeyEnv: 'OPENAI_API_KEY',
-    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4'],
+    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-5.5', 'gpt-6'],
     rateLimit: { rpm: 500, tpm: 30000 },
     timeout: 30000,
     priority: 95,
@@ -74,7 +74,7 @@ export const providers: ProviderConfig[] = [
     name: 'anthropic',
     baseUrl: 'https://api.anthropic.com/v1',
     apiKeyEnv: 'ANTHROPIC_API_KEY',
-    models: ['claude-sonnet-4-6', 'claude-haiku-4-5', 'claude-3-5-sonnet'],
+    models: ['claude-opus-4-8', 'claude-fable-5', 'claude-3-5-haiku'],
     rateLimit: { rpm: 100, tpm: 40000 },
     timeout: 60000,
     priority: 98,
@@ -84,7 +84,7 @@ export const providers: ProviderConfig[] = [
     name: 'deepseek',
     baseUrl: 'https://api.deepseek.com/v1',
     apiKeyEnv: 'DEEPSEEK_API_KEY',
-    models: ['deepseek-chat', 'deepseek-reasoner'],
+    models: ['deepseek-chat', 'deepseek-reasoner', 'deepseek-v4-pro', 'deepseek-v4-flash', 'deepseek-v4-1'],
     rateLimit: { rpm: 60 },
     timeout: 60000,
     priority: 85,
@@ -106,43 +106,66 @@ export const providers: ProviderConfig[] = [
     enabled: true,
   },
   {
-    name: 'litellm',
-    baseUrl: process.env.LITELLM_URL || 'http://localhost:3000/v1',
-    apiKeyEnv: 'LITELLM_API_KEY',
-    models: ['qwen/qwen3.6-plus', 'qwen/qwen3-coder'],
-    rateLimit: { rpm: 100 },
-    timeout: 30000,
-    priority: 50,
-    enabled: true,
-  },
-  {
-    name: 'infini-ai',
-    baseUrl: 'https://cloud.infini-ai.com/maas/coding/v1',
-    apiKeyEnv: 'INFINI_AI_API_KEY',
-    models: ['glm-5', 'deepseek-v3.2'],
+    name: 'qwen',
+    baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    apiKeyEnv: 'DASHSCOPE_API_KEY',
+    models: ['qwen3-coder-free', 'qwen3-coder', 'qwen3.5-coder-plus'],
     rateLimit: { rpm: 60 },
     timeout: 60000,
     priority: 88,
     enabled: true,
   },
+  {
+    name: 'google',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+    apiKeyEnv: 'GOOGLE_API_KEY',
+    models: ['gemini-3-5-flash', 'gemini-3-5-pro'],
+    rateLimit: { rpm: 60 },
+    timeout: 60000,
+    priority: 80,
+    enabled: true,
+  },
 ];
 
 /**
- * 模型能力映射
+ * 模型能力映射 - 与 models.json 同步
  */
 export const modelCapabilities: ModelCapability[] = [
-  // OpenAI
+  // Qwen
   {
-    model: 'gpt-4o',
-    provider: 'openai',
-    intents: ['coding', 'analysis', 'reasoning', 'knowledge', 'creative'],
-    contextWindow: 128000,
-    inputCost: 5.0,
-    outputCost: 15.0,
-    avgLatency: 800,
-    qualityScore: 0.95,
-    features: ['vision', 'function_calling', 'json_mode'],
+    model: 'qwen3-coder-free',
+    provider: 'qwen',
+    intents: ['coding', 'casual_chat', 'translation'],
+    contextWindow: 131072,
+    inputCost: 0,
+    outputCost: 0,
+    avgLatency: 500,
+    qualityScore: 0.85,
+    features: ['free'],
   },
+  {
+    model: 'qwen3-coder',
+    provider: 'qwen',
+    intents: ['coding', 'analysis', 'casual_chat'],
+    contextWindow: 131072,
+    inputCost: 0.1,
+    outputCost: 0.15,
+    avgLatency: 500,
+    qualityScore: 0.88,
+    features: ['code_specialized'],
+  },
+  {
+    model: 'qwen3.5-coder-plus',
+    provider: 'qwen',
+    intents: ['coding', 'analysis', 'reasoning', 'complex-tasks'],
+    contextWindow: 131072,
+    inputCost: 0.2,
+    outputCost: 0.3,
+    avgLatency: 600,
+    qualityScore: 0.92,
+    features: ['code_specialized'],
+  },
+  // OpenAI
   {
     model: 'gpt-4o-mini',
     provider: 'openai',
@@ -154,51 +177,118 @@ export const modelCapabilities: ModelCapability[] = [
     qualityScore: 0.85,
     features: ['vision', 'function_calling'],
   },
+  {
+    model: 'gpt-5.5',
+    provider: 'openai',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'knowledge', 'agentic'],
+    contextWindow: 1048576,
+    inputCost: 5.0,
+    outputCost: 30.0,
+    avgLatency: 1000,
+    qualityScore: 0.97,
+    features: ['vision', 'function_calling', 'json_mode', 'multimodal'],
+  },
+  {
+    model: 'gpt-6',
+    provider: 'openai',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'knowledge', 'agentic'],
+    contextWindow: 2097152,
+    inputCost: 10.0,
+    outputCost: 60.0,
+    avgLatency: 1500,
+    qualityScore: 0.98,
+    features: ['vision', 'function_calling', 'json_mode', 'multimodal', '3d'],
+  },
   // Anthropic
   {
-    model: 'claude-sonnet-4-6',
+    model: 'claude-3-5-haiku',
     provider: 'anthropic',
-    intents: ['coding', 'analysis', 'reasoning', 'creative', 'knowledge'],
-    contextWindow: 1000000,
-    inputCost: 3.0,
-    outputCost: 15.0,
+    intents: ['casual_chat', 'translation', 'coding', 'fast_response'],
+    contextWindow: 200000,
+    inputCost: 0.25,
+    outputCost: 1.25,
+    avgLatency: 300,
+    qualityScore: 0.90,
+    features: ['vision', 'tool_use'],
+  },
+  {
+    model: 'claude-opus-4-8',
+    provider: 'anthropic',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'knowledge', 'complex-tasks'],
+    contextWindow: 1048576,
+    inputCost: 5.0,
+    outputCost: 25.0,
     avgLatency: 1200,
     qualityScore: 0.97,
     features: ['vision', 'tool_use', 'extended_thinking'],
   },
   {
-    model: 'claude-haiku-4-5',
+    model: 'claude-fable-5',
     provider: 'anthropic',
-    intents: ['casual_chat', 'translation', 'coding', 'fast_response'],
-    contextWindow: 200000,
-    inputCost: 1.0,
-    outputCost: 5.0,
-    avgLatency: 300,
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'agentic'],
+    contextWindow: 1048576,
+    inputCost: 10.0,
+    outputCost: 50.0,
+    avgLatency: 1500,
+    qualityScore: 0.98,
+    features: ['vision', 'tool_use', 'extended_thinking'],
+  },
+  // Google
+  {
+    model: 'gemini-3-5-flash',
+    provider: 'google',
+    intents: ['coding', 'casual_chat', 'translation', 'fast_response'],
+    contextWindow: 1048576,
+    inputCost: 1.5,
+    outputCost: 9.0,
+    avgLatency: 400,
     qualityScore: 0.90,
-    features: ['vision', 'tool_use'],
+    features: ['vision', 'function_calling'],
+  },
+  {
+    model: 'gemini-3-5-pro',
+    provider: 'google',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'knowledge', 'long_context'],
+    contextWindow: 2097152,
+    inputCost: 15.0,
+    outputCost: 60.0,
+    avgLatency: 1500,
+    qualityScore: 0.96,
+    features: ['vision', 'function_calling', 'extended_thinking'],
   },
   // DeepSeek
   {
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-pro',
     provider: 'deepseek',
-    intents: ['coding', 'analysis', 'casual_chat', 'translation', 'knowledge'],
-    contextWindow: 128000,
-    inputCost: 0.28,
-    outputCost: 0.42,
-    avgLatency: 600,
-    qualityScore: 0.90,
-    features: ['function_calling', 'json_mode'],
+    intents: ['coding', 'analysis', 'reasoning', 'creative'],
+    contextWindow: 1048576,
+    inputCost: 0.435,
+    outputCost: 0.87,
+    avgLatency: 800,
+    qualityScore: 0.94,
+    features: ['function_calling', 'extended_thinking'],
   },
   {
-    model: 'deepseek-reasoner',
+    model: 'deepseek-v4-flash',
     provider: 'deepseek',
-    intents: ['reasoning', 'analysis', 'math', 'coding', 'scientific'],
-    contextWindow: 128000,
-    inputCost: 0.28,
-    outputCost: 0.42,
-    avgLatency: 2000,
-    qualityScore: 0.95,
-    features: ['chain_of_thought', 'extended_thinking'],
+    intents: ['coding', 'casual_chat', 'translation', 'fast_response'],
+    contextWindow: 1048576,
+    inputCost: 0.098,
+    outputCost: 0.196,
+    avgLatency: 400,
+    qualityScore: 0.88,
+    features: ['function_calling'],
+  },
+  {
+    model: 'deepseek-v4-1',
+    provider: 'deepseek',
+    intents: ['coding', 'analysis', 'reasoning', 'creative'],
+    contextWindow: 1048576,
+    inputCost: 0.5,
+    outputCost: 1.0,
+    avgLatency: 600,
+    qualityScore: 0.92,
+    features: ['function_calling', 'extended_thinking'],
   },
   // OpenRouter Free Models
   {
@@ -245,48 +335,69 @@ export const modelCapabilities: ModelCapability[] = [
     qualityScore: 0.93,
     features: ['free', 'chain_of_thought'],
   },
-  // LiteLLM
+  // OpenRouter specific
   {
-    model: 'qwen/qwen3.6-plus',
-    provider: 'litellm',
-    intents: ['coding', 'analysis', 'reasoning', 'creative'],
-    contextWindow: 32000,
-    inputCost: 0.0,
-    outputCost: 0.0,
-    avgLatency: 500,
-    qualityScore: 0.85,
+    model: 'openrouter/qwen3.6-plus',
+    provider: 'openrouter',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'chinese'],
+    contextWindow: 131072,
+    inputCost: 0.325,
+    outputCost: 1.95,
+    avgLatency: 600,
+    qualityScore: 0.90,
   },
   {
-    model: 'qwen/qwen3-coder',
-    provider: 'litellm',
-    intents: ['coding', 'analysis'],
-    contextWindow: 32000,
-    inputCost: 0.0,
-    outputCost: 0.0,
-    avgLatency: 400,
-    qualityScore: 0.88,
-    features: ['code_specialized'],
+    model: 'openrouter/claude-opus-4.7',
+    provider: 'openrouter',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'complex-tasks'],
+    contextWindow: 200000,
+    inputCost: 5.0,
+    outputCost: 25.0,
+    avgLatency: 1200,
+    qualityScore: 0.96,
   },
-  // Infini-AI
+  // Cohere
   {
-    model: 'glm-5',
-    provider: 'infini-ai',
+    model: 'command-r-plus',
+    provider: 'cohere',
     intents: ['coding', 'analysis', 'reasoning'],
     contextWindow: 128000,
-    inputCost: 0.4,
-    outputCost: 1.6,
-    avgLatency: 700,
-    qualityScore: 0.85,
+    inputCost: 3.0,
+    outputCost: 15.0,
+    avgLatency: 1000,
+    qualityScore: 0.93,
+  },
+  // Meta
+  {
+    model: 'llama-3.1-70b',
+    provider: 'meta',
+    intents: ['coding', 'analysis', 'reasoning', 'casual_chat'],
+    contextWindow: 128000,
+    inputCost: 0.5,
+    outputCost: 0.8,
+    avgLatency: 800,
+    qualityScore: 0.90,
+  },
+  // Mistral
+  {
+    model: 'mistral-small',
+    provider: 'mistral',
+    intents: ['casual_chat', 'translation', 'fast_response'],
+    contextWindow: 128000,
+    inputCost: 1.0,
+    outputCost: 3.0,
+    avgLatency: 400,
+    qualityScore: 0.88,
   },
   {
-    model: 'deepseek-v3.2',
-    provider: 'infini-ai',
-    intents: ['coding', 'analysis', 'reasoning', 'translation', 'casual_chat'],
+    model: 'mistral-large',
+    provider: 'mistral',
+    intents: ['coding', 'analysis', 'reasoning', 'creative'],
     contextWindow: 128000,
-    inputCost: 0.28,
-    outputCost: 0.42,
-    avgLatency: 600,
-    qualityScore: 0.88,
+    inputCost: 4.0,
+    outputCost: 12.0,
+    avgLatency: 1000,
+    qualityScore: 0.94,
   },
 ];
 
@@ -299,9 +410,30 @@ export function getProvider(name: string): ProviderConfig | undefined {
 
 /**
  * 获取模型能力信息
+ * 支持两种格式: "provider/model" 和 "model"
  */
 export function getModelCapability(model: string): ModelCapability | undefined {
-  return modelCapabilities.find(m => m.model === model);
+  // 1. 精确匹配
+  const exact = modelCapabilities.find(m => m.model === model);
+  if (exact) return exact;
+  
+  // 2. 如果是 "provider/model" 格式，尝试用短名匹配
+  const slashIdx = model.indexOf('/');
+  if (slashIdx >= 0) {
+    const shortName = model.slice(slashIdx + 1);
+    const provider = model.slice(0, slashIdx);
+    // 先精确匹配短名
+    const byShortName = modelCapabilities.find(m => m.model === shortName && m.provider === provider);
+    if (byShortName) return byShortName;
+  }
+  
+  // 3. 如果是短名格式，尝试用 "provider/model" 匹配
+  if (slashIdx < 0) {
+    const byFullName = modelCapabilities.find(m => m.model.endsWith('/' + model));
+    if (byFullName) return byFullName;
+  }
+  
+  return undefined;
 }
 
 /**

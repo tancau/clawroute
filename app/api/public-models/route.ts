@@ -4,7 +4,9 @@
  */
 
 import { NextResponse } from 'next/server';
-import providersData from '@/data/providers.json';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 interface JsonModel {
   id: string;
@@ -25,7 +27,34 @@ interface JsonProvidersData {
 
 export async function GET() {
   try {
-    const data = providersData as unknown as JsonProvidersData;
+    // 尝试不同的路径
+    const possiblePaths = [
+      path.join(process.cwd(), 'data', 'providers.json'),
+      path.join(process.cwd(), 'clawroute', 'data', 'providers.json'),
+      path.join(__dirname, '../../data/providers.json')
+    ];
+    
+    let providersContent;
+    let usedPath;
+    
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        providersContent = fs.readFileSync(p, 'utf-8');
+        usedPath = p;
+        break;
+      }
+    }
+    
+    if (!providersContent) {
+      console.error('No providers.json found at any path');
+      return NextResponse.json(
+        { error: 'Providers data not found' },
+        { status: 500 }
+      );
+    }
+    
+    console.log('Using providers.json from:', usedPath);
+    const data = JSON.parse(providersContent) as JsonProvidersData;
     const providers = data.providers;
     const allModels = [];
 
@@ -58,8 +87,7 @@ export async function GET() {
       total: allModels.length,
       lastUpdated: data.lastUpdated || new Date().toISOString(),
     });
-  } catch (error) {
-    console.error('Failed to get public models:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get models' },
       { status: 500 }

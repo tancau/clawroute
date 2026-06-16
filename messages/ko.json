@@ -80,15 +80,27 @@
     "next": "다음",
     "advancedTools": "고급 도구",
     "apiDiscovery": "API 발견",
-    "configImport": "설정 가져오기",
+    "configImport": "구성 가져오기",
     "step1Title": "장면 선택",
-    "step1Desc": "장면에 따라 최적의 모델이 결정됩니다. 속도, 품질, 비용 요구사항이 다릅니다.",
+    "step1Desc": "장면에 따라 가장 적합한 모델이 결정됩니다. 속도, 품질, 비용에 대한 요구 사항이 다릅니다.",
     "step2Title": "후보 모델 비교",
-    "step2Desc": "장면에 따라 추천 모델을 표시합니다. 속도, 품질, 비용을 비교하세요.",
-    "step3Title": "라우팅 전략 설정",
-    "step3Desc": "기본 모델(일상 사용)과 페일오버 모델을 선택합니다.",
-    "step4Title": "설정 파일 내보내기",
-    "step4Desc": "hopllm.json 설정 파일을 다운로드하여 프로젝트 루트에 배치합니다."
+    "step2Desc": "장면에 기반하여 추천 모델을 표시합니다. 속도, 품질, 비용을 비교하세요.",
+    "step3Title": "라우팅 전략 구성",
+    "step3Desc": "기본 모델(일상 사용)과 대체 모델을 선택하세요.",
+    "step4Title": "구성 파일 내보내기",
+    "step4Desc": "hopllm.json 구성 파일을 다운로드하여 프로젝트 루트에 배치하세요."
+  },
+  "modelCompare": {
+    "title": "모델 비교",
+    "sortCost": "비용 우선",
+    "sortQuality": "품질 우선",
+    "sortSpeed": "속도 우선",
+    "modelName": "모델",
+    "speed": "속도",
+    "quality": "품질",
+    "costPer1K": "비용/1K 토큰",
+    "reason": "이유",
+    "showingAllModels": "모든 모델 표시 - 필터링하려면 장면 선택"
   },
   "templates": {
     "title": "플랜 마켓",
@@ -96,8 +108,10 @@
     "searchPlaceholder": "플랜 검색...",
     "all": "전체",
     "noMatch": "일치하는 플랜이 없습니다",
-    "goHome": "홈으로 돌아가서 장면 선택",
-    "previewConfig": "설정 미리보기"
+    "goHome": "홈으로 돌아가 장면 선택",
+    "previewConfig": "구성 미리보기",
+    "tryAdjusting": "검색 또는 필터를 조정하세요",
+    "clearFilters": "필터 지우기"
   },
   "footer": {
     "dataUpdated": "데이터 업데이트",
@@ -407,5 +421,30 @@
     "connectionFailed": "Connection test failed",
     "foundModelsCount": "Found {count} models",
     "cancel": "Cancel"
+  },
+  "modelReasons": {
+    "qwen3-coder-free": "묣, 간단한 작업에 적합",
+    "qwen3-coder": "가성비 최고, 코딩 작업 최선의 선택",
+    "qwen3-5-coder-plus": "코드 능력이 뛰어나고 가격도 적당",
+    "gpt-4o-mini": "빠르고 저렴",
+    "gpt-4o": "전반적인 능력이 뛰어남",
+    "claude-3-5-haiku": "빠르고 품질이 좋음",
+    "claude-3-5-sonnet": "균형 잡혔고 전반적인 능력이 뛰어남",
+    "gemini-2-0-flash": "매우 빠르고 저렴",
+    "deepseek-chat": "균형 잡힘, 중국어에 적합",
+    "deepseek-reasoner": "추론 능력이 뛰어나고 가격도 좋음",
+    "mistral-small": "빠르고 경제적",
+    "mistral-medium": "성능과 가격의 균형",
+    "mistral-large": "강력한 추론 능력",
+    "llama-3-1-8b": "경량, 간단한 작업에 적합",
+    "llama-3-1-70b": "균형 잡힌 오픈소스 모델",
+    "command-r": "성능과 가격의 균형",
+    "command-r-plus": "강력한 추론 능력",
+    "grok-2-mini": "빠르고 경제적",
+    "grok-2": "전반적인 능력이 뛰어남",
+    "moonshot-v1-8k": "중국어 장면에 적합",
+    "openrouter-claude-opus-4-7": "Anthropic 최신 버전",
+    "openrouter-gemini-2-5-flash-image": "Google 최신 버전",
+    "openrouter-qwen3-6-plus": "Alibaba 최신 버전"
   }
 }

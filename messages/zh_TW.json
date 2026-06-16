@@ -108,7 +108,8 @@
     "speed": "速度",
     "quality": "質量",
     "costPer1K": "成本/1K token",
-    "reason": "原因"
+    "reason": "原因",
+    "showingAllModels": "顯示所有模型 - 選擇場景可篩選"
   },
   "footer": {
     "dataUpdated": "數據更新",
@@ -459,5 +460,30 @@
     "connectionFailed": "Connection test failed",
     "foundModelsCount": "Found {count} models",
     "cancel": "Cancel"
+  },
+  "modelReasons": {
+    "qwen3-coder-free": "免費，適合簡單任務",
+    "qwen3-coder": "性價比極高，程式碼任務首選",
+    "qwen3-5-coder-plus": "程式碼能力強，價格適中",
+    "gpt-4o-mini": "快速且便宜",
+    "gpt-4o": "全面能力強",
+    "claude-3-5-haiku": "快速且品質好",
+    "claude-3-5-sonnet": "平衡，全面能力強",
+    "gemini-2-0-flash": "非常快且便宜",
+    "deepseek-chat": "平衡，適合中文",
+    "deepseek-reasoner": "推理能力強，價格好",
+    "mistral-small": "快速且經濟",
+    "mistral-medium": "平衡的性能和價格",
+    "mistral-large": "強大的推理能力",
+    "llama-3-1-8b": "輕量級，適合簡單任務",
+    "llama-3-1-70b": "平衡的開源模型",
+    "command-r": "平衡的性能和價格",
+    "command-r-plus": "強大的推理能力",
+    "grok-2-mini": "快速且經濟",
+    "grok-2": "全面能力強",
+    "moonshot-v1-8k": "適合中文場景",
+    "openrouter-claude-opus-4-7": "Anthropic 最新版本",
+    "openrouter-gemini-2-5-flash-image": "Google 最新版本",
+    "openrouter-qwen3-6-plus": "Alibaba 最新版本"
   }
 }

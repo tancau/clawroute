@@ -327,7 +327,7 @@ export async function POST(request: NextRequest) {
     // 密码强度验证
     if (body.password.length < 8) {
       return NextResponse.json(
-        { error: { code: 'INVALID_INPUT', message: 'Password must be at least 6 characters' } },
+        { error: { code: 'INVALID_INPUT', message: 'Password must be at least 8 characters' } },
         { status: 400 }
       );
     }
@@ -346,16 +346,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 8. 创建用户
-    console.log('[Register] ========== CREATING USER ==========');
-    console.log('[Register] Email:', normalizedEmail);
-    console.log('[Register] Has name:', !!body.name);
-    
     const user = await createUser(normalizedEmail, body.password, body.name);
-    
-    console.log('[Register] User created successfully');
-    console.log('[Register] User ID:', user.id);
-    console.log('[Register] User email:', user.email);
-    console.log('[Register] ======================================');
     
     const tokens = generateTokens(user.id, user.tier);
     
@@ -366,8 +357,7 @@ export async function POST(request: NextRequest) {
       { user, ...tokens },
       { status: 201 }
     );
-  } catch (err) {
-    console.error('Registration error:', err);
+  } catch {
     return NextResponse.json(
       { error: { code: 'INTERNAL_ERROR', message: 'Registration failed. Please try again.' } },
       { status: 500 }

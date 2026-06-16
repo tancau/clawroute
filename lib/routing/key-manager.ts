@@ -29,8 +29,7 @@ class KeyManager {
     // 从环境变量获取 key（对于自定义 Provider，可能没有 apiKeyEnv）
     const envKey = provider.apiKeyEnv ? process.env[provider.apiKeyEnv] : undefined;
     if (!envKey && !provider.apiKey) {
-      console.warn(`[KeyManager] No API key found for provider: ${providerName}`);
-      return [];
+   return [];
     }
 
     // 支持多个 key (用逗号分隔) 或直接使用 provider.apiKey
@@ -49,7 +48,6 @@ class KeyManager {
     this.keys.set(providerName, keyStatuses);
     this.keyIndex.set(providerName, 0);
 
-    console.log(`[KeyManager] Loaded ${keyStatuses.length} keys for ${providerName}`);
     return keyStatuses;
   }
 
@@ -106,13 +104,12 @@ class KeyManager {
     if (keyStatus) {
       keyStatus.valid = false;
       keyStatus.errorCount++;
-      console.warn(`[KeyManager] Key marked invalid for ${providerName}: ${reason || 'unknown error'}`);
+      // Key 失效时静默处理
     }
 
     // 如果所有 key 都失效，尝试重新加载
     const validKeys = keyStatuses.filter(k => k.valid);
     if (validKeys.length === 0) {
-      console.log(`[KeyManager] All keys invalid for ${providerName}, attempting reload`);
       this.loadKeys(providerName);
     }
   }
