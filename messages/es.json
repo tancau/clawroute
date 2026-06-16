@@ -250,7 +250,17 @@
     "earnings": "Ganancias",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
-    "deleteConfirm": "¿Estás seguro de eliminar esta key?"
+    "deleteConfirm": "¿Estás seguro de eliminar esta key?",
+    "predefinedProvider": "Proveedor Predefinido",
+    "customProvider": "Proveedor Personalizado",
+    "customProviderHint": "Soporta cualquier API compatible con OpenAI (Ollama, LocalAI, vLLM, gateways API, etc.). Solo ingresa la URL base y tu clave.",
+    "customName": "Nombre del Proveedor",
+    "customBaseUrl": "URL Base",
+    "customModels": "Modelos (opcional)",
+    "customModelsHint": "IDs de modelos separados por comas. Dejar vacío para auto-descubrimiento vía /models.",
+    "customProviderTip": "Agrega tu propia API compatible con OpenAI — Ollama, LocalAI, vLLM, etc.",
+    "customTag": "Personalizado",
+    "modelsLabel": "Modelos"
   },
   "docsFaq": {
     "q1": "¿Qué es el enrutamiento inteligente?",

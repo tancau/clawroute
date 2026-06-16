@@ -217,7 +217,17 @@
     "earnings": "الأرباح",
     "enabled": "مفعّل",
     "disabled": "معطّل",
-    "deleteConfirm": "هل أنت متأكد من حذف هذا المفتاح؟"
+    "deleteConfirm": "هل أنت متأكد من حذف هذا المفتاح؟",
+    "predefinedProvider": "مزود مُعرَّف مسبقاً",
+    "customProvider": "مزود مخصص",
+    "customProviderHint": "يدعم أي API متوافق مع OpenAI (Ollama، LocalAI، vLLM، بوابات API، إلخ). فقط أدخل عنوان URL الأساسي ومفتاحك.",
+    "customName": "اسم المزود",
+    "customBaseUrl": "عنوان URL الأساسي",
+    "customModels": "النماذج (اختياري)",
+    "customModelsHint": "معرفات النماذج مفصولة بفواصل. اتركه فارغاً للاكتشاف التلقائي عبر /models.",
+    "customProviderTip": "أضف API المتوافق مع OpenAI الخاص بك — Ollama، LocalAI، vLLM، إلخ.",
+    "customTag": "مخصص",
+    "modelsLabel": "النماذج"
   },
   "docsFaq": {
     "q1": "ما هو التوجيه الذكي؟",

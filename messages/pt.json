@@ -250,7 +250,17 @@
     "earnings": "Ganhos",
     "enabled": "Ativado",
     "disabled": "Desativado",
-    "deleteConfirm": "Tem certeza que deseja excluir esta key?"
+    "deleteConfirm": "Tem certeza que deseja excluir esta key?",
+    "predefinedProvider": "Provedor Predefinido",
+    "customProvider": "Provedor Personalizado",
+    "customProviderHint": "Suporta qualquer API compatível com OpenAI (Ollama, LocalAI, vLLM, gateways API, etc.). Basta inserir a URL base e sua chave.",
+    "customName": "Nome do Provedor",
+    "customBaseUrl": "URL Base",
+    "customModels": "Modelos (opcional)",
+    "customModelsHint": "IDs de modelos separados por vírgula. Deixe vazio para auto-descoberta pelo endpoint /models.",
+    "customProviderTip": "Adicione sua própria API compatível com OpenAI — Ollama, LocalAI, vLLM, etc.",
+    "customTag": "Personalizado",
+    "modelsLabel": "Modelos"
   },
   "docsFaq": {
     "q1": "O que é roteamento inteligente?",

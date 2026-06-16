@@ -125,6 +125,36 @@ export const providers: ProviderConfig[] = [
     priority: 80,
     enabled: true,
   },
+  {
+    name: 'mistral',
+    baseUrl: 'https://api.mistral.ai/v1',
+    apiKeyEnv: 'MISTRAL_API_KEY',
+    models: ['mistral-small', 'mistral-medium', 'mistral-large'],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 75,
+    enabled: true,
+  },
+  {
+    name: 'groq',
+    baseUrl: 'https://api.groq.com/openai/v1',
+    apiKeyEnv: 'GROQ_API_KEY',
+    models: ['llama-3.3-70b-versatile', 'mixtral-8x7b-32768'],
+    rateLimit: { rpm: 30 },
+    timeout: 15000,
+    priority: 70,
+    enabled: true,
+  },
+  {
+    name: 'cohere',
+    baseUrl: 'https://api.cohere.ai/v1',
+    apiKeyEnv: 'COHERE_API_KEY',
+    models: ['command-r-plus', 'command-r'],
+    rateLimit: { rpm: 60 },
+    timeout: 30000,
+    priority: 65,
+    enabled: true,
+  },
 ];
 
 /**

@@ -274,7 +274,17 @@
     "earnings": "収益",
     "enabled": "有効",
     "disabled": "無効",
-    "deleteConfirm": "このKeyを削除してもよろしいですか？"
+    "deleteConfirm": "このKeyを削除してもよろしいですか？",
+    "predefinedProvider": "定義済みプロバイダー",
+    "customProvider": "カスタムプロバイダー",
+    "customProviderHint": "OpenAI互換API（Ollama、LocalAI、vLLM、APIゲートウェイなど）に対応。Base URLとキーを入力するだけ。",
+    "customName": "プロバイダー名",
+    "customBaseUrl": "Base URL",
+    "customModels": "モデル（オプション）",
+    "customModelsHint": "カンマ区切りのモデルID。空欄で/modelsエンドポイントから自動検出。",
+    "customProviderTip": "独自のOpenAI互換APIを追加 — Ollama、LocalAI、vLLMなど",
+    "customTag": "カスタム",
+    "modelsLabel": "モデル"
   },
   "docsFaq": {
     "q1": "スマートルーティングとは？",

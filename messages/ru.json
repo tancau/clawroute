@@ -426,7 +426,17 @@
     "earnings": "Доход",
     "enabled": "Включено",
     "disabled": "Отключено",
-    "deleteConfirm": "Вы уверены, что хотите удалить этот ключ?"
+    "deleteConfirm": "Вы уверены, что хотите удалить этот ключ?",
+    "predefinedProvider": "Предопределённый провайдер",
+    "customProvider": "Пользовательский провайдер",
+    "customProviderHint": "Поддерживает любой API, совместимый с OpenAI (Ollama, LocalAI, vLLM, API-шлюзы и т.д.). Просто введите базовый URL и ключ.",
+    "customName": "Имя провайдера",
+    "customBaseUrl": "Базовый URL",
+    "customModels": "Модели (необязательно)",
+    "customModelsHint": "ID моделей через запятую. Оставьте пустым для автообнаружения через /models.",
+    "customProviderTip": "Добавьте свой OpenAI-совместимый API — Ollama, LocalAI, vLLM и т.д.",
+    "customTag": "Пользовательский",
+    "modelsLabel": "Модели"
   },
   "docsFaq": {
     "q1": "Что такое умная маршрутизация?",

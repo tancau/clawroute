@@ -250,7 +250,17 @@
     "earnings": "Einnahmen",
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
-    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Schlüssel löschen möchten?"
+    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Schlüssel löschen möchten?",
+    "predefinedProvider": "Vordefinierter Anbieter",
+    "customProvider": "Benutzerdefinierter Anbieter",
+    "customProviderHint": "Unterstützt jede OpenAI-kompatible API (Ollama, LocalAI, vLLM, API-Gateways usw.). Geben Sie einfach die Basis-URL und Ihren Schlüssel ein.",
+    "customName": "Anbietername",
+    "customBaseUrl": "Basis-URL",
+    "customModels": "Modelle (optional)",
+    "customModelsHint": "Modell-IDs durch Komma getrennt. Leer lassen für automatische Erkennung über /models.",
+    "customProviderTip": "Fügen Sie Ihre eigene OpenAI-kompatible API hinzu — Ollama, LocalAI, vLLM usw.",
+    "customTag": "Benutzerdefiniert",
+    "modelsLabel": "Modelle"
   },
   "docsFaq": {
     "q1": "Was ist intelligentes Routing?",

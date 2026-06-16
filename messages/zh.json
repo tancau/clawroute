@@ -648,7 +648,17 @@
     "earnings": "收益",
     "enabled": "启用",
     "disabled": "禁用",
-    "deleteConfirm": "确定要删除这个 Key 吗？"
+    "deleteConfirm": "确定要删除这个 Key 吗？",
+    "predefinedProvider": "预置 Provider",
+    "customProvider": "自定义 Provider",
+    "customProviderHint": "支持任何 OpenAI 兼容 API（Ollama、LocalAI、vLLM、API 中转站等），只需填入 Base URL 和 Key 即可。",
+    "customName": "Provider 名称",
+    "customBaseUrl": "Base URL",
+    "customModels": "模型（可选）",
+    "customModelsHint": "逗号分隔的模型 ID，留空将自动从 /models 端点发现。",
+    "customProviderTip": "添加你自己的 OpenAI 兼容 API — Ollama、LocalAI、vLLM 等",
+    "customTag": "自定义",
+    "modelsLabel": "模型"
   },
   "docsFaq": {
     "q1": "什么是智能路由？",

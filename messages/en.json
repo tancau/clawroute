@@ -648,7 +648,17 @@
     "earnings": "Earnings",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "deleteConfirm": "Are you sure you want to delete this key?"
+    "deleteConfirm": "Are you sure you want to delete this key?",
+    "predefinedProvider": "Predefined Provider",
+    "customProvider": "Custom Provider",
+    "customProviderHint": "Supports any OpenAI-compatible API (Ollama, LocalAI, vLLM, API gateways, etc.). Just enter the base URL and your key.",
+    "customName": "Provider Name",
+    "customBaseUrl": "Base URL",
+    "customModels": "Models (optional)",
+    "customModelsHint": "Comma-separated model IDs. Leave empty to auto-discover from /models endpoint.",
+    "customProviderTip": "Add your own OpenAI-compatible API — Ollama, LocalAI, vLLM, etc.",
+    "customTag": "Custom",
+    "modelsLabel": "Models"
   },
   "docsFaq": {
     "q1": "What is smart routing?",

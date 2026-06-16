@@ -33,9 +33,11 @@ Multi-language intent detection (Chinese / English / French / German / Spanish /
 
 ### 🔀 Smart Model Routing
 Auto-select the best model based on intent, cost, and availability:
-- 20+ models across 8 providers (OpenAI, Anthropic, DeepSeek, Qwen, Google, OpenRouter, Mistral, Cohere)
+- 20+ models across 9 providers (OpenAI, Anthropic, DeepSeek, Qwen, Google, OpenRouter, Mistral, Groq, Cohere)
+- **Any OpenAI-compatible API supported** — Ollama, LocalAI, vLLM, API gateways, self-hosted models, etc.
 - User API keys or system-managed keys
 - Automatic fallback with exponential backoff retry
+- Custom providers: add your own base URL + API key, works with any `/v1/chat/completions` endpoint
 
 ### 💰 Real Cost Savings
 | Model Used | vs GPT-5.5 | Savings |

@@ -250,7 +250,17 @@
     "earnings": "Gains",
     "enabled": "Activé",
     "disabled": "Désactivé",
-    "deleteConfirm": "Êtes-vous sûr de supprimer cette clé?"
+    "deleteConfirm": "Êtes-vous sûr de supprimer cette clé?",
+    "predefinedProvider": "Fournisseur Prédéfini",
+    "customProvider": "Fournisseur Personnalisé",
+    "customProviderHint": "Prend en charge toute API compatible OpenAI (Ollama, LocalAI, vLLM, passerelles API, etc.). Entrez simplement l'URL de base et votre clé.",
+    "customName": "Nom du Fournisseur",
+    "customBaseUrl": "URL de Base",
+    "customModels": "Modèles (optionnel)",
+    "customModelsHint": "IDs de modèles séparés par des virgules. Laissez vide pour auto-découverte via /models.",
+    "customProviderTip": "Ajoutez votre propre API compatible OpenAI — Ollama, LocalAI, vLLM, etc.",
+    "customTag": "Personnalisé",
+    "modelsLabel": "Modèles"
   },
   "docsFaq": {
     "q1": "Qu'est-ce que le routage intelligent?",
