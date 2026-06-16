@@ -262,6 +262,37 @@
     "customTag": "Personnalisé",
     "modelsLabel": "Modèles"
   },
+  "budgetGuard": {
+    "title": "Garde Budget",
+    "status_normal": "Normal",
+    "status_warning": "Avertissement",
+    "status_downgraded": "Rétrogradé",
+    "status_blocked": "Bloqué",
+    "spent": "dépensé",
+    "limit": "limite",
+    "projected": "Projeté",
+    "noBudgetSet": "Aucune limite budgétaire définie",
+    "setBudgetHint": "Définissez un budget mensuel pour activer la protection automatique des coûts",
+    "dailyAvg": "Moy. quotidienne",
+    "daysLeft": "Jours restants",
+    "modelTier": "Niveau de modèle",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "editBudget": "Modifier le budget",
+    "setBudget": "Définir le budget"
+  },
+  "providerHealth": {
+    "title": "Santé des Fournisseurs",
+    "overall_healthy": "Tous les systèmes normaux",
+    "overall_degraded": "Certains fournisseurs dégradés",
+    "overall_down": "Fournisseurs indisponibles",
+    "noData": "Pas de données de santé. Les données apparaissent après les requêtes.",
+    "latency": "Latence",
+    "errorRate": "Erreurs",
+    "uptime": "5min Up",
+    "requests": "Requêtes",
+    "autoRefresh": "Actualisation automatique toutes les 30s"
+  },
   "docsFaq": {
     "q1": "Qu'est-ce que le routage intelligent?",
     "a1": "Le routage intelligent analyse l'intention de votre requête et sélectionne automatiquement le meilleur modèle. Les tâches simples utilisent des modèles peu coûteux, les tâches complexes utilisent des modèles de haute qualité, vous faisant économiser jusqu'à 80% des coûts.",

@@ -286,6 +286,37 @@
     "customTag": "사용자 정의",
     "modelsLabel": "모델"
   },
+  "budgetGuard": {
+    "title": "예산 가드",
+    "status_normal": "정상",
+    "status_warning": "경고",
+    "status_downgraded": "다운그레이드",
+    "status_blocked": "차단됨",
+    "spent": "사용액",
+    "limit": "한도",
+    "projected": "예상",
+    "noBudgetSet": "예산 한도가 설정되지 않았습니다",
+    "setBudgetHint": "월 예산을 설정하여 자동 비용 보호 활성화",
+    "dailyAvg": "일평균",
+    "daysLeft": "남은 일수",
+    "modelTier": "모델 등급",
+    "save": "저장",
+    "cancel": "취소",
+    "editBudget": "예산 편집",
+    "setBudget": "예산 설정"
+  },
+  "providerHealth": {
+    "title": "제공자 상태",
+    "overall_healthy": "모든 시스템 정상",
+    "overall_degraded": "일부 제공자 성능 저하",
+    "overall_down": "제공자 장애",
+    "noData": "상태 데이터 없음. 요청 후 자동 수집됩니다.",
+    "latency": "지연",
+    "errorRate": "오류율",
+    "uptime": "5분 가동률",
+    "requests": "요청수",
+    "autoRefresh": "30초마다 자동 새로고침"
+  },
   "docsFaq": {
     "q1": "스마트 라우팅이란?",
     "a1": "스마트 라우팅은 요청 의도를 분석하고 최적의 모델을 자동 선택합니다. 간단한 작업은 저비용 모델, 복잡한 작업은 고품질 모델을 사용하여 최대 80% 비용을 절약합니다.",

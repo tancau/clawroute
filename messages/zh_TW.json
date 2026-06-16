@@ -325,6 +325,37 @@
     "customTag": "自訂",
     "modelsLabel": "模型"
   },
+  "budgetGuard": {
+    "title": "預算守護",
+    "status_normal": "正常",
+    "status_warning": "警告",
+    "status_downgraded": "已降級",
+    "status_blocked": "已阻止",
+    "spent": "已花費",
+    "limit": "預算上限",
+    "projected": "預計",
+    "noBudgetSet": "未設定預算限制",
+    "setBudgetHint": "設定月度預算以啟用自動成本保護",
+    "dailyAvg": "日均花費",
+    "daysLeft": "剩餘天數",
+    "modelTier": "模型級別",
+    "save": "儲存",
+    "cancel": "取消",
+    "editBudget": "編輯預算",
+    "setBudget": "設定預算"
+  },
+  "providerHealth": {
+    "title": "Provider 健康度",
+    "overall_healthy": "所有系統正常",
+    "overall_degraded": "部分 Provider 降級",
+    "overall_down": "Provider 不可用",
+    "noData": "暫無健康數據。發送請求後將自動收集。",
+    "latency": "延遲",
+    "errorRate": "錯誤率",
+    "uptime": "5分鐘可用率",
+    "requests": "請求數",
+    "autoRefresh": "每 30 秒自動刷新"
+  },
   "docsFaq": {
     "q1": "什麼是智能路由？",
     "a1": "智能路由會分析您的請求意圖，自動選擇最適合的模型。簡單任務用低成本模型，複雜任務用高質量模型，幫您節省最多 80% 的成本。",

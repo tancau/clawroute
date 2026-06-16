@@ -262,6 +262,37 @@
     "customTag": "Personalizado",
     "modelsLabel": "Modelos"
   },
+  "budgetGuard": {
+    "title": "Guarda de Orçamento",
+    "status_normal": "Normal",
+    "status_warning": "Aviso",
+    "status_downgraded": "Rebaixado",
+    "status_blocked": "Bloqueado",
+    "spent": "gasto",
+    "limit": "limite",
+    "projected": "Projetado",
+    "noBudgetSet": "Nenhum limite de orçamento definido",
+    "setBudgetHint": "Defina um orçamento mensal para ativar a proteção automática de custos",
+    "dailyAvg": "Média Diária",
+    "daysLeft": "Dias Restantes",
+    "modelTier": "Nível do Modelo",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "editBudget": "Editar Orçamento",
+    "setBudget": "Definir Orçamento"
+  },
+  "providerHealth": {
+    "title": "Saúde dos Provedores",
+    "overall_healthy": "Todos os Sistemas Normais",
+    "overall_degraded": "Alguns Provedores Degradados",
+    "overall_down": "Provedores Indisponíveis",
+    "noData": "Sem dados de saúde. Os dados aparecem após solicitações.",
+    "latency": "Latência",
+    "errorRate": "Erros",
+    "uptime": "5min Up",
+    "requests": "Reqs",
+    "autoRefresh": "Atualização automática a cada 30s"
+  },
   "docsFaq": {
     "q1": "O que é roteamento inteligente?",
     "a1": "Roteamento inteligente analisa a intenção da sua requisição e seleciona automaticamente o melhor modelo. Tarefas simples usam modelos de baixo custo, tarefas complexas usam modelos de alta qualidade, economizando até 80% dos custos.",

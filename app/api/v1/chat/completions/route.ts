@@ -18,6 +18,9 @@ import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth
 import { logRequest } from '@/lib/db';
 import { getConfig, getDailyLimitByTier } from '@/lib/config';
 import { checkChatRateLimit } from '@/lib/middleware/rate-limit';
+import { checkBudgetAndGetModelTier, filterModelsByBudgetTier, createBudgetAlert } from '@/lib/budget-guard';
+import { getProviderHealth, filterProvidersByHealth, recordProviderHealth } from '@/lib/provider-health';
+import { findCacheHit, recordPromptCache, calculateCacheAwareCost } from '@/lib/prompt-cache';
 
 // ==================== 类型定义 ====================
 
@@ -713,10 +716,65 @@ export async function POST(request: NextRequest) {
     const userMessage = lastMessage?.content || '';
     classification = classifyIntent(userMessage);
 
-    // 6. 选择模型
+    // 6. 预算守护检查
+    let budgetStatus: import('@/lib/budget-guard').BudgetStatus | undefined;
+    let budgetAlert: import('@/lib/budget-guard').BudgetAlert | null = null;
+    
+    if (user?.userId) {
+      const budgetCheck = await checkBudgetAndGetModelTier(user.userId);
+      budgetStatus = budgetCheck.status;
+      budgetAlert = createBudgetAlert(budgetCheck.status);
+      
+      // 如果预算受限，修改路由逻辑
+      if (budgetCheck.modelTier !== 'full') {
+        // 过滤候选模型
+        const allCandidates = getModelsForIntent(classification.intent);
+        const budgetFiltered = filterModelsByBudgetTier(
+          allCandidates.map(m => ({
+            model: m.model,
+            cost: m.inputCost,
+            isFree: m.features?.includes('free') || m.inputCost === 0,
+          })),
+          budgetCheck.modelTier
+        );
+        
+        // 如果预算过滤后没有可用模型，且用户指定了非免费模型，强制使用免费模型
+        if (budgetFiltered.length === 0 && body.model !== 'auto') {
+          const freeModels = modelCapabilities.filter(m => m.features?.includes('free'));
+          if (freeModels.length > 0) {
+            body.model = freeModels[0]!.model;
+          }
+        }
+      }
+    }
+
+    // 7. 选择模型
     route = routeModel(classification.intent, body.model, user?.providerKeys);
 
-    // 7. 执行请求
+    // 7.5 Prompt 缓存感知：如果候选 Provider 有缓存，优先路由到缓存
+    if (route.alternatives.length > 0) {
+      const candidateProviders = [route.provider, ...route.alternatives.map(a => a.provider)];
+      const cacheHit = findCacheHit(body.messages, candidateProviders);
+      if (cacheHit && cacheHit.provider !== route.provider) {
+        // 缓存命中但不在首选 Provider，切换到有缓存的 Provider
+        const cacheModel = cacheHit.model;
+        const cacheProvider = getProvider(cacheHit.provider);
+        if (cacheProvider) {
+          route = {
+            selectedModel: cacheModel,
+            provider: cacheHit.provider,
+            baseUrl: cacheProvider.baseUrl,
+            reason: `Cache-aware routing: prompt cache hit on ${cacheHit.provider} (discount: ${cacheHit.cacheDiscount * 100}%, ${cacheHit.hitCount} previous hits)`,
+            alternatives: [{ model: route.selectedModel, provider: route.provider }],
+          };
+        }
+      }
+    }
+
+    // 记录本次 prompt 到缓存（无论是否命中）
+    recordPromptCache(body.messages, route.provider, route.selectedModel);
+
+    // 8. 执行请求
     // 优先使用 getProviderWithUserKeys（支持自定义 Provider）
     let provider = getProviderWithUserKeys(route.provider, user?.providerKeys);
     
@@ -833,6 +891,9 @@ export async function POST(request: NextRequest) {
           latencyMs,
           success: true,
         });
+
+        // 记录 Provider 健康度
+        recordProviderHealth(usedProvider, true, latencyMs);
       } catch (logError) {
         console.error('[ChatCompletions] Failed to log request:', logError);
       }
@@ -873,6 +934,11 @@ export async function POST(request: NextRequest) {
           success: false,
           errorMessage: error instanceof Error ? error.message : 'Unknown error',
         });
+
+        // 记录 Provider 健康度（失败）
+        if (route?.provider) {
+          recordProviderHealth(route.provider, false, latencyMs, error instanceof Error ? error.message : 'Unknown error');
+        }
       } catch (logError) {
         console.error('[ChatCompletions] Failed to log error:', logError);
       }

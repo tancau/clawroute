@@ -262,6 +262,37 @@
     "customTag": "Personalizado",
     "modelsLabel": "Modelos"
   },
+  "budgetGuard": {
+    "title": "Guardia de Presupuesto",
+    "status_normal": "Normal",
+    "status_warning": "Advertencia",
+    "status_downgraded": "Degradado",
+    "status_blocked": "Bloqueado",
+    "spent": "gastado",
+    "limit": "límite",
+    "projected": "Proyectado",
+    "noBudgetSet": "Sin límite de presupuesto",
+    "setBudgetHint": "Establece un presupuesto mensual para habilitar la protección automática de costos",
+    "dailyAvg": "Promedio diario",
+    "daysLeft": "Días restantes",
+    "modelTier": "Nivel de modelo",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "editBudget": "Editar presupuesto",
+    "setBudget": "Establecer presupuesto"
+  },
+  "providerHealth": {
+    "title": "Salud de Proveedores",
+    "overall_healthy": "Todos los sistemas normales",
+    "overall_degraded": "Algunos proveedores degradados",
+    "overall_down": "Proveedores no disponibles",
+    "noData": "Sin datos de salud. Los datos aparecen después de las solicitudes.",
+    "latency": "Latencia",
+    "errorRate": "Errores",
+    "uptime": "5min Activo",
+    "requests": "Solicitudes",
+    "autoRefresh": "Actualización automática cada 30s"
+  },
   "docsFaq": {
     "q1": "¿Qué es el enrutamiento inteligente?",
     "a1": "El enrutamiento inteligente analiza la intención de tu solicitud y selecciona automáticamente el mejor modelo. Tareas simples usan modelos de bajo costo, tareas complejas usan modelos de alta calidad, ahorrándote hasta 80% en costos.",

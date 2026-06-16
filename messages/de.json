@@ -262,6 +262,37 @@
     "customTag": "Benutzerdefiniert",
     "modelsLabel": "Modelle"
   },
+  "budgetGuard": {
+    "title": "Budget-Wache",
+    "status_normal": "Normal",
+    "status_warning": "Warnung",
+    "status_downgraded": "Heruntergestuft",
+    "status_blocked": "Blockiert",
+    "spent": "ausgegeben",
+    "limit": "Limit",
+    "projected": "Prognose",
+    "noBudgetSet": "Kein Budgetlimit festgelegt",
+    "setBudgetHint": "Monatliches Budget festlegen für automatischen Kostenschutz",
+    "dailyAvg": "Tagesdurchschnitt",
+    "daysLeft": "Tage verbleibend",
+    "modelTier": "Modellstufe",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "editBudget": "Budget bearbeiten",
+    "setBudget": "Budget festlegen"
+  },
+  "providerHealth": {
+    "title": "Anbieter-Gesundheit",
+    "overall_healthy": "Alle Systeme normal",
+    "overall_degraded": "Einige Anbieter beeinträchtigt",
+    "overall_down": "Anbieter nicht verfügbar",
+    "noData": "Keine Gesundheitsdaten. Daten erscheinen nach Anfragen.",
+    "latency": "Latenz",
+    "errorRate": "Fehler",
+    "uptime": "5min Verfügbarkeit",
+    "requests": "Anfragen",
+    "autoRefresh": "Automatische Aktualisierung alle 30s"
+  },
   "docsFaq": {
     "q1": "Was ist intelligentes Routing?",
     "a1": "Intelligentes Routing analysiert die Absicht Ihrer Anfrage und wählt automatisch das beste Modell. Einfache Aufgaben nutzen kostengünstige Modelle, komplexe Aufgaben nutzen hochwertige Modelle und sparen Ihnen bis zu 80% der Kosten.",

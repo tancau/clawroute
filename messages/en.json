@@ -660,6 +660,37 @@
     "customTag": "Custom",
     "modelsLabel": "Models"
   },
+  "budgetGuard": {
+    "title": "Budget Guard",
+    "status_normal": "Normal",
+    "status_warning": "Warning",
+    "status_downgraded": "Downgraded",
+    "status_blocked": "Blocked",
+    "spent": "spent",
+    "limit": "limit",
+    "projected": "Projected",
+    "noBudgetSet": "No budget limit set",
+    "setBudgetHint": "Set a monthly budget to enable automatic cost protection",
+    "dailyAvg": "Daily Avg",
+    "daysLeft": "Days Left",
+    "modelTier": "Model Tier",
+    "save": "Save",
+    "cancel": "Cancel",
+    "editBudget": "Edit Budget",
+    "setBudget": "Set Budget"
+  },
+  "providerHealth": {
+    "title": "Provider Health",
+    "overall_healthy": "All Systems Normal",
+    "overall_degraded": "Some Providers Degraded",
+    "overall_down": "Providers Down",
+    "noData": "No health data yet. Health data appears after requests are made.",
+    "latency": "Latency",
+    "errorRate": "Errors",
+    "uptime": "5m Up",
+    "requests": "Reqs",
+    "autoRefresh": "Auto-refreshes every 30s"
+  },
   "docsFaq": {
     "q1": "What is smart routing?",
     "a1": "Smart routing analyzes your request intent and automatically selects the best model. Simple tasks use low-cost models, complex tasks use high-quality models, saving you up to 80% on costs.",

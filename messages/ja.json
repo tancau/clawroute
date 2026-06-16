@@ -286,6 +286,37 @@
     "customTag": "カスタム",
     "modelsLabel": "モデル"
   },
+  "budgetGuard": {
+    "title": "予算ガード",
+    "status_normal": "正常",
+    "status_warning": "警告",
+    "status_downgraded": "ダウングレード",
+    "status_blocked": "ブロック",
+    "spent": "使用済み",
+    "limit": "上限",
+    "projected": "予測",
+    "noBudgetSet": "予算制限が設定されていません",
+    "setBudgetHint": "月額予算を設定して自動コスト保護を有効にする",
+    "dailyAvg": "日均",
+    "daysLeft": "残日数",
+    "modelTier": "モデル階層",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "editBudget": "予算編集",
+    "setBudget": "予算設定"
+  },
+  "providerHealth": {
+    "title": "プロバイダー健康状態",
+    "overall_healthy": "全システム正常",
+    "overall_degraded": "一部プロバイダー劣化",
+    "overall_down": "プロバイダー障害",
+    "noData": "健康データなし。リクエスト後に自動収集されます。",
+    "latency": "遅延",
+    "errorRate": "エラー率",
+    "uptime": "5分稼働率",
+    "requests": "リクエスト",
+    "autoRefresh": "30秒ごとに自動更新"
+  },
   "docsFaq": {
     "q1": "スマートルーティングとは？",
     "a1": "スマートルーティングはリクエストの意図を分析し、最適なモデルを自動選択します。簡単なタスクは低コストモデル、複雑なタスクは高品質モデルを使用し、最大80%のコストを節約します。",
