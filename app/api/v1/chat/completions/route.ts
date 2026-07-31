@@ -18,6 +18,7 @@ import { findUserByApiKey, getUserProviderKeys, deductCredits } from '@/lib/auth
 import { logRequest } from '@/lib/db';
 import { getConfig, getDailyLimitByTier } from '@/lib/config';
 import { checkChatRateLimit } from '@/lib/middleware/rate-limit';
+import { acquireProviderSlot, type ProviderSlot } from '@/lib/middleware/concurrency';
 import { checkBudgetAndGetModelTier, filterModelsByBudgetTier, createBudgetAlert } from '@/lib/budget-guard';
 import { getProviderHealth, filterProvidersByHealth, recordProviderHealth } from '@/lib/provider-health';
 import { findCacheHit, recordPromptCache, calculateCacheAwareCost } from '@/lib/prompt-cache';
@@ -474,6 +475,13 @@ async function executeWithRetry(
       continue;
     }
 
+    // 并发控制：acquire provider 槽位（满则回退到下一个备选 provider）
+    const slot = await acquireProviderSlot(attempt.provider);
+    if (!slot) {
+      lastError = new Error(`Provider ${attempt.provider} concurrency limit reached`);
+      continue;
+    }
+
     // Exponential backoff
     if (i > 0) {
       const delay = Math.min(500 * Math.pow(2, i - 1), 10000);
@@ -527,6 +535,9 @@ async function executeWithRetry(
         throw error;
       }
       throw error;
+    } finally {
+      // 非流式：fetch 返回即 provider 生成完成，释放槽位
+      await slot.release();
     }
   }
 
@@ -541,6 +552,7 @@ function createSSEStream(
   apiKey: string,
   requestId: string,
   timeout: number,
+  slot: ProviderSlot,
 ): ReadableStream<Uint8Array> {
   return new ReadableStream({
     async start(controller) {
@@ -589,7 +601,14 @@ function createSSEStream(
         const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg } })}\n\n`;
         controller.enqueue(encoder.encode(errorChunk));
         controller.close();
+      } finally {
+        // 流式：整个流期间持有槽位，流结束（正常/异常/客户端断连）时释放
+        await slot.release();
       }
+    },
+    async cancel() {
+      // 客户端断连：幂等释放（start 的 finally 也会触发）
+      await slot.release();
     },
   });
 }
@@ -853,7 +872,22 @@ export async function POST(request: NextRequest) {
       };
 
       const url = `${provider.baseUrl}/chat/completions`;
-      const sseStream = createSSEStream(url, requestBody, apiKeyForStream, requestId, provider.timeout);
+
+      // 并发控制：流式请求在启动流前 acquire，满则直接 503（避免 200+SSE 错误块）
+      const streamSlot = await acquireProviderSlot(route.provider);
+      if (!streamSlot) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'PROVIDER_CONCURRENCY_FULL',
+              message: `Provider ${route.provider} is at concurrency limit, please retry shortly`,
+            },
+          },
+          { status: 503, headers: { 'Retry-After': '2' } }
+        );
+      }
+
+      const sseStream = createSSEStream(url, requestBody, apiKeyForStream, requestId, provider.timeout, streamSlot);
 
       return new Response(sseStream, {
         headers: {
