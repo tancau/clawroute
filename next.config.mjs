@@ -7,16 +7,12 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Security headers
+  // Security headers（CSP 由 middleware.ts 统一管理：需 dev/prod 区分 + Turnstile 源）
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.openai.com https://api.anthropic.com https://*.supabase.co;",
-          },
           {
             key: 'X-Frame-Options',
             value: 'DENY',

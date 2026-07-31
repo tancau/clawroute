@@ -3,24 +3,45 @@ import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLanguage, isValidLanguage, detectBrowserLanguage, countryToLanguage, LanguageCode } from './lib/i18n/config';
 
 // Security headers configuration
+// CSP 为单一真相源（next.config.mjs 不再重复定义，避免不一致）。
 function addSecurityHeaders(response: NextResponse): NextResponse {
-  // Content Security Policy - allows Cloudflare Turnstile for CAPTCHA
-  const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com;
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data: https:;
-    font-src 'self' data:;
-    connect-src 'self' https://api.openai.com https://api.anthropic.com https://*.supabase.co;
-    frame-src https://challenges.cloudflare.com;
-  `.replace(/\s{2,}/g, ' ').trim();
-  
-  response.headers.set('Content-Security-Policy', cspHeader);
+  const isDev = process.env.NODE_ENV === 'development';
+
+  // Content Security Policy
+  // - 生产移除 'unsafe-eval'（仅 dev 的 HMR/源映射需要）
+  // - script-src 暂保留 'unsafe-inline'，nonce 改造为后续验证项（见 REFACTOR_PLAN）
+  // - 收紧 object-src/base-uri/frame-ancestors/form-action
+  // - 生产加 upgrade-insecure-requests（dev 下会破坏 http://localhost）
+  const scriptSrc = [
+    "'self'",
+    "'unsafe-inline'",
+    ...(isDev ? ["'unsafe-eval'"] : []),
+    'https://challenges.cloudflare.com',
+  ].join(' ');
+
+  const csp = [
+    "default-src 'self'",
+    `script-src ${scriptSrc}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self' data:",
+    'connect-src \'self\' https://api.openai.com https://api.anthropic.com https://*.supabase.co https://challenges.cloudflare.com',
+    'frame-src https://challenges.cloudflare.com',
+    "object-src 'none'",
+    "base-uri 'self'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    ...(isDev ? [] : ['upgrade-insecure-requests']),
+  ]
+    .join('; ')
+    .trim();
+
+  response.headers.set('Content-Security-Policy', csp);
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+  // X-XSS-Protection 已废弃且可引入漏洞（OWASP 建议停用），不再设置
+
   return response;
 }
 
