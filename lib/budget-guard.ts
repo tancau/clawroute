@@ -8,6 +8,9 @@
  * 4. 预算消耗预测
  */
 
+import { getDb } from '@/lib/db/client';
+import { logger } from '@/lib/logger';
+
 // ==================== 类型定义 ====================
 
 export interface BudgetConfig {
@@ -54,23 +57,18 @@ const DEFAULT_BUDGET: Omit<BudgetConfig, 'userId'> = {
   notifyOnWarning: true,
 };
 
-// 内存缓存（数据库不可用时使用）
-const budgetCache = new Map<string, BudgetConfig>();
+// 内存缓存（数据库不可用时使用；TTL 防止多实例陈旧，见 DESIGN_EVALUATION P0-3）
+const BUDGET_CACHE_TTL_MS = 60_000; // 60s
+interface BudgetCacheEntry {
+  config: BudgetConfig;
+  expiresAt: number;
+}
+const budgetCache = new Map<string, BudgetCacheEntry>();
 
 // ==================== 数据库操作 ====================
 
-async function getSql() {
-  try {
-    const { sql } = await import('@vercel/postgres');
-    await sql`SELECT 1`;
-    return sql;
-  } catch {
-    return null;
-  }
-}
-
 async function ensureBudgetTable() {
-  const db = await getSql();
+  const db = await getDb();
   if (!db) return;
 
   try {
@@ -87,17 +85,22 @@ async function ensureBudgetTable() {
         updated_at INTEGER NOT NULL
       )
     `;
-  } catch {
-    // 静默处理
+  } catch (err) {
+    logger.error({ err }, 'ensureBudgetTable failed');
   }
 }
 
 export async function getBudgetConfig(userId: string): Promise<BudgetConfig> {
-  // 先查内存缓存
+  // 先查内存缓存（含 TTL 过期检查）
   const cached = budgetCache.get(userId);
-  if (cached) return cached;
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.config;
+  }
+  if (cached) {
+    budgetCache.delete(userId); // 已过期，清理
+  }
 
-  const db = await getSql();
+  const db = await getDb();
   if (db) {
     try {
       await ensureBudgetTable();
@@ -116,11 +119,11 @@ export async function getBudgetConfig(userId: string): Promise<BudgetConfig> {
           notifyOnWarning: (row.notify_on_warning as boolean) ?? true,
           webhookUrl: (row.webhook_url as string) || undefined,
         };
-        budgetCache.set(userId, config);
+        budgetCache.set(userId, { config, expiresAt: Date.now() + BUDGET_CACHE_TTL_MS });
         return config;
       }
-    } catch {
-      // 降级到默认
+    } catch (err) {
+      logger.error({ err, userId }, 'getBudgetConfig query failed, using default');
     }
   }
 
@@ -128,9 +131,10 @@ export async function getBudgetConfig(userId: string): Promise<BudgetConfig> {
 }
 
 export async function setBudgetConfig(config: BudgetConfig): Promise<void> {
-  budgetCache.set(config.userId, config);
+  // 更新缓存（主动失效，带新 TTL）
+  budgetCache.set(config.userId, { config, expiresAt: Date.now() + BUDGET_CACHE_TTL_MS });
 
-  const db = await getSql();
+  const db = await getDb();
   if (db) {
     try {
       await ensureBudgetTable();
@@ -159,8 +163,8 @@ export async function setBudgetConfig(config: BudgetConfig): Promise<void> {
           webhook_url = ${config.webhookUrl || null},
           updated_at = ${Date.now()}
       `;
-    } catch {
-      // 静默处理
+    } catch (err) {
+      logger.error({ err, userId: config.userId }, 'setBudgetConfig persist failed');
     }
   }
 }
@@ -232,7 +236,7 @@ export async function getBudgetStatus(userId: string): Promise<BudgetStatus> {
 }
 
 async function getMonthlySpend(userId: string, monthStart: number): Promise<number> {
-  const db = await getSql();
+  const db = await getDb();
   if (!db) return 0;
 
   try {
@@ -242,7 +246,8 @@ async function getMonthlySpend(userId: string, monthStart: number): Promise<numb
       WHERE user_id = ${userId} AND created_at >= ${monthStart} AND success = true
     `;
     return parseFloat(result.rows[0]?.total as string) || 0;
-  } catch {
+  } catch (err) {
+    logger.error({ err, userId }, 'getMonthlySpend query failed');
     return 0;
   }
 }
@@ -252,6 +257,11 @@ async function getMonthlySpend(userId: string, monthStart: number): Promise<numb
 /**
  * 检查预算状态，返回允许使用的模型级别
  * 在 routeModel 之前调用
+ *
+ * 语义说明（见 DESIGN_EVALUATION P1-3）：
+ * `allowed` 始终为 true —— 本系统采用"分级降级"而非"硬拦截"策略，
+ * 即使超预算（blocked）也允许使用免费模型，通过 modelTier 控制可用模型范围。
+ * 调用方应依据 modelTier 过滤模型，而非用 allowed 做硬阻断。
  */
 export async function checkBudgetAndGetModelTier(userId: string): Promise<{
   allowed: boolean;
@@ -261,7 +271,7 @@ export async function checkBudgetAndGetModelTier(userId: string): Promise<{
   const status = await getBudgetStatus(userId);
 
   if (status.status === 'blocked') {
-    // 超预算但仍允许使用免费模型
+    // 超预算：降级到免费模型（非硬拦截，设计如此）
     return { allowed: true, modelTier: 'free', status };
   }
 

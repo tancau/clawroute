@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { getDb, isDbConnected } from '@/lib/db/client';
 
 // ===== Password Utilities =====
 
@@ -91,36 +92,11 @@ export function generateTokens(userId: string, tier: string) {
 }
 
 // ===== Storage Layer =====
-// Uses Vercel Postgres when available, falls back to in-memory store
-
-// 连接状态追踪（带时间戳，允许自动重试）
-let lastConnectionAttempt = 0;
-let connectionError: string | null = null;
-const CONNECTION_RETRY_INTERVAL = 30000; // 30秒后自动重试
+// Uses Vercel Postgres when available, falls back to in-memory store.
+// 连接管理统一委托 lib/db/client.ts（含重试间隔与结构化日志）。
 
 async function getPostgres() {
-  const now = Date.now();
-  
-  // 如果最近失败过，检查是否应该重试
-  if (connectionError && now - lastConnectionAttempt < CONNECTION_RETRY_INTERVAL) {
-    // PostgreSQL 不可用时静默使用内存回退
-    return null;
-  }
-  
-  try {
-    // Try different connection methods
-    const { sql } = await import('@vercel/postgres');
-    
-    // Test connection with timeout
-    await sql`SELECT 1 as test`;
-    connectionError = null; // 重置错误状态
-    return sql;
-  } catch (err) {
-    lastConnectionAttempt = now;
-    connectionError = err instanceof Error ? err.message : String(err);
-    // PostgreSQL 不可用时静默使用内存回退，不输出敏感错误信息
-    return null;
-  }
+  return getDb();
 }
 
 // In-memory fallback store
@@ -274,7 +250,7 @@ export async function createUser(email: string, password: string, name?: string)
 }
 
 export function isUsingPostgres(): boolean {
-  return connectionError === null;
+  return isDbConnected();
 }
 
 // ===== Provider Keys Operations =====

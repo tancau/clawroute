@@ -1,27 +1,18 @@
 /**
  * 数据库工具函数
  * 用于创建和管理数据库表
- * 
- * 包含容错机制：PostgreSQL 不可用时静默返回
+ *
+ * 注意：数据库连接通过 lib/db/client.ts 统一管理（见 REFACTOR_PLAN）。
  */
 
-// 检查 PostgreSQL 是否可用
-async function getSql() {
-  try {
-    const { sql } = await import('@vercel/postgres');
-    // 测试连接
-    await sql`SELECT 1`;
-    return sql;
-  } catch {
-    return null;
-  }
-}
+import { getDb } from '@/lib/db/client';
+import { logger } from '@/lib/logger';
 
 // 确保 request_logs 表存在
 export async function ensureRequestLogsTable() {
-  const db = await getSql();
+  const db = await getDb();
   if (!db) return;
-  
+
   try {
     await db`
       CREATE TABLE IF NOT EXISTS request_logs (
@@ -40,17 +31,17 @@ export async function ensureRequestLogsTable() {
         metadata TEXT
       )
     `;
-    
+
     // 创建索引
     try {
       await db`CREATE INDEX IF NOT EXISTS idx_request_logs_user_id ON request_logs(user_id)`;
       await db`CREATE INDEX IF NOT EXISTS idx_request_logs_created_at ON request_logs(created_at)`;
       await db`CREATE INDEX IF NOT EXISTS idx_request_logs_model ON request_logs(model)`;
-    } catch {
-      // 索引可能已存在
+    } catch (err) {
+      logger.warn({ err }, 'request_logs index creation (may already exist)');
     }
-  } catch {
-    // 静默处理表创建错误
+  } catch (err) {
+    logger.error({ err }, 'ensureRequestLogsTable failed');
   }
 }
 
@@ -69,15 +60,18 @@ export async function logRequest(params: {
   errorMessage?: string;
   metadata?: Record<string, unknown>;
 }) {
-  const db = await getSql();
-  if (!db) return; // 数据库不可用时静默跳过日志记录
-  
+  const db = await getDb();
+  if (!db) {
+    logger.warn({ userId: params.userId }, 'logRequest skipped: database unavailable');
+    return;
+  }
+
   try {
     await ensureRequestLogsTable();
-    
+
     await db`
       INSERT INTO request_logs (
-        id, user_id, model, provider, input_tokens, output_tokens, 
+        id, user_id, model, provider, input_tokens, output_tokens,
         cost_usd, intent, latency_ms, success, error_message, created_at, metadata
       ) VALUES (
         ${params.id},
@@ -95,7 +89,8 @@ export async function logRequest(params: {
         ${params.metadata ? JSON.stringify(params.metadata) : null}
       )
     `;
-  } catch {
-    // 日志记录失败不应影响主流程
+  } catch (err) {
+    // 日志记录失败不阻断主流程，但必须可见（取代原静默 catch）
+    logger.error({ err, requestId: params.id, userId: params.userId }, 'logRequest failed');
   }
 }
