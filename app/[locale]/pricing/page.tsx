@@ -47,7 +47,7 @@ export default function PricingPage() {
   };
 
   // Get unique providers
-  const providers = ['all', ...new Set(models.map(m => m.provider))];
+  const providers = ['all', ...Array.from(new Set(models.map(m => m.provider)))];
 
   // Filter and sort models
   const filteredModels = models

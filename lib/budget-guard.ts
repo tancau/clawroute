@@ -8,8 +8,6 @@
  * 4. 预算消耗预测
  */
 
-import { sql } from '@vercel/postgres';
-
 // ==================== 类型定义 ====================
 
 export interface BudgetConfig {
@@ -173,7 +171,6 @@ export async function getBudgetStatus(userId: string): Promise<BudgetStatus> {
   const config = await getBudgetConfig(userId);
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const daysPassed = now.getDate();
   const daysRemaining = daysInMonth - daysPassed;

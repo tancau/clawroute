@@ -4,9 +4,6 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Zap, Play, CheckCircle2, TrendingDown, Clock, Target } from 'lucide-react';
 
-// Demo API Key for testing
-const DEMO_API_KEY = 'hopllm-demo-free-2024';
-
 // Preset prompts for quick testing
 const PRESET_PROMPTS = [
   { id: 'translate', labelKey: 'presetTranslate', prompt: '请把这句话翻译成英文：人工智能正在改变我们的生活方式' },
@@ -29,7 +26,7 @@ interface RoutingResult {
 export function QuickExperience() {
   const t = useTranslations('quickExperience');
   const [apiKey, setApiKey] = useState('');
-  const [selectedPrompt, setSelectedPrompt] = useState(PRESET_PROMPTS[0]);
+  const [selectedPrompt, setSelectedPrompt] = useState(PRESET_PROMPTS[0]!);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<RoutingResult | null>(null);
   const [error, setError] = useState('');
@@ -40,7 +37,6 @@ export function QuickExperience() {
     setResult(null);
 
     const startTime = Date.now();
-    const keyToUse = apiKey.trim() || DEMO_API_KEY;
 
     try {
       // Simulate API call with demo response
@@ -108,7 +104,7 @@ def fibonacci_iterative(n):
       }
 
       setResult(routing);
-    } catch (err) {
+    } catch {
       setError(t('errorOccurred'));
     }
 

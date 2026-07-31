@@ -6,7 +6,6 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 interface JsonModel {
   id: string;

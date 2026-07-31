@@ -112,7 +112,7 @@ async function getPostgres() {
     const { sql } = await import('@vercel/postgres');
     
     // Test connection with timeout
-    const result = await sql`SELECT 1 as test`;
+    await sql`SELECT 1 as test`;
     connectionError = null; // 重置错误状态
     return sql;
   } catch (err) {

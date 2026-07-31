@@ -20,6 +20,7 @@ interface KeyManagerProps {
   userId: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function KeyManager({ userId }: KeyManagerProps) {
   const t = useTranslations('keyManager');
   const [providers, setProviders] = useState<ProviderInfo[]>([]);

@@ -96,6 +96,7 @@ class KeyManager {
   /**
    * 标记 Key 失效
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   markKeyInvalid(providerName: string, key: string, reason?: string): void {
     const keyStatuses = this.keys.get(providerName);
     if (!keyStatuses) return;

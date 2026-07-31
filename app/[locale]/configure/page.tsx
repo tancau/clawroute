@@ -4,8 +4,6 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { useAppStore } from '@/store/use-app-store';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ConfigStepper } from '@/components/configure/ConfigStepper';
 import { StepScene } from '@/components/configure/StepScene';
@@ -29,7 +27,6 @@ function ConfigureContent() {
   const sceneId = searchParams.get('scene');
   const selectedSceneId = useAppStore((s) => s.selectedSceneId);
   const selectScene = useAppStore((s) => s.selectScene);
-  const scenes = useAppStore((s) => s.scenes);
   const configStep = useAppStore((s) => s.configStep);
   const setConfigStep = useAppStore((s) => s.setConfigStep);
   const completedSteps = useAppStore((s) => s.completedSteps);
@@ -45,8 +42,6 @@ function ConfigureContent() {
       setConfigStep(2);
     }
   }, [sceneId, selectedSceneId, selectScene, setConfigStep, configStep]);
-
-  const currentScene = scenes.find((s) => s.id === (selectedSceneId ?? sceneId));
 
   const handleNext = () => {
     markStepCompleted(configStep);

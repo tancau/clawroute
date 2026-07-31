@@ -5,8 +5,6 @@
  * 包含容错机制：PostgreSQL 不可用时静默返回
  */
 
-import { sql } from '@vercel/postgres';
-
 // 检查 PostgreSQL 是否可用
 async function getSql() {
   try {

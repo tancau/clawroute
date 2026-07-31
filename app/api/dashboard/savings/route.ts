@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
-import { getModelCapability, calculateRequestCost } from '@/lib/routing/providers';
+import { calculateRequestCost } from '@/lib/routing/providers';
 
 // 检查 PostgreSQL 是否可用
 async function isPostgresAvailable(): Promise<boolean> {
@@ -115,7 +115,6 @@ export async function GET(request: NextRequest) {
     // 计算真实节省：对比每个模型的成本 vs GPT-5.5 的成本
     let gpt55EquivalentCost = 0;
     for (const row of modelBreakdown.rows) {
-      const modelName = row.model as string;
       const inputTokens = parseInt(row.total_input_tokens as string) || 0;
       const outputTokens = parseInt(row.total_output_tokens as string) || 0;
       
