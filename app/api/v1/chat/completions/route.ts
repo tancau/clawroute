@@ -546,6 +546,24 @@ async function executeWithRetry(
 
 // ==================== SSE 流处理 ====================
 
+interface StreamBillingContext {
+  userId?: string;
+  model: string;
+  provider: string;
+  intent: string;
+  requestId: string;
+  startTime: number;
+  inputTokensEstimate: number;
+}
+
+/**
+ * 创建 SSE 流：透传 provider 原始字节给客户端，同时解析流以捕获 usage
+ * 与输出文本，流结束后记账（logRequest + provider health）。
+ *
+ * - usage 来源：请求体携带 stream_options.include_usage=true，provider 在
+ *   末块返回 usage；未返回时按累积输出文本估算（~3 字符/token）。
+ * - 记账通过 billingDone 标志保证仅一次（覆盖正常结束/异常/客户端断连）。
+ */
 function createSSEStream(
   url: string,
   requestBody: Record<string, unknown>,
@@ -553,10 +571,68 @@ function createSSEStream(
   requestId: string,
   timeout: number,
   slot: ProviderSlot,
+  billing: StreamBillingContext,
 ): ReadableStream<Uint8Array> {
   return new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      let sseBuffer = '';
+      let outputText = '';
+      let usage: { prompt_tokens?: number; completion_tokens?: number } | null = null;
+      let billingDone = false;
+
+      const finalizeBilling = async (success: boolean, errorMessage?: string) => {
+        if (billingDone) return;
+        billingDone = true;
+        if (!billing.userId) return; // 无用户（dev mode）不记录
+        const inputTokens = usage?.prompt_tokens ?? billing.inputTokensEstimate;
+        const outputTokens = usage?.completion_tokens ?? Math.ceil(outputText.length / 3);
+        const costUsd = calculateRequestCost(billing.model, inputTokens, outputTokens);
+        const latencyMs = Date.now() - billing.startTime;
+        try {
+          await logRequest({
+            id: billing.requestId,
+            userId: billing.userId,
+            model: billing.model,
+            provider: billing.provider,
+            inputTokens,
+            outputTokens,
+            costUsd,
+            intent: billing.intent,
+            latencyMs,
+            success,
+            errorMessage,
+            metadata: { streaming: true, usage_reported: !!usage },
+          });
+          recordProviderHealth(billing.provider, success, latencyMs, errorMessage);
+        } catch (err) {
+          console.error('[ChatCompletions] stream billing failed:', err);
+        }
+      };
+
+      // 解析单个 SSE 事件，捕获 usage 与 delta.content
+      const processEvent = (event: string) => {
+        const dataLines = event
+          .split('\n')
+          .filter(l => l.startsWith('data:'))
+          .map(l => l.slice(5).trimStart());
+        if (dataLines.length === 0) return;
+        const data = dataLines.join('\n');
+        if (data === '[DONE]') return;
+        try {
+          const json = JSON.parse(data);
+          if (json.usage) {
+            usage = json.usage;
+          }
+          const delta = json.choices?.[0]?.delta;
+          if (delta?.content) {
+            outputText += delta.content as string;
+          }
+        } catch {
+          // 非 JSON 事件（provider 注释等），忽略
+        }
+      };
 
       try {
         const response = await fetch(url, {
@@ -575,32 +651,50 @@ function createSSEStream(
           const errorChunk = `data: ${JSON.stringify({ error: { message: `Provider error: ${response.status} - ${errorText.slice(0, 200)}` } })}\n\n`;
           controller.enqueue(encoder.encode(errorChunk));
           controller.close();
+          await finalizeBilling(false, `Provider error: ${response.status}`);
           return;
         }
 
         if (!response.body) {
           controller.close();
+          await finalizeBilling(false, 'No response body');
           return;
         }
 
-        // 直接转发流
+        // 透传流：原始字节直接 enqueue，副本解码用于解析 usage/输出
         const reader = response.body.getReader();
         try {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             controller.enqueue(value);
+            sseBuffer += decoder.decode(value, { stream: true });
+            let idx: number;
+            while ((idx = sseBuffer.indexOf('\n\n')) !== -1) {
+              const ev = sseBuffer.slice(0, idx);
+              sseBuffer = sseBuffer.slice(idx + 2);
+              processEvent(ev);
+            }
           }
+          // flush 解码器与残余事件
+          sseBuffer += decoder.decode();
+          if (sseBuffer.trim()) processEvent(sseBuffer);
         } finally {
           reader.releaseLock();
         }
 
         controller.close();
+        await finalizeBilling(true);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg } })}\n\n`;
-        controller.enqueue(encoder.encode(errorChunk));
-        controller.close();
+        try {
+          controller.enqueue(encoder.encode(errorChunk));
+          controller.close();
+        } catch {
+          // controller 已关闭（如客户端断连），忽略
+        }
+        await finalizeBilling(false, errorMsg);
       } finally {
         // 流式：整个流期间持有槽位，流结束（正常/异常/客户端断连）时释放
         await slot.release();
@@ -866,6 +960,9 @@ export async function POST(request: NextRequest) {
         max_tokens: body.max_tokens,
         top_p: body.top_p,
         stream: true,
+        // 请求 provider 在末块返回 usage，用于精确计费；不支持该字段的
+        // provider 会忽略它，回退到输出文本估算。
+        stream_options: { include_usage: true },
         stop: body.stop,
         presence_penalty: body.presence_penalty,
         frequency_penalty: body.frequency_penalty,
@@ -887,7 +984,21 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const sseStream = createSSEStream(url, requestBody, apiKeyForStream, requestId, provider.timeout, streamSlot);
+      const inputTokensEstimate = Math.ceil(
+        body.messages.map(m => m.content).join('').length / 3
+      );
+      const sseStream = createSSEStream(
+        url, requestBody, apiKeyForStream, requestId, provider.timeout, streamSlot,
+        {
+          userId: user?.userId,
+          model: route.selectedModel,
+          provider: route.provider,
+          intent: classification.intent,
+          requestId,
+          startTime,
+          inputTokensEstimate,
+        },
+      );
 
       return new Response(sseStream, {
         headers: {
