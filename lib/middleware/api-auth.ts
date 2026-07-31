@@ -15,7 +15,6 @@ const PUBLIC_API_PATHS = [
   '/api/v1/ping',
   '/api/health',
   '/api/health/db',
-  '/api/v1/health',
 ];
 
 // APIs that allow optional auth (work without auth but may use auth for enhanced features)

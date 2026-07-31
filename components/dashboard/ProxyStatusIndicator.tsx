@@ -25,13 +25,10 @@ export function ProxyStatusIndicator({ className }: ProxyStatusIndicatorProps) {
   const checkStatus = async () => {
     setStatus('checking');
     try {
-      const res = await fetch('/api/v1/ping');
-      if (res.ok) {
-        const data = await res.json();
-        setStatus(data.status === 'ok' ? 'running' : 'error');
-      } else {
-        setStatus('error');
-      }
+      // liveness 探针（/api/health）：进程存活即 200，不检查依赖。
+      // 旧代码 GET /api/v1/ping 会 405（该端点仅接受 POST 批量测试 provider）。
+      const res = await fetch('/api/health');
+      setStatus(res.ok ? 'running' : 'error');
     } catch {
       setStatus('stopped');
     }
