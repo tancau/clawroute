@@ -26,7 +26,6 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/backend ./backend
 
 RUN mkdir -p /app/data && chown -R hopllm:nodejs /app/data
 

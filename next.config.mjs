@@ -7,12 +7,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Exclude backend directory from Next.js compilation
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': ['./backend/**'],
-    },
-  },
   // Security headers
   async headers() {
     return [
