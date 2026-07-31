@@ -1,26 +1,17 @@
 import { NextResponse } from 'next/server';
+import { isDbHealthy } from '@/lib/db/client';
 
+/**
+ * 数据库连通性检查。
+ * 复用统一数据访问层 isDbHealthy()，避免重复 @vercel/postgres 直连与 console 日志。
+ */
 export async function GET() {
-  try {
-    const { sql } = await import('@vercel/postgres');
-    
-    // Test connection
-    const result = await sql`SELECT 1 as test`;
-    
-    return NextResponse.json({
-      status: 'connected',
-      message: 'PostgreSQL connection successful',
+  const healthy = await isDbHealthy();
+  return NextResponse.json(
+    {
+      status: healthy ? 'connected' : 'unavailable',
       timestamp: new Date().toISOString(),
-      rowCount: result.rowCount,
-    });
-  } catch (err) {
-    console.error('[DB Health Check] Connection failed:', err);
-    
-    return NextResponse.json({
-      status: 'error',
-      message: err instanceof Error ? err.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-      hint: 'Check POSTGRES_URL environment variable',
-    }, { status: 500 });
-  }
+    },
+    { status: healthy ? 200 : 503 }
+  );
 }
