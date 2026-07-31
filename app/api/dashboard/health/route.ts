@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const payload = verifyJWT(token, getJWTSecret());
+  const payload = await verifyJWT(token, getJWTSecret());
   if (!payload?.userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

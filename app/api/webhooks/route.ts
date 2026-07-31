@@ -54,7 +54,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       );
     }
 
-    const payload = verifyJWT(token, getJWTSecret());
+    const payload = await verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
       );
     }
 
-    const payload = verifyJWT(token, getJWTSecret());
+    const payload = await verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { success: false, error: 'Invalid token' },

@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Verify token
-    const payload = verifyJWT(token, getJWTSecret());
+    const payload = await verifyJWT(token, getJWTSecret());
     if (!payload || !payload.userId) {
       return NextResponse.json(
         { error: { code: 'INVALID_TOKEN', message: 'Invalid or expired token' } },

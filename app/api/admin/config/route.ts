@@ -31,7 +31,7 @@ async function checkAdminAuth(request: NextRequest): Promise<{ authorized: boole
   if (!secret) {
     return { authorized: false, error: 'Server configuration error' };
   }
-  const payload = verifyJWT(token, secret);
+  const payload = await verifyJWT(token, secret);
   
   if (!payload || typeof payload !== 'object') {
     return { authorized: false, error: 'Invalid token' };

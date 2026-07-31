@@ -81,7 +81,7 @@ export async function authenticateApiRequest(request: NextRequest): Promise<Auth
   
   // Try JWT verification first
   const secret = getJWTSecret();
-  const jwtPayload = verifyJWT(token, secret);
+  const jwtPayload = await verifyJWT(token, secret);
   
   if (jwtPayload && jwtPayload.userId) {
     return {

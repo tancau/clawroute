@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { SignJWT, jwtVerify } from 'jose';
 import { getDb, isDbConnected } from '@/lib/db/client';
 
 // ===== Password Utilities =====
@@ -19,12 +20,14 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 // ===== JWT Utilities =====
+// 使用 jose（标准库，WebCrypto）替代自实现 HS256，消除自实现密码学风险。
+// 算法显式锁定 HS256，防 alg 混淆/none 攻击；exp 由 jose 自动校验。
+// 与旧实现生成的 token 互通（相同 secret → 相同 HMAC），既有会话无需失效。
 
-function signJWT(payload: Record<string, unknown>, secret: string): string {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
-  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
-  return `${header}.${body}.${signature}`;
+function signJWT(payload: Record<string, unknown>): Promise<string> {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .sign(new TextEncoder().encode(getJWTSecret()));
 }
 
 /**
@@ -38,21 +41,14 @@ export function getJWTSecret(): string {
   return secret;
 }
 
-export function verifyJWT(token: string, secret: string): Record<string, unknown> | null {
-  const parts = token.split('.');
-  if (parts.length !== 3) return null;
-  const [header, body, signature] = parts;
-  if (!header || !body || !signature) return null;
-  const expected = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
-  // 常量时间比较，避免时序攻击（先校验长度，timingSafeEqual 要求等长 Buffer）
-  const sigBuf = Buffer.from(signature);
-  const expBuf = Buffer.from(expected);
-  if (sigBuf.length !== expBuf.length) return null;
-  if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
+export async function verifyJWT(token: string, secret: string): Promise<Record<string, unknown> | null> {
   try {
-    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
-    return payload;
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(secret),
+      { algorithms: ['HS256'] }
+    );
+    return payload as Record<string, unknown>;
   } catch {
     return null;
   }
@@ -78,16 +74,10 @@ interface InternalUser extends SafeUser {
 
 // ===== Token Generation =====
 
-export function generateTokens(userId: string, tier: string) {
+export async function generateTokens(userId: string, tier: string) {
   const now = Math.floor(Date.now() / 1000);
-  const accessToken = signJWT(
-    { userId, tier, iat: now, exp: now + 3600 },
-    getJWTSecret()
-  );
-  const refreshToken = signJWT(
-    { userId, type: 'refresh', iat: now, exp: now + 7 * 86400 },
-    getJWTSecret()
-  );
+  const accessToken = await signJWT({ userId, tier, iat: now, exp: now + 3600 });
+  const refreshToken = await signJWT({ userId, type: 'refresh', iat: now, exp: now + 7 * 86400 });
   return { accessToken, refreshToken, expiresIn: 3600 };
 }
 

@@ -13,7 +13,7 @@ async function authenticate(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   const token = authHeader?.replace('Bearer ', '');
   if (!token) return null;
-  const payload = verifyJWT(token, getJWTSecret());
+  const payload = await verifyJWT(token, getJWTSecret());
   if (!payload?.userId) return null;
   return { userId: payload.userId as string };
 }
