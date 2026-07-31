@@ -155,6 +155,17 @@ export const providers: ProviderConfig[] = [
     priority: 65,
     enabled: true,
   },
+  {
+    // Meta Llama 通过 OpenRouter 访问（与 data/providers.json 保持一致）
+    name: 'meta',
+    baseUrl: 'https://openrouter.ai/api/v1',
+    apiKeyEnv: 'OPENROUTER_API_KEY',
+    models: ['meta-llama/llama-3.1-8b-instruct', 'meta-llama/llama-3.1-70b-instruct', 'llama-3.1-70b'],
+    rateLimit: { rpm: 100 },
+    timeout: 45000,
+    priority: 55,
+    enabled: true,
+  },
 ];
 
 /**
@@ -196,6 +207,17 @@ export const modelCapabilities: ModelCapability[] = [
     features: ['code_specialized'],
   },
   // OpenAI
+  {
+    model: 'gpt-4o',
+    provider: 'openai',
+    intents: ['coding', 'analysis', 'reasoning', 'creative', 'knowledge'],
+    contextWindow: 128000,
+    inputCost: 5.0,
+    outputCost: 15.0,
+    avgLatency: 400,
+    qualityScore: 0.93,
+    features: ['vision', 'function_calling', 'json_mode'],
+  },
   {
     model: 'gpt-4o-mini',
     provider: 'openai',
@@ -287,6 +309,17 @@ export const modelCapabilities: ModelCapability[] = [
     features: ['vision', 'function_calling', 'extended_thinking'],
   },
   // DeepSeek
+  {
+    model: 'deepseek-chat',
+    provider: 'deepseek',
+    intents: ['coding', 'analysis', 'casual_chat', 'translation'],
+    contextWindow: 64000,
+    inputCost: 0.28,
+    outputCost: 0.42,
+    avgLatency: 500,
+    qualityScore: 0.85,
+    features: ['function_calling'],
+  },
   {
     model: 'deepseek-v4-pro',
     provider: 'deepseek',
