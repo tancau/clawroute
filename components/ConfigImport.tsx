@@ -112,7 +112,7 @@ export function ConfigImport() {
     setPingResults(null);
 
     try {
-      const response = await fetch('/api/ping', {
+      const response = await fetch('/api/v1/ping', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -154,7 +154,7 @@ export function ConfigImport() {
         return;
       }
 
-      const response = await fetch('/api/test-completion', {
+      const response = await fetch('/api/v1/test-completion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ providers: testProviders }),

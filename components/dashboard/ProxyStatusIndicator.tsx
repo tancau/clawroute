@@ -25,7 +25,7 @@ export function ProxyStatusIndicator({ className }: ProxyStatusIndicatorProps) {
   const checkStatus = async () => {
     setStatus('checking');
     try {
-      const res = await fetch('/api/ping');
+      const res = await fetch('/api/v1/ping');
       if (res.ok) {
         const data = await res.json();
         setStatus(data.status === 'ok' ? 'running' : 'error');

@@ -3,7 +3,7 @@ import { authenticateApiRequest, unauthorizedResponse } from '@/lib/middleware/a
 
 /**
  * Proxy endpoint to discover models from an OpenAI-compatible API.
- * POST /api/discover
+ * POST /api/v1/discover
  * Body: { baseUrl: string, apiKey: string }
  * Returns: { models: [...] }
  * 

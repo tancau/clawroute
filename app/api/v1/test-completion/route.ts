@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest, unauthorizedResponse } from '@/lib/middleware/api-auth';
 
 /**
- * POST /api/test-completion
+ * POST /api/v1/test-completion
  * Test provider API connections by sending a minimal completion request
  * 
  * Security: Requires authentication to prevent abuse

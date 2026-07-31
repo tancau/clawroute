@@ -57,7 +57,7 @@ export function ApiDiscovery() {
     setResult(null);
     setVerifyResult(null);
     try {
-      const response = await fetch('/api/discover', {
+      const response = await fetch('/api/v1/discover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ baseUrl: baseUrl.trim(), apiKey: apiKey.trim() }),
@@ -74,7 +74,7 @@ export function ApiDiscovery() {
     setVerifying(true);
     setVerifyResult(null);
     try {
-      const response = await fetch('/api/verify', {
+      const response = await fetch('/api/v1/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ baseUrl: baseUrl.trim(), apiKey: apiKey.trim(), model: result?.models?.[0]?.id || undefined }),

@@ -69,7 +69,7 @@ export function FeedbackForm({ model, userId, onSubmit, onCancel }: FeedbackForm
     setError(null);
     
     try {
-      const response = await fetch('/api/models/feedback', {
+      const response = await fetch('/api/v1/models/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

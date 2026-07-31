@@ -3,7 +3,7 @@ import { authenticateApiRequest } from '@/lib/middleware/api-auth';
 
 /**
  * Verify an API key by making a lightweight chat completion request.
- * POST /api/verify
+ * POST /api/v1/verify
  * Body: { baseUrl: string, apiKey: string, model?: string }
  * Returns: { valid: boolean, model?: string, error?: string, latencyMs?: number }
  */

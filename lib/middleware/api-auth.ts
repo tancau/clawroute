@@ -12,7 +12,7 @@ import { verifyJWT, findUserByApiKey, getJWTSecret } from '@/lib/auth';
 
 // Public APIs that don't require authentication
 const PUBLIC_API_PATHS = [
-  '/api/ping',
+  '/api/v1/ping',
   '/api/health',
   '/api/health/db',
   '/api/v1/health',

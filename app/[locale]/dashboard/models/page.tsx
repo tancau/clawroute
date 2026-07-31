@@ -56,7 +56,7 @@ export default function ModelRankingsPage() {
   const loadModels = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/models/capabilities?merged=true');
+      const response = await fetch('/api/v1/models/capabilities?merged=true');
       
       if (!response.ok) {
         throw new Error('Failed to load models');

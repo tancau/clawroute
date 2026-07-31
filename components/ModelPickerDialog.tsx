@@ -51,7 +51,7 @@ export function ModelPickerDialog({
     setError(null);
     setModels([]);
     try {
-      const response = await fetch('/api/discover', {
+      const response = await fetch('/api/v1/discover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ baseUrl: baseUrl.trim(), apiKey: apiKey.trim() }),
