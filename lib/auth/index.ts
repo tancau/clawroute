@@ -1,58 +1,11 @@
 import crypto from 'crypto';
-import { SignJWT, jwtVerify } from 'jose';
 import { getDb, isDbConnected } from '@/lib/db/client';
+import { hashPassword } from './password';
 
-// ===== Password Utilities =====
-
-export function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha256').toString('hex');
-  return `${salt}:${hash}`;
-}
-
-export function verifyPassword(password: string, stored: string): boolean {
-  const parts = stored.split(':');
-  const salt = parts[0] ?? '';
-  const hash = parts[1] ?? '';
-  if (!salt || !hash) return false;
-  const verifyHash = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha256').toString('hex');
-  return hash === verifyHash;
-}
-
-// ===== JWT Utilities =====
-// 使用 jose（标准库，WebCrypto）替代自实现 HS256，消除自实现密码学风险。
-// 算法显式锁定 HS256，防 alg 混淆/none 攻击；exp 由 jose 自动校验。
-// 与旧实现生成的 token 互通（相同 secret → 相同 HMAC），既有会话无需失效。
-
-function signJWT(payload: Record<string, unknown>): Promise<string> {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-    .sign(new TextEncoder().encode(getJWTSecret()));
-}
-
-/**
- * 获取 JWT 密钥（集中管理，所有代码应使用此函数）
- */
-export function getJWTSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error('JWT_SECRET environment variable is required');
-  }
-  return secret;
-}
-
-export async function verifyJWT(token: string, secret: string): Promise<Record<string, unknown> | null> {
-  try {
-    const { payload } = await jwtVerify(
-      token,
-      new TextEncoder().encode(secret),
-      { algorithms: ['HS256'] }
-    );
-    return payload as Record<string, unknown>;
-  } catch {
-    return null;
-  }
-}
+// 密码与 JWT 工具已拆分至独立模块（password.ts / jwt.ts），此处通过 barrel
+// re-export 保持 `@/lib/auth` 公共 API 不变，避免 30+ 调用方改动。
+export { hashPassword, verifyPassword } from './password';
+export { getJWTSecret, verifyJWT, generateTokens } from './jwt';
 
 // ===== User Types =====
 
@@ -70,15 +23,6 @@ export interface SafeUser {
 interface InternalUser extends SafeUser {
   passwordHash: string;
   providerKeysEncrypted?: string; // 加密存储的 Provider Keys
-}
-
-// ===== Token Generation =====
-
-export async function generateTokens(userId: string, tier: string) {
-  const now = Math.floor(Date.now() / 1000);
-  const accessToken = await signJWT({ userId, tier, iat: now, exp: now + 3600 });
-  const refreshToken = await signJWT({ userId, type: 'refresh', iat: now, exp: now + 7 * 86400 });
-  return { accessToken, refreshToken, expiresIn: 3600 };
 }
 
 // ===== Storage Layer =====
