@@ -43,7 +43,11 @@ export function verifyJWT(token: string, secret: string): Record<string, unknown
   const [header, body, signature] = parts;
   if (!header || !body || !signature) return null;
   const expected = crypto.createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
-  if (signature !== expected) return null;
+  // 常量时间比较，避免时序攻击（先校验长度，timingSafeEqual 要求等长 Buffer）
+  const sigBuf = Buffer.from(signature);
+  const expBuf = Buffer.from(expected);
+  if (sigBuf.length !== expBuf.length) return null;
+  if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
   try {
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;

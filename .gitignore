@@ -31,6 +31,9 @@ yarn-error.log*
 
 # database
 data/hopllm.db
+data/*.db
+data/*.db-shm
+data/*.db-wal
 
 # vercel
 .vercel
