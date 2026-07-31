@@ -21,6 +21,13 @@ interface SyncResult {
 // 简单的内存状态（生产环境应使用 Redis 或数据库）
 let lastSyncTime: number | null = null;
 let syncInProgress = false;
+let lastSyncResults: {
+  syncType: string;
+  results: SyncResult[];
+  totalDuration: number;
+  timestamp: number;
+  error: string | null;
+} | null = null;
 
 async function checkAdminAuth(request: NextRequest): Promise<{ authorized: boolean; userId?: string; error?: string }> {
   const token = request.cookies.get('accessToken')?.value ||
@@ -61,11 +68,18 @@ export async function GET(request: NextRequest) {
       lastSyncTime,
       syncInProgress,
       nextScheduledSync: lastSyncTime ? lastSyncTime + 6 * 60 * 60 * 1000 : null,
+      lastResults: lastSyncResults,
     },
   });
 }
 
-// POST - 触发同步
+// POST - 触发同步（异步：立即返回 202，后台执行，通过 GET /status 查询进度与结果）
+//
+// 模型同步需拉取外部数据源（最多 2×30s），在请求线程同步执行会触发
+// serverless 超时。改为 fire-and-forget：标记进行中后立即返回，后台
+// 任务更新 lastSyncTime / lastSyncResults / syncInProgress。
+// （Docker / long-running Node 部署下 event loop 持续，后台任务会完成；
+//   纯 Vercel serverless 需改用 @vercel/functions 的 waitUntil 保活。）
 export async function POST(request: NextRequest) {
   const auth = await checkAdminAuth(request);
 
@@ -83,15 +97,37 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const body = await request.json().catch(() => ({}));
+  const syncType = body.type || 'prices'; // 'prices' | 'models' | 'full'
+
+  syncInProgress = true;
+  const startTime = Date.now();
+
+  // 后台执行，不阻塞响应；错误已在 runner 内部落入 lastSyncResults
+  runSyncInBackground(syncType, startTime).catch((err) => {
+    console.error('[Sync] background runner crashed:', err);
+    syncInProgress = false;
+  });
+
+  return NextResponse.json(
+    {
+      success: true,
+      data: {
+        syncType,
+        message: 'Sync started in background',
+        status: 'in_progress',
+      },
+    },
+    { status: 202 }
+  );
+}
+
+/**
+ * 后台同步执行体：更新 lastSyncResults 与状态标志。
+ */
+async function runSyncInBackground(syncType: string, startTime: number): Promise<void> {
+  const results: SyncResult[] = [];
   try {
-    const body = await request.json().catch(() => ({}));
-    const syncType = body.type || 'prices'; // 'prices' | 'models' | 'full'
-
-    syncInProgress = true;
-    const startTime = Date.now();
-
-    const results: SyncResult[] = [];
-
     if (syncType === 'prices' || syncType === 'full') {
       results.push(await syncPrices());
     }
@@ -101,26 +137,23 @@ export async function POST(request: NextRequest) {
     }
 
     lastSyncTime = Date.now();
+    lastSyncResults = {
+      syncType,
+      results,
+      totalDuration: Date.now() - startTime,
+      timestamp: lastSyncTime,
+      error: null,
+    };
+  } catch (error) {
+    lastSyncResults = {
+      syncType,
+      results,
+      totalDuration: Date.now() - startTime,
+      timestamp: Date.now(),
+      error: error instanceof Error ? error.message : 'Sync failed',
+    };
+  } finally {
     syncInProgress = false;
-
-    const totalDuration = Date.now() - startTime;
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        syncType,
-        results,
-        totalDuration,
-        timestamp: lastSyncTime,
-      },
-    });
-  } catch (error: unknown) {
-    syncInProgress = false;
-    const message = error instanceof Error ? error.message : 'Sync failed';
-    return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message } },
-      { status: 500 }
-    );
   }
 }
 

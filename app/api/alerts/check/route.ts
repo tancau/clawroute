@@ -108,14 +108,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     if (creditsLowTriggered) {
       results.triggered = true;
       
-      // 触发 Webhook
+      // 触发 Webhook（fire-and-forget：投递不应阻塞告警检查响应；
+      //   triggerWebhooks 内部已捕获所有错误并记入 webhook_logs）
       if (settings.webhook_enabled) {
-        await triggerWebhooks(userId, 'credits.low', {
+        triggerWebhooks(userId, 'credits.low', {
           userId,
           currentCredits,
           threshold: creditsThreshold,
           timestamp: Date.now(),
-        });
+        }).catch((err) => console.error('[Alerts] credits.low webhook failed:', err));
       }
     }
 
@@ -148,14 +149,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     if (dailyLimitTriggered) {
       results.triggered = true;
       
-      // 触发 Webhook
+      // 触发 Webhook（fire-and-forget，见上）
       if (settings.webhook_enabled) {
-        await triggerWebhooks(userId, 'daily.limit', {
+        triggerWebhooks(userId, 'daily.limit', {
           userId,
           dailyRequests: dailyRequestCount,
           limit: dailyLimit,
           timestamp: Date.now(),
-        });
+        }).catch((err) => console.error('[Alerts] daily.limit webhook failed:', err));
       }
     }
 
@@ -191,16 +192,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     if (errorRateTriggered) {
       results.triggered = true;
       
-      // 触发 Webhook
+      // 触发 Webhook（fire-and-forget，见上）
       if (settings.webhook_enabled) {
-        await triggerWebhooks(userId, 'error.rate.high', {
+        triggerWebhooks(userId, 'error.rate.high', {
           userId,
           errorRate: errorRate.toFixed(1),
           threshold: errorRateThreshold,
           errorCount,
           totalRequests,
           timestamp: Date.now(),
-        });
+        }).catch((err) => console.error('[Alerts] error.rate.high webhook failed:', err));
       }
     }
 
