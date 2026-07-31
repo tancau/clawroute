@@ -21,6 +21,7 @@ import { checkChatRateLimit } from '@/lib/middleware/rate-limit';
 import { checkBudgetAndGetModelTier, filterModelsByBudgetTier, createBudgetAlert } from '@/lib/budget-guard';
 import { getProviderHealth, filterProvidersByHealth, recordProviderHealth } from '@/lib/provider-health';
 import { findCacheHit, recordPromptCache, calculateCacheAwareCost } from '@/lib/prompt-cache';
+import { classifyWithAI } from '@/lib/routing/classify';
 
 // ==================== 类型定义 ====================
 
@@ -45,7 +46,7 @@ interface ChatCompletionRequest {
 interface IntentClassification {
   intent: string;
   confidence: number;
-  source: 'rule' | 'cached';
+  source: 'rule' | 'cached' | 'ai';
 }
 
 // ==================== 意图分类（简化版） ====================
@@ -173,9 +174,9 @@ const INTENT_RULES: Array<{ patterns: RegExp[]; intent: string }> = [
   },
 ];
 
-function classifyIntent(message: string): IntentClassification {
+async function classifyIntent(message: string): Promise<IntentClassification> {
   const lowerMessage = message.toLowerCase();
-  
+
   for (const rule of INTENT_RULES) {
     for (const pattern of rule.patterns) {
       if (pattern.test(lowerMessage)) {
@@ -187,7 +188,13 @@ function classifyIntent(message: string): IntentClassification {
       }
     }
   }
-  
+
+  // 规则未命中（低置信度）：尝试 AI 分类器（Ollama），不可用则降级
+  const aiResult = await classifyWithAI(message);
+  if (aiResult) {
+    return aiResult;
+  }
+
   // 默认意图
   return {
     intent: 'casual_chat',
@@ -664,7 +671,8 @@ export async function POST(request: NextRequest) {
 
     // 2. Rate Limiting (Enhanced: per-minute + per-day limits)
     const clientId = user?.userId || request.headers.get('X-Forwarded-For') || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'anonymous';
-    const rateCheck = await checkChatRateLimit(clientId);
+    const userTier = user?.tier || 'free';
+    const rateCheck = await checkChatRateLimit(clientId, userTier);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         {
@@ -714,7 +722,7 @@ export async function POST(request: NextRequest) {
     // 5. 分类意图
     const lastMessage = body.messages[body.messages.length - 1];
     const userMessage = lastMessage?.content || '';
-    classification = classifyIntent(userMessage);
+    classification = await classifyIntent(userMessage);
 
     // 6. 预算守护检查
     let budgetStatus: import('@/lib/budget-guard').BudgetStatus | undefined;

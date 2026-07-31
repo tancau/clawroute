@@ -10,6 +10,7 @@
 
 import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
+import { getDailyLimitByTier } from '@/lib/config';
 
 // ==================== Redis 客户端 ====================
 
@@ -235,6 +236,20 @@ export function getLoginRateLimiter(): (identifier: string) => Promise<RateLimit
 }
 
 /**
+ * 登录防暴破：按账户维度限流
+ * 单一账户每 15 分钟最多 5 次登录尝试，即使攻击者切换 IP 也无法暴破。
+ * identifier 建议使用 `login:email:${normalizedEmail}`。
+ */
+let loginAttemptLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
+
+export function getLoginAttemptLimiter(): (identifier: string) => Promise<RateLimitResult> {
+  if (!loginAttemptLimiter) {
+    loginAttemptLimiter = createCustomRateLimiter(5, 900, 'login_attempt');
+  }
+  return loginAttemptLimiter;
+}
+
+/**
  * 注册 API 速率限制器
  * 每个IP每小时最多 5 次注册尝试
  */
@@ -249,11 +264,14 @@ export function getRegisterRateLimiter(): (identifier: string) => Promise<RateLi
 
 /**
  * Chat Completions API 速率限制器
- * 每用户每分钟: 60 次请求
- * 每用户每天: 10,000 次请求
+ * 按用户 tier 分级：
+ *   - 分钟级：来自 TIER_LIMITS（free:20 / pro:100 / team:500 / enterprise:2000）
+ *   - 日级：来自 getDailyLimitByTier（free:100 / pro:1000 / team:10000 / admin:Infinity）
+ *
+ * 每个等级独立缓存 limiter 实例，identifier 为 user.id 或 IP。
  */
-let chatMinuteLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
-let chatDailyLimiter: ((identifier: string) => Promise<RateLimitResult>) | null = null;
+const chatMinuteLimiters = new Map<string, (identifier: string) => Promise<RateLimitResult>>();
+const chatDailyLimiters = new Map<string, (identifier: string) => Promise<RateLimitResult>>();
 
 export interface ChatRateLimitResult {
   allowed: boolean;
@@ -263,17 +281,24 @@ export interface ChatRateLimitResult {
   retryAfter?: number;
 }
 
-export async function checkChatRateLimit(identifier: string): Promise<ChatRateLimitResult> {
-  if (!chatMinuteLimiter) {
-    chatMinuteLimiter = createCustomRateLimiter(60, 60, 'chat_minute');
+export async function checkChatRateLimit(
+  identifier: string,
+  tier: string = 'free'
+): Promise<ChatRateLimitResult> {
+  const tierConfig = TIER_LIMITS[tier] || TIER_LIMITS.free!;
+
+  // 1. 分钟级限流（per-tier）
+  let minuteLimiter = chatMinuteLimiters.get(tier);
+  if (!minuteLimiter) {
+    minuteLimiter = createCustomRateLimiter(
+      tierConfig.maxRequests,
+      tierConfig.windowSeconds,
+      `chat_minute_${tier}`
+    );
+    chatMinuteLimiters.set(tier, minuteLimiter);
   }
-  if (!chatDailyLimiter) {
-    chatDailyLimiter = createCustomRateLimiter(10000, 86400, 'chat_daily');
-  }
-  
-  // Check minute limit
-  const minuteResult = await chatMinuteLimiter(identifier);
-  
+
+  const minuteResult = await minuteLimiter(identifier);
   if (!minuteResult.success) {
     return {
       allowed: false,
@@ -282,10 +307,20 @@ export async function checkChatRateLimit(identifier: string): Promise<ChatRateLi
       retryAfter: minuteResult.reset,
     };
   }
-  
-  // Check daily limit
-  const dailyResult = await chatDailyLimiter(identifier);
-  
+
+  // 2. 日级限流（per-tier，从配置读取；admin/Infinity 跳过）
+  const dailyLimit = await getDailyLimitByTier(tier);
+  if (!Number.isFinite(dailyLimit)) {
+    return { allowed: true, minuteLimit: minuteResult };
+  }
+
+  let dailyLimiter = chatDailyLimiters.get(tier);
+  if (!dailyLimiter) {
+    dailyLimiter = createCustomRateLimiter(dailyLimit, 86400, `chat_daily_${tier}`);
+    chatDailyLimiters.set(tier, dailyLimiter);
+  }
+
+  const dailyResult = await dailyLimiter(identifier);
   if (!dailyResult.success) {
     return {
       allowed: false,
@@ -295,7 +330,7 @@ export async function checkChatRateLimit(identifier: string): Promise<ChatRateLi
       retryAfter: dailyResult.reset,
     };
   }
-  
+
   return {
     allowed: true,
     minuteLimit: minuteResult,

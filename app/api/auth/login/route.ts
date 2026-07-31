@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findUserByEmail, verifyPassword, generateTokens } from '@/lib/auth';
-import { getLoginRateLimiter } from '@/lib/middleware/rate-limit';
+import { getLoginRateLimiter, getLoginAttemptLimiter } from '@/lib/middleware/rate-limit';
 
 // ==================== 获取客户端 IP ====================
 
@@ -58,7 +58,27 @@ export async function POST(request: NextRequest) {
 
     // Find user
     const normalizedEmail = body.email.toLowerCase().trim();
-    
+
+    // 4. 账户维度防暴破：单一 email 每 15 分钟最多 5 次尝试
+    //    在密码验证前检查，防止攻击者切换 IP 暴力破解单一账户
+    const loginAttemptLimiter = getLoginAttemptLimiter();
+    const attemptResult = await loginAttemptLimiter(`login:email:${normalizedEmail}`);
+    if (!attemptResult.success) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'RATE_LIMITED',
+            message: 'Too many login attempts for this account. Please try again later.',
+            retry_after: attemptResult.reset,
+          },
+        },
+        {
+          status: 429,
+          headers: attemptResult.reset > 0 ? { 'Retry-After': String(attemptResult.reset) } : undefined,
+        }
+      );
+    }
+
     const user = await findUserByEmail(normalizedEmail);
     
     if (!user) {
