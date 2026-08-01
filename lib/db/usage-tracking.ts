@@ -1,14 +1,18 @@
 /**
  * 用户使用追踪
  * 跟踪 API 调用次数，实现每日限制
- * 
+ *
  * 功能：
  * 1. 每日调用计数
  * 2. Tier-based 限制
  * 3. 使用统计
+ *
+ * 连接通过 lib/db/client.ts 统一管理（getDb）；DB 不可用时优雅降级：
+ * 读取返回零值默认对象、写入/删除无操作，调用方（usage 路由）已用 try/catch 包裹。
  */
 
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
+import { logger } from '@/lib/logger';
 
 // ==================== 类型定义 ====================
 
@@ -62,25 +66,32 @@ const DEFAULT_MONTHLY_LIMIT = 2000;
 // ==================== 数据库表管理 ====================
 
 export async function ensureUsageTrackingTable() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS user_usage (
-      id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
-      date DATE NOT NULL,
-      api_calls INTEGER DEFAULT 0,
-      input_tokens INTEGER DEFAULT 0,
-      output_tokens INTEGER DEFAULT 0,
-      last_call TIMESTAMP,
-      created_at TIMESTAMP DEFAULT NOW(),
-      UNIQUE(user_id, date)
-    )
-  `;
-  
+  const db = await getDb();
+  if (!db) return;
+
   try {
-    await sql`CREATE INDEX IF NOT EXISTS idx_user_usage_user_id ON user_usage(user_id)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_user_usage_date ON user_usage(date)`;
-  } catch {
-    // 索引可能已存在
+    await db`
+      CREATE TABLE IF NOT EXISTS user_usage (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        date DATE NOT NULL,
+        api_calls INTEGER DEFAULT 0,
+        input_tokens INTEGER DEFAULT 0,
+        output_tokens INTEGER DEFAULT 0,
+        last_call TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(user_id, date)
+      )
+    `;
+
+    try {
+      await db`CREATE INDEX IF NOT EXISTS idx_user_usage_user_id ON user_usage(user_id)`;
+      await db`CREATE INDEX IF NOT EXISTS idx_user_usage_date ON user_usage(date)`;
+    } catch (err) {
+      logger.warn({ err }, 'user_usage index creation (may already exist)');
+    }
+  } catch (err) {
+    logger.error({ err }, 'ensureUsageTrackingTable failed');
   }
 }
 
@@ -94,25 +105,28 @@ export async function recordApiCall(
   inputTokens: number = 0,
   outputTokens: number = 0
 ): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
   await ensureUsageTrackingTable();
-  
-  const today = new Date().toISOString().split('T')[0];
+
+  const today = new Date().toISOString().split('T')[0]!;
   const id = `${userId}-${today}`;
-  
+
   // 尝试更新现有记录
-  const updateResult = await sql`
+  const updateResult = await db`
     UPDATE user_usage
-    SET 
+    SET
       api_calls = api_calls + 1,
       input_tokens = input_tokens + ${inputTokens},
       output_tokens = output_tokens + ${outputTokens},
       last_call = NOW()
     WHERE user_id = ${userId} AND date = ${today}
   `;
-  
+
   // 如果没有更新任何行，插入新记录
   if (updateResult.rowCount === 0) {
-    await sql`
+    await db`
       INSERT INTO user_usage (id, user_id, date, api_calls, input_tokens, output_tokens, last_call)
       VALUES (${id}, ${userId}, ${today}, 1, ${inputTokens}, ${outputTokens}, NOW())
       ON CONFLICT (user_id, date) DO UPDATE SET
@@ -128,16 +142,21 @@ export async function recordApiCall(
  * 获取今日使用量
  */
 export async function getTodayUsage(userId: string): Promise<DailyUsage> {
-  await ensureUsageTrackingTable();
-  
+  const db = await getDb();
   const today = new Date().toISOString().split('T')[0] || new Date().toISOString().slice(0, 10);
-  
-  const result = await sql`
+
+  if (!db) {
+    return { date: today, apiCalls: 0, inputTokens: 0, outputTokens: 0 };
+  }
+
+  await ensureUsageTrackingTable();
+
+  const result = await db`
     SELECT api_calls, input_tokens, output_tokens
     FROM user_usage
     WHERE user_id = ${userId} AND date = ${today}
   `;
-  
+
   if (result.rows.length === 0) {
     return {
       date: today,
@@ -146,7 +165,7 @@ export async function getTodayUsage(userId: string): Promise<DailyUsage> {
       outputTokens: 0,
     };
   }
-  
+
   const row = result.rows[0]!;
   return {
     date: today,
@@ -160,22 +179,27 @@ export async function getTodayUsage(userId: string): Promise<DailyUsage> {
  * 获取本月使用量
  */
 export async function getMonthlyUsage(userId: string): Promise<MonthlyUsage> {
-  await ensureUsageTrackingTable();
-  
+  const db = await getDb();
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const month = monthStart.toISOString().slice(0, 7) || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; // YYYY-MM
-  
-  const result = await sql`
-    SELECT 
+
+  if (!db) {
+    return { month, apiCalls: 0, inputTokens: 0, outputTokens: 0 };
+  }
+
+  await ensureUsageTrackingTable();
+
+  const result = await db`
+    SELECT
       COALESCE(SUM(api_calls), 0) as api_calls,
       COALESCE(SUM(input_tokens), 0) as input_tokens,
       COALESCE(SUM(output_tokens), 0) as output_tokens
     FROM user_usage
-    WHERE user_id = ${userId} 
+    WHERE user_id = ${userId}
       AND date >= ${monthStart.toISOString().split('T')[0]}
   `;
-  
+
   const row = result.rows[0]!;
   return {
     month,
@@ -187,7 +211,7 @@ export async function getMonthlyUsage(userId: string): Promise<MonthlyUsage> {
 
 /**
  * 检查每日限制
- * 
+ *
  * @returns true 如果未超过限制
  */
 export async function checkDailyLimit(
@@ -195,13 +219,13 @@ export async function checkDailyLimit(
   tier: string = 'free'
 ): Promise<{ allowed: boolean; usage: number; limit: number }> {
   const limit = DAILY_LIMITS[tier] ?? DEFAULT_DAILY_LIMIT;
-  
+
   // enterprise 无限制
   if (limit === -1) {
     const usage = await getTodayUsage(userId);
     return { allowed: true, usage: usage.apiCalls, limit: -1 };
   }
-  
+
   const usage = await getTodayUsage(userId);
   return {
     allowed: usage.apiCalls < limit,
@@ -212,7 +236,7 @@ export async function checkDailyLimit(
 
 /**
  * 检查每月限制
- * 
+ *
  * @returns true 如果未超过限制
  */
 export async function checkMonthlyLimit(
@@ -220,13 +244,13 @@ export async function checkMonthlyLimit(
   tier: string = 'free'
 ): Promise<{ allowed: boolean; usage: number; limit: number }> {
   const limit = MONTHLY_LIMITS[tier] ?? DEFAULT_MONTHLY_LIMIT;
-  
+
   // enterprise 无限制
   if (limit === -1) {
     const usage = await getMonthlyUsage(userId);
     return { allowed: true, usage: usage.apiCalls, limit: -1 };
   }
-  
+
   const usage = await getMonthlyUsage(userId);
   return {
     allowed: usage.apiCalls < limit,
@@ -246,10 +270,10 @@ export async function getUsageStats(
     getTodayUsage(userId),
     getMonthlyUsage(userId),
   ]);
-  
+
   const dailyLimit = DAILY_LIMITS[tier] ?? DEFAULT_DAILY_LIMIT;
   const monthlyLimit = MONTHLY_LIMITS[tier] ?? DEFAULT_MONTHLY_LIMIT;
-  
+
   return {
     today: {
       calls: todayUsage.apiCalls,
@@ -271,19 +295,22 @@ export async function getUsageHistory(
   userId: string,
   days: number = 30
 ): Promise<DailyUsage[]> {
+  const db = await getDb();
+  if (!db) return [];
+
   await ensureUsageTrackingTable();
-  
+
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
   const startDateStr = startDate.toISOString().split('T')[0];
-  
-  const result = await sql`
+
+  const result = await db`
     SELECT date, api_calls, input_tokens, output_tokens
     FROM user_usage
     WHERE user_id = ${userId} AND date >= ${startDateStr}
     ORDER BY date DESC
   `;
-  
+
   return result.rows.map(row => ({
     date: row.date as string,
     apiCalls: (row.api_calls as number) ?? 0,
@@ -296,11 +323,14 @@ export async function getUsageHistory(
  * 重置用户每日使用量（管理员功能）
  */
 export async function resetDailyUsage(userId: string): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
   await ensureUsageTrackingTable();
-  
+
   const today = new Date().toISOString().split('T')[0];
-  
-  await sql`
+
+  await db`
     DELETE FROM user_usage
     WHERE user_id = ${userId} AND date = ${today}
   `;

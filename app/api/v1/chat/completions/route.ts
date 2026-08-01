@@ -648,7 +648,9 @@ function createSSEStream(
 
         if (!response.ok) {
           const errorText = await response.text();
-          const errorChunk = `data: ${JSON.stringify({ error: { message: `Provider error: ${response.status} - ${errorText.slice(0, 200)}` } })}\n\n`;
+          // OpenAI 兼容：错误以 data: chunk 发送，并以 data: [DONE] 终止流，
+          // 避免客户端因缺少终止符而挂起。
+          const errorChunk = `data: ${JSON.stringify({ error: { message: `Provider error: ${response.status} - ${errorText.slice(0, 200)}`, type: 'api_error' } })}\n\ndata: [DONE]\n\n`;
           controller.enqueue(encoder.encode(errorChunk));
           controller.close();
           await finalizeBilling(false, `Provider error: ${response.status}`);
@@ -687,7 +689,8 @@ function createSSEStream(
         await finalizeBilling(true);
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg } })}\n\n`;
+        // OpenAI 兼容：错误 chunk + data: [DONE] 终止符
+        const errorChunk = `data: ${JSON.stringify({ error: { message: errorMsg, type: 'api_error' } })}\n\ndata: [DONE]\n\n`;
         try {
           controller.enqueue(encoder.encode(errorChunk));
           controller.close();
@@ -773,6 +776,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: {
+              type: 'invalid_request_error',
               code: 'UNAUTHORIZED',
               message: 'Invalid or missing API key',
             },
@@ -790,6 +794,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: {
+            type: 'rate_limit_error',
             code: 'RATE_LIMITED',
             message: rateCheck.error || 'Too many requests. Please try again later.',
             retry_after: rateCheck.retryAfter,
@@ -808,6 +813,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: {
+            type: 'insufficient_quota',
             code: 'INSUFFICIENT_CREDITS',
             message: 'You have run out of credits. Please upgrade to Pro or purchase more credits.',
             hint: 'Visit /dashboard to upgrade',
@@ -824,6 +830,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: {
+            type: 'invalid_request_error',
             code: 'INVALID_REQUEST',
             message: 'messages field is required and must be a non-empty array',
           },
@@ -908,6 +915,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: {
+            type: 'api_error',
             code: 'PROVIDER_UNAVAILABLE',
             message: `Provider ${route.provider} is not available`,
           },
@@ -945,9 +953,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: {
-              code: 'NO_API_KEY',
-              message: `No API key available for provider: ${route.provider}`,
-            },
+            type: 'api_error',
+            code: 'NO_API_KEY',
+            message: `No API key available for provider: ${route.provider}`,
+          },
           },
           { status: 503 }
         );
@@ -976,9 +985,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: {
-              code: 'PROVIDER_CONCURRENCY_FULL',
-              message: `Provider ${route.provider} is at concurrency limit, please retry shortly`,
-            },
+            type: 'server_error',
+            code: 'PROVIDER_CONCURRENCY_FULL',
+            message: `Provider ${route.provider} is at concurrency limit, please retry shortly`,
+          },
           },
           { status: 503, headers: { 'Retry-After': '2' } }
         );
@@ -1100,6 +1110,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: {
+          type: 'api_error',
           code: 'INTERNAL_ERROR',
           message: error instanceof Error ? error.message : 'Chat completion failed',
           latency_ms: latencyMs,

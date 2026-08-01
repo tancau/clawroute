@@ -37,6 +37,7 @@ export async function ensureRequestLogsTable() {
       await db`CREATE INDEX IF NOT EXISTS idx_request_logs_user_id ON request_logs(user_id)`;
       await db`CREATE INDEX IF NOT EXISTS idx_request_logs_created_at ON request_logs(created_at)`;
       await db`CREATE INDEX IF NOT EXISTS idx_request_logs_model ON request_logs(model)`;
+      await db`CREATE INDEX IF NOT EXISTS idx_request_logs_success ON request_logs(success)`;
     } catch (err) {
       logger.warn({ err }, 'request_logs index creation (may already exist)');
     }
