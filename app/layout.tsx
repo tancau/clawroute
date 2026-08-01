@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
+import { headers } from 'next/headers';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -100,12 +101,15 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  // 读取中间件生成的 per-request nonce（使用 nonce 强制动态渲染）
+  const nonce = (await headers()).get('x-nonce') ?? '';
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
         {/* Theme script to prevent flash */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
