@@ -11,6 +11,7 @@ test.describe('安全头 / CSP nonce', () => {
     const resp = await request.get('/en');
     const csp = resp.headers()['content-security-policy'];
     expect(csp).toBeTruthy();
+    if (!csp) throw new Error('Missing content-security-policy header');
     expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/);
     expect(csp).toContain("'strict-dynamic'");
     // script-src 不应包含 'unsafe-inline'（dev/prod 均不含；dev 仅多 'unsafe-eval'）

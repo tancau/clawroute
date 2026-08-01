@@ -96,24 +96,28 @@ const memoryRateLimitMap = new Map<string, MemoryRateLimitEntry>();
 function checkMemoryRateLimit(
   identifier: string,
   maxRequests: number,
-  windowSeconds: number
+  windowSeconds: number,
+  prefix: string = 'default'
 ): { success: boolean; limit: number; reset: number; remaining: number } {
   const now = Date.now();
   const windowMs = windowSeconds * 1000;
-  
-  let entry = memoryRateLimitMap.get(identifier);
-  
+
+  // 按 prefix 隔离不同 limiter 的计数（与 Redis 路径的 `prefix` 行为对齐），
+  // 否则同一 identifier 上的 minute/daily limiter 会共用一个计数器导致提前触发限流。
+  const key = `${prefix}:${identifier}`;
+  let entry = memoryRateLimitMap.get(key);
+
   if (!entry || now > entry.resetAt) {
     entry = { count: 0, resetAt: now + windowMs };
-    memoryRateLimitMap.set(identifier, entry);
+    memoryRateLimitMap.set(key, entry);
   }
-  
+
   entry.count++;
-  
+
   const remaining = Math.max(0, maxRequests - entry.count);
   const success = entry.count <= maxRequests;
   const reset = Math.ceil((entry.resetAt - now) / 1000);
-  
+
   return { success, limit: maxRequests, reset, remaining };
 }
 
@@ -175,7 +179,8 @@ export async function checkRateLimit(
     const result = checkMemoryRateLimit(
       identifier,
       config.maxRequests,
-      config.windowSeconds
+      config.windowSeconds,
+      `tier:${tier}`
     );
     return { ...result, usingMemory: true };
   }
@@ -202,11 +207,12 @@ export async function checkRateLimit(
     };
   } catch (error) {
     console.error('[RateLimit] Redis error, falling back to memory:', error);
-    
+
     const result = checkMemoryRateLimit(
       identifier,
       config.maxRequests,
-      config.windowSeconds
+      config.windowSeconds,
+      `tier:${tier}`
     );
     return { ...result, usingMemory: true };
   }
@@ -351,19 +357,19 @@ export function createCustomRateLimiter(
   return async (identifier: string): Promise<RateLimitResult> => {
     // 如果 Redis 不可用，使用内存回退
     if (!redisClient) {
-      const result = checkMemoryRateLimit(identifier, maxRequests, windowSeconds);
+      const result = checkMemoryRateLimit(identifier, maxRequests, windowSeconds, prefix);
       return { ...result, usingMemory: true };
     }
-    
+
     const customRatelimit = new Ratelimit({
       redis: redisClient,
       limiter: Ratelimit.slidingWindow(maxRequests, `${windowSeconds} s`),
       prefix: `hopllm:${prefix}`,
     });
-    
+
     try {
       const result = await customRatelimit.limit(identifier);
-      
+
       return {
         success: result.success,
         limit: result.limit,
@@ -373,8 +379,8 @@ export function createCustomRateLimiter(
       };
     } catch (error) {
       console.error(`[RateLimit:${prefix}] Redis error:`, error);
-      
-      const result = checkMemoryRateLimit(identifier, maxRequests, windowSeconds);
+
+      const result = checkMemoryRateLimit(identifier, maxRequests, windowSeconds, prefix);
       return { ...result, usingMemory: true };
     }
   };
