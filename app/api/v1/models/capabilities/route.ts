@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest } from '@/lib/middleware/api-auth';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { ensureAllFeedbackTables } from '@/lib/db/feedback-tables';
 import modelCapabilitiesData from '@/data/model-capabilities.json';
 import type { ModelCapability } from '@/lib/models/capability-matrix';
@@ -40,8 +40,15 @@ export async function GET(request: NextRequest) {
 
 
   try {
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { error: { type: 'api_error', code: 'DATABASE_UNAVAILABLE', message: 'Database temporarily unavailable' } },
+        { status: 503 }
+      );
+    }
     await ensureAllFeedbackTables();
-    
+
     const { searchParams } = new URL(request.url);
     const modelId = searchParams.get('modelId');
     const includeMerged = searchParams.get('merged') === 'true';
@@ -132,8 +139,11 @@ export async function GET(request: NextRequest) {
 // ===== Helper: Get Model Feedbacks =====
 
 async function getModelFeedbacks(modelId: string): Promise<UserFeedback[]> {
+  const db = await getDb();
+  if (!db) return [];
+
   try {
-    const result = await sql`
+    const result = await db`
       SELECT 
         id, user_id, model_id,
         coding_score, reasoning_score, math_score, translation_score,

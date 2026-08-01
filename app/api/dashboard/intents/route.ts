@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 interface IntentStats {
@@ -38,8 +38,16 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 按意图聚合
-    const result = await sql`
+    const result = await db`
       SELECT 
         COALESCE(intent, 'unknown') as intent,
         COUNT(*) as requests,
@@ -52,7 +60,7 @@ export async function GET(request: NextRequest) {
     `;
 
     // 计算总数
-    const totalResult = await sql`
+    const totalResult = await db`
       SELECT COUNT(*) as total FROM request_logs WHERE user_id = ${userId}
     `;
     const total = parseInt(totalResult.rows[0]?.total as string) || 1;

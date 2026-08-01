@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { 
   sendEmail, 
@@ -84,8 +84,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 获取用户信息
-    const userResult = await sql`
+    const userResult = await db`
       SELECT id, email, name FROM users WHERE id = ${userId}
     `;
 
@@ -232,7 +240,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
     // 记录通知
     await ensureNotificationsTable();
-    await sql`
+    await db`
       INSERT INTO notifications (id, user_id, type, subject, content, status, sent_at, created_at)
       VALUES (
         ${notificationId},
@@ -248,7 +256,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
     if (!result.success) {
       // 更新错误信息
-      await sql`
+      await db`
         UPDATE notifications SET error_message = ${result.error} WHERE id = ${notificationId}
       `;
     }

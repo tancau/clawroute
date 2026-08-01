@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureRequestLogsTable } from '@/lib/db-tables';
 
@@ -54,6 +54,14 @@ export async function GET(request: NextRequest): Promise<Response | NextResponse
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 解析查询参数
     const searchParams = request.nextUrl.searchParams;
     const params: ExportParams = {
@@ -75,7 +83,7 @@ export async function GET(request: NextRequest): Promise<Response | NextResponse
     await ensureRequestLogsTable();
 
     // 构建基础查询
-    const baseQuery = sql`
+    const baseQuery = db`
       SELECT 
         id, model, provider, input_tokens, output_tokens, 
         cost_usd, intent, latency_ms, success, error_message, created_at

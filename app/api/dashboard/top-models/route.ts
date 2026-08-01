@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 interface TopModel {
@@ -38,12 +38,20 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 获取查询参数
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');
 
     // 按模型聚合
-    const result = await sql`
+    const result = await db`
       SELECT 
         model,
         COUNT(*) as requests,

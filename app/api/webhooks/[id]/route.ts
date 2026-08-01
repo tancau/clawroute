@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureWebhooksTable } from '@/lib/db-tables';
 
@@ -38,13 +38,21 @@ export async function DELETE(
     }
 
     const userId = payload.userId as string;
+
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
     const { id } = await params;
 
     await ensureWebhooksTable();
 
     // 删除 Webhook（确保是用户自己的）
-    const result = await sql`
-      DELETE FROM webhooks 
+    const result = await db`
+      DELETE FROM webhooks
       WHERE id = ${id} AND user_id = ${userId}
       RETURNING id
     `;

@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 interface ApiResponse<T = unknown> {
@@ -62,8 +62,16 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 检查是否是 Admin
-    const userResult = await sql`
+    const userResult = await db`
       SELECT tier, status FROM users WHERE id = ${userId}
     `;
 
@@ -86,7 +94,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const now = Date.now();
 
     // 计算日留存率（过去 30 天）
-    const dailyRetentionResult = await sql`
+    const dailyRetentionResult = await db`
       WITH daily_users AS (
         SELECT 
           DATE(TO_TIMESTAMP(created_at / 1000)) as activity_date,
@@ -120,7 +128,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 计算周留存率（过去 12 周）
-    const weeklyRetentionResult = await sql`
+    const weeklyRetentionResult = await db`
       WITH weekly_users AS (
         SELECT 
           DATE_TRUNC('week', TO_TIMESTAMP(created_at / 1000)) as week,
@@ -144,7 +152,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 计算月留存率（过去 6 个月）
-    const monthlyRetentionResult = await sql`
+    const monthlyRetentionResult = await db`
       WITH monthly_users AS (
         SELECT 
           DATE_TRUNC('month', TO_TIMESTAMP(created_at / 1000)) as month,
@@ -168,7 +176,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // Cohort 分析（按注册月份）
-    const cohortResult = await sql`
+    const cohortResult = await db`
       WITH user_cohorts AS (
         SELECT 
           id,
@@ -219,7 +227,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     // 计算流失率
     const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
     
-    const churnResult = await sql`
+    const churnResult = await db`
       WITH active_users AS (
         SELECT DISTINCT user_id
         FROM request_logs
@@ -240,7 +248,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const churnRate = ((totalCount - activeCount) / totalCount) * 100;
 
     // 计算平均用户生命周期
-    const lifetimeResult = await sql`
+    const lifetimeResult = await db`
       SELECT 
         AVG(EXTRACT(EPOCH FROM (
           TO_TIMESTAMP(MAX(created_at) / 1000) - TO_TIMESTAMP(MIN(created_at) / 1000)

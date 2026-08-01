@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureWebhooksTable } from '@/lib/db-tables';
 import crypto from 'crypto';
@@ -63,11 +63,19 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     const userId = payload.userId as string;
+
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
     await ensureWebhooksTable();
 
-    const result = await sql`
-      SELECT 
-        id, user_id, url, secret, events, active, 
+    const result = await db`
+      SELECT
+        id, user_id, url, secret, events, active,
         last_triggered_at, failure_count, created_at, updated_at
       FROM webhooks WHERE user_id = ${userId}
       ORDER BY created_at DESC
@@ -120,6 +128,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     }
 
     const userId = payload.userId as string;
+
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
     const body = await request.json();
 
     // 验证 URL
@@ -168,7 +184,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
     // 检查用户 Webhook 数量限制
     await ensureWebhooksTable();
-    const countResult = await sql`
+    const countResult = await db`
       SELECT COUNT(*) as count FROM webhooks WHERE user_id = ${userId}
     `;
     const webhookCount = parseInt((countResult.rows[0]?.count as string) || '0');
@@ -186,7 +202,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     const now = Date.now();
 
     // 保存 Webhook
-    await sql`
+    await db`
       INSERT INTO webhooks (
         id, user_id, url, secret, events, active, failure_count, created_at, updated_at
       ) VALUES (

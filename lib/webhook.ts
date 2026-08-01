@@ -3,7 +3,7 @@ import crypto from 'crypto';
  * Webhook 触发工具
  */
 
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { ensureWebhooksTable, ensureWebhookLogsTable } from './db-tables';
 
 // Webhook 事件类型
@@ -31,11 +31,14 @@ export async function triggerWebhooks(
   data: Record<string, unknown>
 ): Promise<void> {
   try {
+    const db = await getDb();
+    if (!db) return;
+
     await ensureWebhooksTable();
     await ensureWebhookLogsTable();
 
     // 获取用户的所有活跃 Webhooks
-    const webhooks = await sql`
+    const webhooks = await db`
       SELECT id, url, secret
       FROM webhooks
       WHERE user_id = ${userId} AND active = true
@@ -69,7 +72,7 @@ export async function triggerWebhooks(
         });
 
         // 记录结果
-        await sql`
+        await db`
           INSERT INTO webhook_logs (webhook_id, event, status, response_code, created_at)
           VALUES (${webhookId}, ${event}, ${response.ok ? 'success' : 'failed'}, ${response.status}, ${Date.now()})
         `;
@@ -77,7 +80,7 @@ export async function triggerWebhooks(
         console.error(`[Webhook] Failed to send to ${url}:`, error);
         
         // 记录失败
-        await sql`
+        await db`
           INSERT INTO webhook_logs (webhook_id, event, status, error_message, created_at)
           VALUES (${webhookId}, ${event}, 'failed', ${String(error)}, ${Date.now()})
         `;

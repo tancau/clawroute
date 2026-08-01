@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureErrorTrackingTable } from '@/lib/db-tables';
 import crypto from 'crypto';
@@ -81,8 +81,16 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 检查是否是 Admin
-    const userResult = await sql`
+    const userResult = await db`
       SELECT tier, status FROM users WHERE id = ${userId}
     `;
 
@@ -110,7 +118,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     await ensureErrorTrackingTable();
 
     // 获取总错误数
-    const totalErrorsResult = await sql`
+    const totalErrorsResult = await db`
       SELECT COUNT(*) as count
       FROM request_logs
       WHERE success = false AND created_at >= ${thirtyDaysAgo}
@@ -119,7 +127,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const totalErrors = parseInt(totalErrorsResult.rows[0]?.count as string) || 0;
 
     // 获取唯一错误数（基于错误消息）
-    const uniqueErrorsResult = await sql`
+    const uniqueErrorsResult = await db`
       SELECT COUNT(DISTINCT error_message) as count
       FROM request_logs
       WHERE success = false AND created_at >= ${thirtyDaysAgo}
@@ -128,7 +136,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const uniqueErrors = parseInt(uniqueErrorsResult.rows[0]?.count as string) || 0;
 
     // 获取未解决的错误数
-    const unresolvedResult = await sql`
+    const unresolvedResult = await db`
       SELECT COUNT(*) as count
       FROM error_tracking
       WHERE resolved = false
@@ -137,7 +145,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const unresolvedErrors = parseInt(unresolvedResult.rows[0]?.count as string) || 0;
 
     // 按错误类型统计
-    const errorsByTypeResult = await sql`
+    const errorsByTypeResult = await db`
       SELECT
         CASE
           WHEN error_message LIKE '%timeout%' THEN 'Timeout'
@@ -161,7 +169,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 按模型统计错误
-    const errorsByModelResult = await sql`
+    const errorsByModelResult = await db`
       SELECT
         rl.model,
         COUNT(CASE WHEN rl.success = false THEN 1 END) as errors,
@@ -183,7 +191,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 按提供商统计错误
-    const errorsByProviderResult = await sql`
+    const errorsByProviderResult = await db`
       SELECT
         rl.provider,
         COUNT(CASE WHEN rl.success = false THEN 1 END) as errors,
@@ -204,7 +212,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 最近错误列表
-    const recentErrorsResult = await sql`
+    const recentErrorsResult = await db`
       SELECT
         id, user_id, model, provider, error_message,
         created_at, latency_ms, intent
@@ -230,7 +238,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 错误时间线（按天）
-    const errorTimelineResult = await sql`
+    const errorTimelineResult = await db`
       SELECT
         DATE(TO_TIMESTAMP(created_at / 1000)) as date,
         COUNT(*) as errors
@@ -290,8 +298,16 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 检查 Admin 权限
-    const userResult = await sql`
+    const userResult = await db`
       SELECT tier FROM users WHERE id = ${userId}
     `;
 
@@ -309,7 +325,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     const errorId = crypto.randomUUID();
     const now = Date.now();
 
-    await sql`
+    await db`
       INSERT INTO error_tracking (
         id, error_type, error_message, error_stack, request_id,
         model, provider, occurrence_count, first_seen_at, last_seen_at, resolved
@@ -365,8 +381,16 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 检查 Admin 权限
-    const userResult = await sql`
+    const userResult = await db`
       SELECT tier FROM users WHERE id = ${userId}
     `;
 
@@ -387,7 +411,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
       );
     }
 
-    await sql`
+    await db`
       UPDATE error_tracking
       SET resolved = ${body.resolved ?? true}
       WHERE id = ${body.errorId}

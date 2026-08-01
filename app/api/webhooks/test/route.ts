@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureWebhooksTable } from '@/lib/db-tables';
 import { testWebhook, sendWebhook } from '@/lib/webhook';
@@ -45,6 +45,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     }
 
     const userId = payload.userId as string;
+
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
     const body = await request.json();
 
     // 测试新 URL 或已存在的 Webhook
@@ -64,8 +72,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
       // 测试已存在的 Webhook
       await ensureWebhooksTable();
       
-      const result = await sql`
-        SELECT id, url, secret FROM webhooks 
+      const result = await db`
+        SELECT id, url, secret FROM webhooks
         WHERE id = ${body.webhookId} AND user_id = ${userId}
       `;
 

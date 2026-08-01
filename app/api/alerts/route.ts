@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureAlertsTable } from '@/lib/db-tables';
 import crypto from 'crypto';
@@ -60,11 +60,19 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     const userId = payload.userId as string;
+
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
     await ensureAlertsTable();
 
     // 查询告警设置
-    const result = await sql`
-      SELECT 
+    const result = await db`
+      SELECT
         user_id, credits_threshold, daily_request_limit, error_rate_threshold,
         email_enabled, webhook_enabled, created_at, updated_at
       FROM alerts WHERE user_id = ${userId}
@@ -73,9 +81,9 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     if (result.rows.length === 0) {
       // 创建默认设置
       const now = Date.now();
-      await sql`
+      await db`
         INSERT INTO alerts (
-          id, user_id, credits_threshold, daily_request_limit, 
+          id, user_id, credits_threshold, daily_request_limit,
           error_rate_threshold, email_enabled, webhook_enabled, created_at, updated_at
         ) VALUES (
           ${crypto.randomUUID()},
@@ -150,6 +158,14 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     const userId = payload.userId as string;
+
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
     const body = await request.json();
 
     // 验证参数
@@ -178,7 +194,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
     const now = Date.now();
 
     // 检查是否存在设置
-    const existing = await sql`
+    const existing = await db`
       SELECT user_id FROM alerts WHERE user_id = ${userId}
     `;
 
@@ -192,7 +208,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
         webhookEnabled: body.webhookEnabled ?? DEFAULT_ALERT_SETTINGS.webhookEnabled,
       };
 
-      await sql`
+      await db`
         INSERT INTO alerts (
           id, user_id, credits_threshold, daily_request_limit,
           error_rate_threshold, email_enabled, webhook_enabled, created_at, updated_at
@@ -221,7 +237,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     // 更新现有设置
-    await sql`
+    await db`
       UPDATE alerts SET
         credits_threshold = COALESCE(${body.creditsThreshold}, credits_threshold),
         daily_request_limit = COALESCE(${body.dailyRequestLimit}, daily_request_limit),
@@ -233,8 +249,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse<ApiRespons
     `;
 
     // 获取更新后的设置
-    const result = await sql`
-      SELECT 
+    const result = await db`
+      SELECT
         user_id, credits_threshold, daily_request_limit, error_rate_threshold,
         email_enabled, webhook_enabled, created_at, updated_at
       FROM alerts WHERE user_id = ${userId}

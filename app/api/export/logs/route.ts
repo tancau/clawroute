@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { ensureWebhookLogsTable } from '@/lib/db-tables';
 
@@ -43,6 +43,14 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 解析查询参数
     const searchParams = request.nextUrl.searchParams;
     const format = (searchParams.get('format') as 'json' | 'csv') || 'json';
@@ -57,7 +65,7 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
 
     // 获取 Webhook 日志
     if (logType === 'webhook' || logType === 'all') {
-      const webhookResult = await sql`
+      const webhookResult = await db`
         SELECT 
           wl.id, wl.webhook_id, wl.event_type, wl.payload, 
           wl.response_status, wl.response_body, wl.success, 
@@ -88,7 +96,7 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
     if (logType === 'notification' || logType === 'all') {
       await ensureNotificationsTableExists();
       
-      const notificationResult = await sql`
+      const notificationResult = await db`
         SELECT 
           id, user_id, type, subject, status, 
           sent_at, error_message, created_at
@@ -155,8 +163,9 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
 
 // 确保通知表存在
 async function ensureNotificationsTableExists() {
-  const { sql } = await import('@vercel/postgres');
-  await sql`
+  const db = await getDb();
+  if (!db) return;
+  await db`
     CREATE TABLE IF NOT EXISTS notifications (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,

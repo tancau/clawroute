@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest } from '@/lib/middleware/api-auth';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { ensureAllFeedbackTables } from '@/lib/db/feedback-tables';
 
 // Generate unique ID
@@ -74,8 +74,15 @@ export async function POST(request: NextRequest) {
 
 
   try {
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { error: { type: 'api_error', code: 'DATABASE_UNAVAILABLE', message: 'Database temporarily unavailable' } },
+        { status: 503 }
+      );
+    }
     await ensureAllFeedbackTables();
-    
+
     const body: FeedbackSubmission = await request.json();
     
     // Validate
@@ -118,7 +125,7 @@ export async function POST(request: NextRequest) {
     const now = Date.now();
     
     // Check if user already submitted feedback for this model
-    const existing = await sql`
+    const existing = await db`
       SELECT id FROM model_feedback 
       WHERE user_id = ${body.userId} AND model_id = ${body.modelId}
       LIMIT 1
@@ -131,7 +138,7 @@ export async function POST(request: NextRequest) {
       }
       
       // Update existing feedback
-      await sql`
+      await db`
         UPDATE model_feedback SET
           coding_score = ${body.scores?.coding ?? null},
           reasoning_score = ${body.scores?.reasoning ?? null},
@@ -156,7 +163,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Insert new feedback
-    await sql`
+    await db`
       INSERT INTO model_feedback (
         id, user_id, model_id,
         coding_score, reasoning_score, math_score, translation_score,
@@ -202,8 +209,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { error: { type: 'api_error', code: 'DATABASE_UNAVAILABLE', message: 'Database temporarily unavailable' } },
+        { status: 503 }
+      );
+    }
     await ensureAllFeedbackTables();
-    
+
     const { searchParams } = new URL(request.url);
     const modelId = searchParams.get('modelId');
     
@@ -215,7 +229,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Get all feedbacks for this model
-    const result = await sql`
+    const result = await db`
       SELECT 
         coding_score, reasoning_score, math_score, translation_score,
         creative_score, analysis_score, long_context_score, chinese_score,
@@ -295,9 +309,12 @@ export async function GET(request: NextRequest) {
 // ===== Helper: Update User Reputation =====
 
 async function updateUserReputation(userId: string) {
+  const db = await getDb();
+  if (!db) return;
+
   try {
     // Get user's feedback stats
-    const feedbackStats = await sql`
+    const feedbackStats = await db`
       SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN verified THEN 1 ELSE 0 END) as verified,
@@ -322,7 +339,7 @@ async function updateUserReputation(userId: string) {
     const now = Date.now();
     
     // Upsert user reputation
-    await sql`
+    await db`
       INSERT INTO user_reputation (user_id, total_feedbacks, verified_feedbacks, total_upvotes, reputation_score, created_at, updated_at)
       VALUES (${userId}, ${total}, ${verified}, ${totalUpvotes}, ${reputationScore}, ${now}, ${now})
       ON CONFLICT (user_id)

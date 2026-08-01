@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getCredits, getJWTSecret } from '@/lib/auth';
 import { 
   ensureAlertsTable, 
@@ -58,14 +58,22 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     await ensureAlertsTable();
     await ensureRequestLogsTable();
     await ensureWebhooksTable();
     await ensureWebhookLogsTable();
 
     // 获取告警设置
-    const alertSettings = await sql`
-      SELECT 
+    const alertSettings = await db`
+      SELECT
         credits_threshold, daily_request_limit, error_rate_threshold,
         email_enabled, webhook_enabled
       FROM alerts WHERE user_id = ${userId}
@@ -124,9 +132,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     const today = new Date();
     const dayStart = Math.floor(new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() / 1000);
     
-    const dailyStats = await sql`
+    const dailyStats = await db`
       SELECT COUNT(*) as count
-      FROM request_logs 
+      FROM request_logs
       WHERE user_id = ${userId} AND created_at >= ${dayStart}
     `;
     
@@ -163,11 +171,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     // 3. 检查错误率
     const oneHourAgo = Date.now() - 3600000;
     
-    const errorStats = await sql`
-      SELECT 
+    const errorStats = await db`
+      SELECT
         COUNT(*) as total,
         SUM(CASE WHEN NOT success THEN 1 ELSE 0 END) as errors
-      FROM request_logs 
+      FROM request_logs
       WHERE user_id = ${userId} AND created_at >= ${oneHourAgo}
     `;
     

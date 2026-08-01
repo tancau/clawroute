@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 interface StatsResponse {
@@ -39,8 +39,16 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 获取用户信息
-    const userResult = await sql`
+    const userResult = await db`
       SELECT tier, credits FROM users WHERE id = ${userId}
     `;
 
@@ -56,7 +64,7 @@ export async function GET(request: NextRequest) {
     // 获取统计数据（最近30天）
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
-    const statsResult = await sql`
+    const statsResult = await db`
       SELECT 
         COUNT(*) as total_requests,
         COALESCE(SUM(input_tokens + output_tokens), 0) as total_tokens,

@@ -9,15 +9,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 import { calculateRequestCost } from '@/lib/routing/providers';
 
 // 检查 PostgreSQL 是否可用
 async function isPostgresAvailable(): Promise<boolean> {
   try {
-    const { sql } = await import('@vercel/postgres');
-    await sql`SELECT 1`;
+    const db = await getDb();
+    if (!db) return false;
+    await db`SELECT 1`;
     return true;
   } catch {
     return false;
@@ -60,6 +61,14 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 获取查询参数
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '30');
@@ -91,7 +100,7 @@ export async function GET(request: NextRequest) {
     const startTime = Date.now() - days * 24 * 60 * 60 * 1000;
 
     // 获取总体成本
-    const totalResult = await sql`
+    const totalResult = await db`
       SELECT 
         COALESCE(SUM(cost_usd), 0) as total_cost
       FROM request_logs 
@@ -101,7 +110,7 @@ export async function GET(request: NextRequest) {
     const totalCost = parseFloat(totalResult.rows[0]?.total_cost as string) || 0;
     
     // 获取按模型聚合的请求数据，计算真实节省金额
-    const modelBreakdown = await sql`
+    const modelBreakdown = await db`
       SELECT 
         model,
         COALESCE(SUM(input_tokens), 0) as total_input_tokens,
@@ -130,7 +139,7 @@ export async function GET(request: NextRequest) {
       : 0;
 
     // 按天聚合数据
-    const dailyResult = await sql`
+    const dailyResult = await db`
       SELECT 
         DATE(TO_TIMESTAMP(created_at / 1000)) as day,
         COUNT(*) as requests,

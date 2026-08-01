@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 interface ApiResponse<T = unknown> {
@@ -54,8 +54,16 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 检查是否是 Admin
-    const userResult = await sql`
+    const userResult = await db`
       SELECT tier, status FROM users WHERE id = ${userId}
     `;
 
@@ -83,7 +91,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
 
     // 获取总收入（基于 request_logs 的 cost）
-    const totalCostResult = await sql`
+    const totalCostResult = await db`
       SELECT COALESCE(SUM(cost_usd), 0) as total_cost
       FROM request_logs
     `;
@@ -91,7 +99,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const totalRevenue = parseFloat(totalCostResult.rows[0]?.total_cost as string) || 0;
 
     // 获取月度收入
-    const monthlyCostResult = await sql`
+    const monthlyCostResult = await db`
       SELECT COALESCE(SUM(cost_usd), 0) as monthly_cost
       FROM request_logs
       WHERE created_at >= ${thirtyDaysAgo}
@@ -100,7 +108,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const monthlyRevenue = parseFloat(monthlyCostResult.rows[0]?.monthly_cost as string) || 0;
 
     // 获取每日收入
-    const dailyCostResult = await sql`
+    const dailyCostResult = await db`
       SELECT COALESCE(SUM(cost_usd), 0) as daily_cost
       FROM request_logs
       WHERE created_at >= ${oneDayAgo}
@@ -109,7 +117,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const dailyRevenue = parseFloat(dailyCostResult.rows[0]?.daily_cost as string) || 0;
 
     // 按用户等级统计
-    const tierStatsResult = await sql`
+    const tierStatsResult = await db`
       SELECT 
         u.tier,
         COUNT(DISTINCT u.id) as users,
@@ -127,7 +135,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 按月统计收入
-    const monthlyBreakdownResult = await sql`
+    const monthlyBreakdownResult = await db`
       SELECT 
         DATE_TRUNC('month', TO_TIMESTAMP(created_at / 1000)) as month,
         COALESCE(SUM(cost_usd), 0) as revenue,
@@ -146,7 +154,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }));
 
     // 计算平均每用户收入
-    const userCountResult = await sql`
+    const userCountResult = await db`
       SELECT COUNT(*) as total_users FROM users
     `;
 

@@ -4,13 +4,15 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { getDb } from '@/lib/db/client';
 import { verifyJWT, getJWTSecret } from '@/lib/auth';
 
 // 检查 PostgreSQL 是否可用
 async function isPostgresAvailable(): Promise<boolean> {
   try {
-    await sql`SELECT 1`;
+    const db = await getDb();
+    if (!db) return false;
+    await db`SELECT 1`;
     return true;
   } catch {
     return false;
@@ -47,6 +49,14 @@ export async function GET(request: NextRequest) {
 
     const userId = payload.userId as string;
 
+    const db = await getDb();
+    if (!db) {
+      return NextResponse.json(
+        { success: false, error: 'Database temporarily unavailable' },
+        { status: 503 }
+      );
+    }
+
     // 获取查询参数
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '7');
@@ -74,7 +84,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 按天聚合数据
-    const result = await sql`
+    const result = await db`
       SELECT 
         DATE(TO_TIMESTAMP(created_at / 1000)) as day,
         COUNT(*) as requests,
