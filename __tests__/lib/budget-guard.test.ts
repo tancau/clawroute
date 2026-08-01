@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 
 // 统一 mock 数据访问层：budget-guard 仅依赖 getDb
 vi.mock('@/lib/db/client', () => ({
@@ -15,7 +15,7 @@ import {
   checkBudgetAndGetModelTier,
 } from '@/lib/budget-guard';
 
-const getDbMock = getDb as unknown as vi.Mock;
+const getDbMock = getDb as unknown as Mock;
 
 /** 构造一个作为 tagged template 使用的 sql mock（被 `db\`...\`` 调用） */
 function makeSqlMock() {

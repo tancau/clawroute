@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest';
 
 // mock @vercel/postgres：db/client 内部 `await import('@vercel/postgres')` 会拿到此 mock
 vi.mock('@vercel/postgres', () => ({ sql: vi.fn() }));
@@ -6,7 +6,7 @@ vi.mock('@vercel/postgres', () => ({ sql: vi.fn() }));
 import { sql } from '@vercel/postgres';
 import { getDb, isDbHealthy, isDbConnected, _resetDbClientForTesting } from '@/lib/db/client';
 
-const sqlMock = sql as unknown as vi.Mock;
+const sqlMock = sql as unknown as Mock;
 
 beforeEach(() => {
   _resetDbClientForTesting();
