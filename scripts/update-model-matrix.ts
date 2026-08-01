@@ -41,10 +41,28 @@ interface ProviderPricing {
   };
 }
 
+interface CapabilityModel {
+  id: string;
+  benchmarks?: Record<string, number>;
+  capabilities?: { reasoning?: number; math?: number };
+  arenaElo?: number;
+  cost?: { input: number; output: number };
+  contextWindow?: number;
+  maxTokens?: number;
+  updatedAt?: string;
+  [key: string]: unknown;
+}
+
+interface CapabilityData {
+  models: CapabilityModel[];
+  lastUpdated?: string;
+  dataSource?: string[];
+  [key: string]: unknown;
+}
+
 // ===== Configuration =====
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const CAPABILITY_FILE = path.join(DATA_DIR, 'model-capabilities.json');
-const MODELS_FILE = path.join(DATA_DIR, 'models.json');
 
 const HF_OPENLLM_API = 'https://huggingface.co/api/open-llm-leaderboard/v1';
 const CHATBOT_ARENA_API = 'https://huggingface.co/api/spaces/lmsys/chatbot-arena-leaderboard';
@@ -185,12 +203,12 @@ function calculateCapabilityScore(
  * Merge fetched data with existing capability data
  */
 function mergeData(
-  existing: any,
+  existing: CapabilityData,
   openllm: OpenLLMLeaderboardEntry[],
   arena: ChatbotArenaEntry[],
   pricing: ProviderPricing
-): any {
-  const updated = { ...existing };
+): CapabilityData {
+  const updated: CapabilityData = { ...existing, models: [...existing.models] };
   const now = new Date().toISOString();
   
   // Update models with new benchmark data
@@ -208,6 +226,7 @@ function mergeData(
       };
       
       // Update capabilities
+      model.capabilities = model.capabilities ?? {};
       model.capabilities.reasoning = calculateCapabilityScore('mmlu', openllmEntry.mmlu);
       model.capabilities.math = calculateCapabilityScore('gsm8k', openllmEntry.gsm8k);
     }
@@ -242,7 +261,7 @@ function mergeData(
   updated.lastUpdated = now;
   updated.dataSource = [
     ...Array.from(new Set([
-      ...updated.dataSource,
+      ...(updated.dataSource ?? []),
       'HuggingFace OpenLLM',
       'Chatbot Arena',
     ]))
@@ -263,12 +282,12 @@ async function main() {
   console.log();
   
   // Read existing data
-  let existingData: any;
+  let existingData: CapabilityData;
   try {
     const content = fs.readFileSync(CAPABILITY_FILE, 'utf-8');
-    existingData = JSON.parse(content);
+    existingData = JSON.parse(content) as CapabilityData;
     console.log(`📖 Loaded ${existingData.models.length} existing models`);
-  } catch (error) {
+  } catch {
     console.error('❌ Could not read existing capability data');
     process.exit(1);
   }

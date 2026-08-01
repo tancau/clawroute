@@ -52,10 +52,8 @@ describe('SceneSelector', () => {
     render(<SceneSelector />);
     const card = screen.getByText('交易 Bot');
     await user.click(card);
-    // selectScene is called via the mock
-    const { useAppStore } = await import('@/store/use-app-store');
-    const selectScene = vi.mocked(useAppStore).mock.results[0]?.value?.selectScene;
-    // The mock structure makes this hard to verify directly, so we just check the card is clickable
+    // selectScene is called via the mock; the mock structure makes it hard to
+    // verify directly, so we just assert the card remains clickable.
     expect(card).toBeInTheDocument();
   });
 });

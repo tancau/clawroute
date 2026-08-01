@@ -33,7 +33,7 @@ function applyThemeToDOM(resolved: 'dark' | 'light') {
 
 export const useThemeStore = create<ThemeStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       theme: 'dark',
       resolvedTheme: 'dark',
       setTheme: (theme: Theme) => {

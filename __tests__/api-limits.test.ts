@@ -4,7 +4,7 @@
  * 测试速率限制、每日限制和使用追踪功能
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock 环境变量
 vi.mock('process.env', () => ({
@@ -59,8 +59,7 @@ describe('Registration Security', () => {
   describe('IP Rate Limit', () => {
     it('should track IP attempts', async () => {
       // 这个测试需要模拟内存存储
-      const ip = '192.168.1.1';
-      
+
       // 模拟 5 次尝试
       for (let i = 0; i < 5; i++) {
         // 记录尝试
